@@ -1,0 +1,22 @@
+.btn-item:hover {
+    background-color: rgba(128, 128, 128, 0.65) !important;
+    color: white !important;
+    transition: 0.3s;
+}
+
+.btn-exit:hover {
+    background-color: rgb(220, 53, 69) !important;
+    color: white !important;
+    transition: 0.3s;
+}
+
+.dropdown-item:hover,
+.nav-link:hover {
+    background-color: rgb(25, 135, 84) !important;
+    color: white !important;
+    transition: 0.3s;
+}
+
+.nav-link {
+    font-size: 1.1rem;
+}

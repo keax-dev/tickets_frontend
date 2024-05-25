@@ -1,0 +1,120 @@
+<nav class="navbar navbar-success bg-success fixed-top py-3">
+
+    <div class="container-fluid">
+
+        <button class="navbar-toggler border border-light" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar" aria-label="Toggle navigation">
+            <i class="fa-solid fa-bars text-light"></i>
+        </button>
+
+        <div class="d-flex justify-content-center align-items-center mx-5">
+
+            <p class="m-0 p-0 mx-4 lead text-light">Juan Mario Benalcazar Solis</p>
+
+            <i class="fa-solid fa-user fs-4 text-light"></i>
+
+            <button class="btn btn-success rounded-circle" [matMenuTriggerFor]="menu">
+                <i class="fa-solid fa-caret-down"></i>
+            </button>
+
+        </div>
+
+        <mat-menu #menu="matMenu" class="pt-4 pb-2 bg-light shadow">
+
+            <button mat-menu-item class="py-3 px-2 text-dark btn-item">
+              <i class="fa-solid fa-key mx-2"></i>
+              <span class="fs-6">Cambiar Contraseña</span>
+            </button>
+
+            <button mat-menu-item class="py-3 px-2 text-danger btn-exit">
+              <i class="fa-solid fa-circle-left mx-2"></i>
+              <span class="fs-6">Salir</span>
+            </button>
+
+        </mat-menu>
+
+        <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
+
+            <div class="offcanvas-header">
+                <img class="w-100" src="Logo-H-Mushuc-Runa.png" alt="Cooperativa Mushuc Runa" class="w-75">
+                <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+            </div>
+
+            <div class="offcanvas-body p-0">
+
+                <ul class="navbar-nav">
+
+                    <li class="nav-item">
+                        <a (click)="setMenuSelected(1)" class="nav-link w-100 d-flex justify-content-between align-items-center px-3" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Ingreso de Solicitudes
+                            @if (menu_selected == 1) {
+                                <i class="fa-solid fa-caret-up"></i>
+                            }@else {
+                                <i class="fa-solid fa-caret-down"></i>
+                            }
+                        </a>
+                        <ul class="dropdown-menu border-top border-bottom border-success m-2">
+                            <li><a class="dropdown-item text-wrap" href="#">Ingreso de Personas</a></li>
+                            <li><a class="dropdown-item text-wrap" href="#">Ingreso de Simulador</a></li>
+                            <li><a class="dropdown-item text-wrap" href="#">Simulador RVELI y DOBLE PAGARÉ</a></li>
+                            <li><a class="dropdown-item text-wrap" href="#">Simulador TRIPLE PAGARE COBERTURA TOTAL</a></li>
+                            <li><a class="dropdown-item text-wrap" href="#">Ingreso de la Solicitud de crédito</a></li>
+                            <li><a class="dropdown-item text-wrap" href="#">Análisis de la capacidad de pago</a></li>
+                        </ul>
+                    </li>
+
+                    <li class="nav-item ">
+                        <a (click)="setMenuSelected(2)" class="nav-link d-flex justify-content-between align-items-center px-3" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Seguimiento de Solicitudes 
+                            @if (menu_selected == 2) {
+                                <i class="fa-solid fa-caret-up"></i>
+                            }@else {
+                                <i class="fa-solid fa-caret-down"></i>
+                            }
+                        </a>
+                        <ul class="dropdown-menu border-top border-bottom border-success m-2">
+                            <li><a class="dropdown-item text-wrap" href="#">Consulta de Seguimiento</a></li>
+                            <li><a class="dropdown-item text-wrap" href="#">Modificación de Estados de Seguimiento</a></li>
+                        </ul>
+                    </li>
+
+                    <li class="nav-item dropdown">
+                        <a (click)="setMenuSelected(3)" class="nav-link text-wrap d-flex justify-content-between align-items-center px-3" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Ingreso de Datos de la Factura y Actualización de Información Cliente
+                            @if (menu_selected == 3) {
+                                <i class="fa-solid fa-caret-up"></i>
+                            }@else {
+                                <i class="fa-solid fa-caret-down"></i>
+                            }
+                        </a>
+                        <ul class="dropdown-menu border-top border-bottom border-success m-2">
+                            <li><a class="dropdown-item text-wrap" href="#">Mantenimiento de la Información del Cliente</a></li>
+                            <li><a class="dropdown-item text-wrap" href="#">Ingreso de Datos de la Factura</a></li>
+                            <li><a class="dropdown-item text-wrap" href="#">Subida de Documentos y Generación del Check List</a></li>
+                            <li><a class="dropdown-item text-wrap" href="#">Impresión de documentos de Crédito</a></li>
+                        </ul>
+                    </li>
+
+                    <li class="nav-item dropdown">
+                        <a (click)="setMenuSelected(4)" class="nav-link text-wrap d-flex justify-content-between align-items-center px-3" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Control de Entrega de Documentos y Generación del Check List
+                            @if (menu_selected == 4) {
+                                <i class="fa-solid fa-caret-up"></i>
+                            }@else {
+                                <i class="fa-solid fa-caret-down"></i>
+                            }
+                        </a>
+                        <ul class="dropdown-menu border-top border-bottom border-success m-2">
+                            <li><a class="dropdown-item text-wrap" href="#">Subida de Documentos y Generación del Check List</a></li>
+                            <li><a class="dropdown-item text-wrap" href="#">Reporte del Check List</a></li>
+                        </ul>
+                    </li>
+
+                </ul>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</nav>
