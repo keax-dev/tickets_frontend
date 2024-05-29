@@ -2,15 +2,15 @@ import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angula
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { MatButtonModule } from '@angular/material/button';
+import { UserDataService } from '../../services/user-data.service';
 import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
 import { Subscription } from 'rxjs';
 import { AlertService } from '../../services/alert.service';
 import { AuthService } from '../../services/auth.service';
-import { Component } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
-import { UserDataService } from '../../services/user-data.service';
 
 @Component({
   selector: 'app-login',
@@ -19,7 +19,7 @@ import { UserDataService } from '../../services/user-data.service';
   templateUrl: './login.component.html',
   styleUrl: './login.component.css'
 })
-export default class LoginComponent {
+export default class LoginComponent implements OnDestroy {
 
   loginForm: FormGroup = this.fb.group({
     cpersona: ['', [Validators.required]],
@@ -37,6 +37,11 @@ export default class LoginComponent {
     private router: Router,
     private fb: FormBuilder) { }
 
+  ngOnDestroy(): void {
+    this.loginSubscription?.unsubscribe();
+    this.spinner.hide();
+  }
+
   login() {
     if (this.loginForm.valid) {
       this.spinner.show();
@@ -44,9 +49,10 @@ export default class LoginComponent {
         next: result => {
           if (result.status) {
             this.alertService.success(result.alert);
-            this.saveInformationUser(result.data);
+            this.saveInformationUser(result.data.user);
+            localStorage.setItem('token', result.data.token);
           } else {
-            
+            this.alertService.error(result);
           }
           this.spinner.hide();
           this.loginSubscription?.unsubscribe();

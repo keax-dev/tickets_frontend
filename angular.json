@@ -28,6 +28,7 @@
                             "node_modules/ngx-spinner/animations/ball-spin-clockwise.css",
                             "@angular/material/prebuilt-themes/cyan-orange.css",
                             "node_modules/bootstrap/dist/css/bootstrap.min.css",
+                            "node_modules/ngx-toastr/toastr.css",
                             "src/styles.css"
                         ],
                         "scripts": [
@@ -87,7 +88,6 @@
                         }],
                         "styles": [
                             "@angular/material/prebuilt-themes/cyan-orange.css",
-                            "node_modules/ngx-spinner/animations/ball-spin-clockwise.css",
                             "src/styles.css"
                         ],
                         "scripts": []

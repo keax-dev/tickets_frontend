@@ -24,6 +24,7 @@
     "bootstrap": "^5.3.3",
     "crypto-js": "^4.2.0",
     "ngx-spinner": "^17.0.0",
+    "ngx-toastr": "^18.0.0",
     "rxjs": "~7.8.0",
     "sweetalert2": "^11.11.0",
     "tslib": "^2.3.0",

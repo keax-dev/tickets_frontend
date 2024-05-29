@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HeaderService } from './headers.service';
-import { Observable } from 'rxjs'; 
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -11,6 +11,14 @@ export class AuthService {
 
   login(user: any): Observable<any> {
     return this.headers.http.post(`${this.headers.url}login`, user);
+  }
+
+  logout(): Observable<any> {
+    return this.headers.http.post(`${this.headers.url}logout`, {}, this.headers.httpOptions);
+  }
+
+  clearDataLocalStorage() {
+    localStorage.clear();
   }
 
 }

@@ -1,5 +1,7 @@
-import { Component } from '@angular/core';
+import { HeaderService } from '../services/headers.service';
+import { UserDataService } from '../services/user-data.service';
 import { MenuComponent } from './menu/menu.component';
+import { Component, OnInit } from '@angular/core';
 
 @Component({
   selector: 'app-home',
@@ -8,6 +10,14 @@ import { MenuComponent } from './menu/menu.component';
   templateUrl: './home.component.html',
   styleUrl: './home.component.css'
 })
-export default class HomeComponent {
+export default class HomeComponent implements OnInit {
+
+  constructor(private headerService: HeaderService,
+    private userDataService: UserDataService) { }
+
+  ngOnInit(): void {
+    this.headerService.getToken();
+    this.userDataService.uploadDataLocalStorage();
+  }
 
 }

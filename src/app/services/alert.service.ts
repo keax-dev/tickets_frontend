@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { NgxSpinnerService } from 'ngx-spinner';
+import { ToastrService } from 'ngx-toastr';
 import Swal from 'sweetalert2';
 
 @Injectable({
@@ -7,22 +8,19 @@ import Swal from 'sweetalert2';
 })
 export class AlertService {
 
+  constructor(private toastr: ToastrService) { }
+
   success(title: string) {
-    Swal.fire({ icon: "success", title: title, showConfirmButton: false, timer: 1500 });
+    this.toastr.success(title, undefined, { positionClass: 'toast-bottom-right' });
   }
 
-  error(title: string, messages: string[]) {
-    let html = '';
-    if (messages.length !== 0) {
-      messages.forEach((message: any) => {
-        html += `<p> - ${message}</p>`
-      });
-    }
-    Swal.fire({ icon: "error", title: title, html: html, confirmButtonColor: 'red' });
+  error(result: any) {
+    const messageContent = result.messages.map((message: string) => `<li>${message}</li>`).join('');
+    this.toastr.error(`<div><strong>${result.alert}</strong><ul>${messageContent}</ul></div>`, undefined, { enableHtml: true, positionClass: 'toast-top-right' });
   }
 
   errorApplication(spinner: NgxSpinnerService) {
-    Swal.fire({ icon: "error", title: 'Se produjo un error contacta al administrador', timer: 1500, confirmButtonColor: 'red' });
+    this.toastr.error('Se produjo un error contacta al administrador', undefined, { positionClass: 'toast-top-right' });
     spinner.hide();
   }
 

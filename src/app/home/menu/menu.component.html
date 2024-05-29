@@ -10,20 +10,20 @@
 
             <div class="row mx-2 info-user">
                 <div class="col-auto text-light">
-                    <p class="text-data m-0 p-0 d-flex justify-content-between align-content-center bg-secondary px-3 m-1 rounded-1 border border-light"><strong class="me-2">Sucursal: </strong> {{ userDataService.getBranch() }}</p>
-                    <p class="text-data m-0 p-0 d-flex justify-content-between align-content-center bg-secondary px-3 m-1 rounded-1 border border-light"><strong class="me-2">Oficina: </strong> {{ userDataService.getOffice() }}</p>
+                    <p class="text-data m-0 p-0 d-flex justify-content-between align-content-center px-3 m-1 rounded-1 border border-light"><strong class="me-2">Sucursal: </strong> {{ userDataService.getBranch() }}</p>
+                    <p class="text-data m-0 p-0 d-flex justify-content-between align-content-center px-3 m-1 rounded-1 border border-light"><strong class="me-2">Oficina: </strong> {{ userDataService.getOffice() }}</p>
                 </div>
                 <div class="col-auto text-light">
-                    <p class="text-data m-0 p-0 d-flex justify-content-between align-content-center bg-secondary px-3 m-1 rounded-1 border border-light"><strong class="me-2">Terminal: </strong> {{ userDataService.getTerminal() }}</p>
-                    <p class="text-data m-0 p-0 d-flex justify-content-between align-content-center bg-secondary px-3 m-1 rounded-1 border border-light"><strong class="me-2">Rol: </strong> {{ userDataService.getRolName() }}</p>
+                    <p class="text-data m-0 p-0 d-flex justify-content-between align-content-center px-3 m-1 rounded-1 border border-light"><strong class="me-2">Terminal: </strong> {{ userDataService.getTerminal() }}</p>
+                    <p class="text-data m-0 p-0 d-flex justify-content-between align-content-center px-3 m-1 rounded-1 border border-light"><strong class="me-2">Rol: </strong> {{ userDataService.getRolName() }}</p>
                 </div>
                 <div class="col-auto text-light">
-                    <p class="text-data m-0 p-0 d-flex justify-content-between align-content-center bg-secondary px-3 m-1 rounded-1 border border-light"><strong class="me-2">Usuario: </strong> {{ userDataService.getUser() }}</p>
-                    <p class="text-data m-0 p-0 d-flex justify-content-between align-content-center bg-secondary px-3 m-1 rounded-1 border border-light"><strong class="me-2">Area: </strong> {{ userDataService.getArea() }}</p>
+                    <p class="text-data m-0 p-0 d-flex justify-content-between align-content-center px-3 m-1 rounded-1 border border-light"><strong class="me-2">Usuario: </strong> {{ userDataService.getUser() }}</p>
+                    <p class="text-data m-0 p-0 d-flex justify-content-between align-content-center px-3 m-1 rounded-1 border border-light"><strong class="me-2">Area: </strong> {{ userDataService.getArea() }}</p>
                 </div>
                 <div class="col-auto text-light">
-                    <p class="text-data m-0 p-0 d-flex justify-content-between align-content-center bg-secondary px-3 m-1 rounded-1 border border-light"><strong class="me-2">Fecha Actual: </strong> {{ userDataService.getCurrentDate() }}</p>
-                    <p class="text-data m-0 p-0 d-flex justify-content-between align-content-center bg-secondary px-3 m-1 rounded-1 border border-light"><strong class="me-2">Fecha Contable:</strong> {{ userDataService.getAccountingDate() }}</p>
+                    <p class="text-data m-0 p-0 d-flex justify-content-between align-content-center px-3 m-1 rounded-1 border border-light"><strong class="me-2">Fecha Actual: </strong> {{ userDataService.getCurrentDate() }}</p>
+                    <p class="text-data m-0 p-0 d-flex justify-content-between align-content-center px-3 m-1 rounded-1 border border-light"><strong class="me-2">Fecha Contable:</strong> {{ userDataService.getAccountingDate() }}</p>
                 </div>
             </div>
 
@@ -44,7 +44,7 @@
               <span class="fs-6">Cambiar Contraseña</span>
             </button>
 
-            <button mat-menu-item class="py-3 px-2 text-danger btn-exit">
+            <button (click)="logout()" mat-menu-item class="py-3 px-2 text-danger btn-exit">
               <i class="fa-solid fa-circle-left mx-2"></i>
               <span class="fs-6">Salir</span>
             </button>
@@ -63,20 +63,20 @@
 
                 <div class="row m-0 p-0 info-user-cellphone">
                     <div class="col text-light">
-                        <p class="text-data m-0 p-0 d-flex justify-content-between align-content-center bg-secondary px-3 m-1 rounded-1 border border-light"><strong class="me-2">Sucursal: </strong> {{ userDataService.getBranch() }}</p>
-                        <p class="text-data m-0 p-0 d-flex justify-content-between align-content-center bg-secondary px-3 m-1 rounded-1 border border-light"><strong class="me-2">Oficina: </strong> {{ userDataService.getOffice() }}</p>
+                        <p class="text-data m-0 p-0 d-flex justify-content-between align-content-center bg-success px-3 m-1 rounded-1 border border-light"><strong class="me-2">Sucursal: </strong> {{ userDataService.getBranch() }}</p>
+                        <p class="text-data m-0 p-0 d-flex justify-content-between align-content-center bg-success px-3 m-1 rounded-1 border border-light"><strong class="me-2">Oficina: </strong> {{ userDataService.getOffice() }}</p>
                     </div>
                     <div class="col text-light">
-                        <p class="text-data m-0 p-0 d-flex justify-content-between align-content-center bg-secondary px-3 m-1 rounded-1 border border-light"><strong class="me-2">Terminal: </strong> {{ userDataService.getTerminal() }}</p>
-                        <p class="text-data m-0 p-0 d-flex justify-content-between align-content-center bg-secondary px-3 m-1 rounded-1 border border-light"><strong class="me-2">Rol: </strong> {{ userDataService.getRolName() }}</p>
+                        <p class="text-data m-0 p-0 d-flex justify-content-between align-content-center bg-success px-3 m-1 rounded-1 border border-light"><strong class="me-2">Terminal: </strong> {{ userDataService.getTerminal() }}</p>
+                        <p class="text-data m-0 p-0 d-flex justify-content-between align-content-center bg-success px-3 m-1 rounded-1 border border-light"><strong class="me-2">Rol: </strong> {{ userDataService.getRolName() }}</p>
                     </div>
                     <div class="col text-light">
-                        <p class="text-data m-0 p-0 d-flex justify-content-between align-content-center bg-secondary px-3 m-1 rounded-1 border border-light"><strong class="me-2">Usuario: </strong> {{ userDataService.getUser() }}</p>
-                        <p class="text-data m-0 p-0 d-flex justify-content-between align-content-center bg-secondary px-3 m-1 rounded-1 border border-light"><strong class="me-2">Area: </strong> {{ userDataService.getArea() }}</p>
+                        <p class="text-data m-0 p-0 d-flex justify-content-between align-content-center bg-success px-3 m-1 rounded-1 border border-light"><strong class="me-2">Usuario: </strong> {{ userDataService.getUser() }}</p>
+                        <p class="text-data m-0 p-0 d-flex justify-content-between align-content-center bg-success px-3 m-1 rounded-1 border border-light"><strong class="me-2">Area: </strong> {{ userDataService.getArea() }}</p>
                     </div>
                     <div class="col text-light">
-                        <p class="text-data m-0 p-0 d-flex justify-content-between align-content-center bg-secondary px-3 m-1 rounded-1 border border-light"><strong class="me-2">Fecha Actual: </strong> {{ userDataService.getCurrentDate() }}</p>
-                        <p class="text-data m-0 p-0 d-flex justify-content-between align-content-center bg-secondary px-3 m-1 rounded-1 border border-light"><strong class="me-2">Fecha Contable:</strong> {{ userDataService.getAccountingDate() }}</p>
+                        <p class="text-data m-0 p-0 d-flex justify-content-between align-content-center bg-success px-3 m-1 rounded-1 border border-light"><strong class="me-2">Fecha Actual: </strong> {{ userDataService.getCurrentDate() }}</p>
+                        <p class="text-data m-0 p-0 d-flex justify-content-between align-content-center bg-success px-3 m-1 rounded-1 border border-light"><strong class="me-2">Fecha Contable:</strong> {{ userDataService.getAccountingDate() }}</p>
                     </div>
                 </div>
 
