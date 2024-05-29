@@ -20,3 +20,20 @@
 .nav-link {
     font-size: 1.1rem;
 }
+
+.text-data {
+    font-size: 0.8rem;
+}
+
+.info-user-cellphone {
+    display: none;
+}
+
+@media (max-width: 1250px) {
+    .info-user {
+        display: none;
+    }
+    .info-user-cellphone {
+        display: block;
+    }
+}

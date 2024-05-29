@@ -5,9 +5,12 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
+import { Subscription } from 'rxjs';
+import { AlertService } from '../../services/alert.service';
 import { AuthService } from '../../services/auth.service';
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
+import { UserDataService } from '../../services/user-data.service';
 
 @Component({
   selector: 'app-login',
@@ -19,19 +22,51 @@ import { Router } from '@angular/router';
 export default class LoginComponent {
 
   loginForm: FormGroup = this.fb.group({
-    user: ['', [Validators.required]],
+    cpersona: ['', [Validators.required]],
     password: ['', Validators.required]
   });
 
-  hide: boolean = true;;
+  hide: boolean = true;
+
+  loginSubscription!: Subscription;
 
   constructor(private authService: AuthService,
+    private userDataService: UserDataService,
+    private alertService: AlertService,
     private spinner: NgxSpinnerService,
     private router: Router,
     private fb: FormBuilder) { }
 
   login() {
-    if (this.loginForm.valid) this.router.navigateByUrl('/home')
+    if (this.loginForm.valid) {
+      this.spinner.show();
+      this.loginSubscription = this.authService.login(this.loginForm.value).subscribe({
+        next: result => {
+          if (result.status) {
+            this.alertService.success(result.alert);
+            this.saveInformationUser(result.data);
+          } else {
+            
+          }
+          this.spinner.hide();
+          this.loginSubscription?.unsubscribe();
+        },
+        error: e => this.alertService.errorApplication(this.spinner)
+      });
+    }
+  }
+
+  saveInformationUser(user: any) {
+    // this.userDataService.saveAccountingDate();
+    // this.userDataService.saveDurrentDate(user.);
+    this.userDataService.saveTerminal(user.terminal);
+    this.userDataService.saveBranch(user.sucursal);
+    this.userDataService.saveOffice(user.oficina);
+    this.userDataService.saveArea(user.area);
+    this.userDataService.saveUser(user.cpersona);
+    this.userDataService.saveRol(Number(user.role.id).toString());
+    this.userDataService.saveRolName(user.role.name);
+    this.router.navigateByUrl('/home');
   }
 
 }

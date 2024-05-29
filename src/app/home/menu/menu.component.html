@@ -8,13 +8,32 @@
 
         <div class="d-flex justify-content-center align-items-center mx-5">
 
-            <p class="m-0 p-0 mx-4 lead text-light">Juan Mario Benalcazar Solis</p>
+            <div class="row mx-2 info-user">
+                <div class="col-auto text-light">
+                    <p class="text-data m-0 p-0 d-flex justify-content-between align-content-center bg-secondary px-3 m-1 rounded-1 border border-light"><strong class="me-2">Sucursal: </strong> {{ userDataService.getBranch() }}</p>
+                    <p class="text-data m-0 p-0 d-flex justify-content-between align-content-center bg-secondary px-3 m-1 rounded-1 border border-light"><strong class="me-2">Oficina: </strong> {{ userDataService.getOffice() }}</p>
+                </div>
+                <div class="col-auto text-light">
+                    <p class="text-data m-0 p-0 d-flex justify-content-between align-content-center bg-secondary px-3 m-1 rounded-1 border border-light"><strong class="me-2">Terminal: </strong> {{ userDataService.getTerminal() }}</p>
+                    <p class="text-data m-0 p-0 d-flex justify-content-between align-content-center bg-secondary px-3 m-1 rounded-1 border border-light"><strong class="me-2">Rol: </strong> {{ userDataService.getRolName() }}</p>
+                </div>
+                <div class="col-auto text-light">
+                    <p class="text-data m-0 p-0 d-flex justify-content-between align-content-center bg-secondary px-3 m-1 rounded-1 border border-light"><strong class="me-2">Usuario: </strong> {{ userDataService.getUser() }}</p>
+                    <p class="text-data m-0 p-0 d-flex justify-content-between align-content-center bg-secondary px-3 m-1 rounded-1 border border-light"><strong class="me-2">Area: </strong> {{ userDataService.getArea() }}</p>
+                </div>
+                <div class="col-auto text-light">
+                    <p class="text-data m-0 p-0 d-flex justify-content-between align-content-center bg-secondary px-3 m-1 rounded-1 border border-light"><strong class="me-2">Fecha Actual: </strong> {{ userDataService.getCurrentDate() }}</p>
+                    <p class="text-data m-0 p-0 d-flex justify-content-between align-content-center bg-secondary px-3 m-1 rounded-1 border border-light"><strong class="me-2">Fecha Contable:</strong> {{ userDataService.getAccountingDate() }}</p>
+                </div>
+            </div>
 
-            <i class="fa-solid fa-user fs-4 text-light"></i>
+            <div>
+                <i class="fa-solid fa-user fs-5 text-light"></i>
 
-            <button class="btn btn-success rounded-circle" [matMenuTriggerFor]="menu">
-                <i class="fa-solid fa-caret-down"></i>
-            </button>
+                <button class="btn btn-success rounded-circle" [matMenuTriggerFor]="menu">
+                    <i class="fa-solid fa-caret-down"></i>
+                </button>
+            </div>
 
         </div>
 
@@ -40,6 +59,26 @@
             </div>
 
             <div class="offcanvas-body p-0">
+
+
+                <div class="row m-0 p-0 info-user-cellphone">
+                    <div class="col text-light">
+                        <p class="text-data m-0 p-0 d-flex justify-content-between align-content-center bg-secondary px-3 m-1 rounded-1 border border-light"><strong class="me-2">Sucursal: </strong> {{ userDataService.getBranch() }}</p>
+                        <p class="text-data m-0 p-0 d-flex justify-content-between align-content-center bg-secondary px-3 m-1 rounded-1 border border-light"><strong class="me-2">Oficina: </strong> {{ userDataService.getOffice() }}</p>
+                    </div>
+                    <div class="col text-light">
+                        <p class="text-data m-0 p-0 d-flex justify-content-between align-content-center bg-secondary px-3 m-1 rounded-1 border border-light"><strong class="me-2">Terminal: </strong> {{ userDataService.getTerminal() }}</p>
+                        <p class="text-data m-0 p-0 d-flex justify-content-between align-content-center bg-secondary px-3 m-1 rounded-1 border border-light"><strong class="me-2">Rol: </strong> {{ userDataService.getRolName() }}</p>
+                    </div>
+                    <div class="col text-light">
+                        <p class="text-data m-0 p-0 d-flex justify-content-between align-content-center bg-secondary px-3 m-1 rounded-1 border border-light"><strong class="me-2">Usuario: </strong> {{ userDataService.getUser() }}</p>
+                        <p class="text-data m-0 p-0 d-flex justify-content-between align-content-center bg-secondary px-3 m-1 rounded-1 border border-light"><strong class="me-2">Area: </strong> {{ userDataService.getArea() }}</p>
+                    </div>
+                    <div class="col text-light">
+                        <p class="text-data m-0 p-0 d-flex justify-content-between align-content-center bg-secondary px-3 m-1 rounded-1 border border-light"><strong class="me-2">Fecha Actual: </strong> {{ userDataService.getCurrentDate() }}</p>
+                        <p class="text-data m-0 p-0 d-flex justify-content-between align-content-center bg-secondary px-3 m-1 rounded-1 border border-light"><strong class="me-2">Fecha Contable:</strong> {{ userDataService.getAccountingDate() }}</p>
+                    </div>
+                </div>
 
                 <ul class="navbar-nav">
 
