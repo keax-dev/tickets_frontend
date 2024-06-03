@@ -1,4 +1,5 @@
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Component, OnDestroy } from '@angular/core';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { MatButtonModule } from '@angular/material/button';
@@ -9,7 +10,6 @@ import { CommonModule } from '@angular/common';
 import { Subscription } from 'rxjs';
 import { AlertService } from '../../services/alert.service';
 import { AuthService } from '../../services/auth.service';
-import { Component, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 
 @Component({

@@ -17,6 +17,11 @@
     transition: 0.3s;
 }
 
+.activate {
+    background-color: rgb(25, 135, 84) !important;
+    color: white !important;
+}
+
 .nav-link {
     font-size: 1.1rem;
 }

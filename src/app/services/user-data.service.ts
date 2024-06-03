@@ -9,12 +9,12 @@ export class UserDataService {
   private accountingDate!: string;
   private currentDate!: string;
   private terminal!: string;
+  private rolName!: string;
   private branch!: string;
   private office!: string;
   private area!: string;
   private user!: string;
   private rol!: number;
-  private rolName!: string;
 
   constructor(private localStorageService: LocalStorageService) {
     this.uploadDataLocalStorage();

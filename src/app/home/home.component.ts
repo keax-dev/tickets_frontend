@@ -1,12 +1,13 @@
-import { HeaderService } from '../services/headers.service';
-import { UserDataService } from '../services/user-data.service';
-import { MenuComponent } from './menu/menu.component';
 import { Component, OnInit } from '@angular/core';
+import { UserDataService } from '../services/user-data.service';
+import { HeaderService } from '../services/headers.service';
+import { MenuComponent } from './menu/menu.component';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [MenuComponent],
+  imports: [MenuComponent,RouterModule],
   templateUrl: './home.component.html',
   styleUrl: './home.component.css'
 })
