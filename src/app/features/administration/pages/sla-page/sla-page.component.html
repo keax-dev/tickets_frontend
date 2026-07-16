@@ -1,0 +1,103 @@
+<section class="page-card page">
+  <div class="page-heading">
+    <div>
+      <h1>SLA</h1>
+      <p>Define ventanas objetivo por prioridad para primera respuesta y resolucion.</p>
+    </div>
+    <button
+      (click)="loadPolicies()"
+      severity="secondary"
+      label="Recargar"
+      icon="pi pi-refresh"
+      type="button"
+      pButton
+    ></button>
+  </div>
+
+  @if (errorMessage()) {
+    <p-message severity="error" [text]="errorMessage() ?? ''"></p-message>
+  }
+
+  <div class="layout">
+    <p-card>
+      <p-table [value]="policies()" [loading]="loading()">
+        <ng-template pTemplate="header">
+          <tr>
+            <th>Prioridad</th>
+            <th>Primera respuesta</th>
+            <th>Resolucion</th>
+            <th>Estado</th>
+            <th class="actions-column">Acciones</th>
+          </tr>
+        </ng-template>
+
+        <ng-template pTemplate="body" let-policy>
+          <tr>
+            <td>
+              <p-tag
+                [severity]="prioritySeverity(policy.priority)"
+                [value]="priorityLabel(policy.priority)"
+              ></p-tag>
+            </td>
+            <td>{{ policy.firstResponseHours }} h</td>
+            <td>{{ policy.resolutionHours }} h</td>
+            <td>
+              <p-tag
+                [severity]="policy.active ? 'success' : 'secondary'"
+                [value]="policy.active ? 'Activa' : 'Inactiva'"
+              ></p-tag>
+            </td>
+            <td class="actions-cell">
+              <button
+                (click)="selectPolicy(policy)"
+                severity="secondary"
+                label="Editar"
+                type="button"
+                size="small"
+                pButton
+              ></button>
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </p-card>
+
+    <p-card header="Editar politica">
+      <form class="form" [formGroup]="slaForm" (ngSubmit)="submit()">
+        <label class="field">
+          <span>Prioridad</span>
+          <p-select
+            [options]="priorityOptions"
+            formControlName="priority"
+            optionLabel="label"
+            optionValue="value"
+          ></p-select>
+        </label>
+
+        <label class="field">
+          <span>Primera respuesta (horas)</span>
+          <input pInputText type="number" min="1" formControlName="firstResponseHours" />
+        </label>
+
+        <label class="field">
+          <span>Resolucion (horas)</span>
+          <input pInputText type="number" min="1" formControlName="resolutionHours" />
+        </label>
+
+        <label class="field">
+          <span>Estado</span>
+          <p-select
+            [options]="activeOptions"
+            formControlName="active"
+            optionValue="value"
+            optionLabel="label"
+          ></p-select>
+        </label>
+
+        <div class="form-actions">
+          <button pButton type="submit" label="Guardar SLA" [loading]="saving()"></button>
+        </div>
+      </form>
+    </p-card>
+  </div>
+</section>

@@ -1,14 +1,16 @@
+import { authGuard, guestGuard, permissionGuard } from './core/auth/guards/auth.guards';
+import { ShellComponent } from './core/layout/components/shell/shell.component';
 import { Routes } from '@angular/router';
-import { authGuard, guestGuard, permissionGuard } from './core/auth/auth.guards';
-import { ShellComponent } from './core/layout/shell.component';
 
 export const routes: Routes = [
   {
     path: 'login',
     canActivate: [guestGuard],
-    title: 'Iniciar sesión',
+    title: 'Iniciar sesion',
     loadComponent: () =>
-      import('./features/auth/login-page.component').then((module) => module.LoginPageComponent),
+      import('./features/auth/pages/login-page/login-page.component').then(
+        (module) => module.LoginPageComponent,
+      ),
   },
   {
     path: '',
@@ -19,7 +21,7 @@ export const routes: Routes = [
         path: 'dashboard',
         title: 'Dashboard',
         loadComponent: () =>
-          import('./features/dashboard/dashboard-page.component').then(
+          import('./features/dashboard/pages/dashboard-page/dashboard-page.component').then(
             (module) => module.DashboardPageComponent,
           ),
       },
@@ -27,7 +29,7 @@ export const routes: Routes = [
         path: 'tickets',
         title: 'Tickets',
         loadComponent: () =>
-          import('./features/tickets/ticket-list-page.component').then(
+          import('./features/tickets/pages/ticket-list-page/ticket-list-page.component').then(
             (module) => module.TicketListPageComponent,
           ),
       },
@@ -35,7 +37,7 @@ export const routes: Routes = [
         path: 'tickets/new',
         title: 'Nuevo ticket',
         loadComponent: () =>
-          import('./features/tickets/ticket-create-page.component').then(
+          import('./features/tickets/pages/ticket-create-page/ticket-create-page.component').then(
             (module) => module.TicketCreatePageComponent,
           ),
       },
@@ -43,7 +45,7 @@ export const routes: Routes = [
         path: 'tickets/:ticketId',
         title: 'Detalle del ticket',
         loadComponent: () =>
-          import('./features/tickets/ticket-detail-page.component').then(
+          import('./features/tickets/pages/ticket-detail-page/ticket-detail-page.component').then(
             (module) => module.TicketDetailPageComponent,
           ),
       },
@@ -51,7 +53,7 @@ export const routes: Routes = [
         path: 'notifications',
         title: 'Notificaciones',
         loadComponent: () =>
-          import('./features/notifications/notifications-page.component').then(
+          import('./features/notifications/pages/notifications-page/notifications-page.component').then(
             (module) => module.NotificationsPageComponent,
           ),
       },
@@ -59,7 +61,7 @@ export const routes: Routes = [
         path: 'profile',
         title: 'Perfil',
         loadComponent: () =>
-          import('./features/profile/profile-page.component').then(
+          import('./features/profile/pages/profile-page/profile-page.component').then(
             (module) => module.ProfilePageComponent,
           ),
       },
@@ -71,19 +73,19 @@ export const routes: Routes = [
           permission: 'USER_READ',
         },
         loadComponent: () =>
-          import('./features/administration/users-page.component').then(
+          import('./features/administration/pages/users-page/users-page.component').then(
             (module) => module.UsersPageComponent,
           ),
       },
       {
         path: 'admin/categories',
-        title: 'Categorías',
+        title: 'Categorias',
         canActivate: [permissionGuard],
         data: {
           permission: 'CATEGORY_READ',
         },
         loadComponent: () =>
-          import('./features/administration/categories-page.component').then(
+          import('./features/administration/pages/categories-page/categories-page.component').then(
             (module) => module.CategoriesPageComponent,
           ),
       },
@@ -95,7 +97,7 @@ export const routes: Routes = [
           permission: 'SLA_READ',
         },
         loadComponent: () =>
-          import('./features/administration/sla-page.component').then(
+          import('./features/administration/pages/sla-page/sla-page.component').then(
             (module) => module.SlaPageComponent,
           ),
       },
@@ -110,15 +112,15 @@ export const routes: Routes = [
     path: 'forbidden',
     title: 'Acceso denegado',
     loadComponent: () =>
-      import('./features/system/forbidden-page.component').then(
+      import('./features/system/pages/forbidden-page/forbidden-page.component').then(
         (module) => module.ForbiddenPageComponent,
       ),
   },
   {
     path: '**',
-    title: 'Página no encontrada',
+    title: 'Pagina no encontrada',
     loadComponent: () =>
-      import('./features/system/not-found-page.component').then(
+      import('./features/system/pages/not-found-page/not-found-page.component').then(
         (module) => module.NotFoundPageComponent,
       ),
   },

@@ -1,0 +1,39 @@
+<section class="page-card page">
+  <div class="page-heading">
+    <div>
+      <h1>Notificaciones</h1>
+      <p>Seguimiento personal de eventos relevantes del flujo de tickets.</p>
+    </div>
+    <button
+      (click)="notificationStore.markAllAsRead()"
+      severity="secondary"
+      label="Marcar todas"
+      type="button"
+      pButton
+    ></button>
+  </div>
+
+  <div class="stack">
+    @for (notification of notificationStore.page()?.content ?? []; track notification.id) {
+      <div class="notification-item">
+        <div>
+          <strong>{{ notification.title }}</strong>
+          <p>{{ notification.message }}</p>
+        </div>
+        <div class="notification-side">
+          <p-tag
+            [severity]="notification.read ? 'secondary' : 'success'"
+            [value]="notification.read ? 'Leida' : 'Nueva'"
+          ></p-tag>
+          <button
+            (click)="notificationStore.markAsRead(notification.id)"
+            variant="text"
+            label="Marcar"
+            type="button"
+            pButton
+          ></button>
+        </div>
+      </div>
+    }
+  </div>
+</section>

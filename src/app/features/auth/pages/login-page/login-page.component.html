@@ -1,0 +1,60 @@
+<div class="login-page">
+  <div class="hero">
+    <p class="eyebrow">Sistema senior de soporte</p>
+    <h1>Gestiona tickets con foco en operacion, SLA y trazabilidad.</h1>
+    <p>
+      La sesion usa access token en memoria y refresh token seguro en cookie HttpOnly, alineado con
+      el backend que acabamos de montar.
+    </p>
+  </div>
+
+  <p-card class="login-card">
+    <ng-template pTemplate="title">Ingresar</ng-template>
+    <ng-template pTemplate="subtitle">
+      Usa una cuenta local de demostracion o tus credenciales.
+    </ng-template>
+
+    <form (ngSubmit)="submit()" [formGroup]="loginForm">
+      <label class="field">
+        <span>Correo</span>
+        <input pInputText type="email" formControlName="email" placeholder="admin@tickets.local" />
+      </label>
+
+      <label class="field">
+        <span>Contrasena</span>
+        <p-password
+          [toggleMask]="true"
+          [feedback]="false"
+          formControlName="password"
+          inputStyleClass="w-full"
+          placeholder="Password123!"
+        />
+      </label>
+
+      @if (showValidationError()) {
+        <p-message severity="warn" text="Completa correo y contrasena para continuar." />
+      }
+
+      @if (authStore.errorMessage()) {
+        <p-message severity="error" [text]="authStore.errorMessage() ?? ''" />
+      }
+
+      <button
+        [loading]="authStore.loading()"
+        label="Ingresar"
+        class="submit-button"
+        type="submit"
+        pButton
+      ></button>
+    </form>
+
+    <div class="helper">
+      <strong>Credenciales locales:</strong>
+      <span>
+        <code>admin@tickets.local</code>, <code>manager@tickets.local</code>,
+        <code>agent@tickets.local</code>, <code>customer@tickets.local</code>
+      </span>
+      <span>Contrasena: <code>Password123!</code></span>
+    </div>
+  </p-card>
+</div>

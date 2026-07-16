@@ -1,0 +1,50 @@
+<section class="page-card page">
+  <div class="page-heading">
+    <div>
+      <h1>Nuevo ticket</h1>
+      <p>Crea una solicitud con idempotencia para evitar tickets duplicados por reintentos.</p>
+    </div>
+  </div>
+
+  <form class="stack" [formGroup]="ticketForm" (ngSubmit)="submit()">
+    <label class="field">
+      <span>Titulo</span>
+      <input pInputText formControlName="title" />
+    </label>
+
+    <label class="field">
+      <span>Descripcion</span>
+      <textarea pTextarea formControlName="description" rows="7"></textarea>
+    </label>
+
+    <div class="grid">
+      <label class="field">
+        <span>Categoria</span>
+        <p-select
+          [options]="categories"
+          formControlName="categoryId"
+          optionLabel="name"
+          optionValue="id"
+        ></p-select>
+      </label>
+
+      <label class="field">
+        <span>Prioridad</span>
+        <p-select
+          [options]="priorityOptions"
+          formControlName="priority"
+          optionLabel="label"
+          optionValue="value"
+        ></p-select>
+      </label>
+    </div>
+
+    @if (errorMessage()) {
+      <p-message severity="error" [text]="errorMessage() ?? ''"></p-message>
+    }
+
+    <div class="actions">
+      <button pButton type="submit" label="Crear ticket" [loading]="submitting()"></button>
+    </div>
+  </form>
+</section>

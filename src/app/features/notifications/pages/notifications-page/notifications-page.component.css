@@ -1,0 +1,31 @@
+.page {
+  padding: 1.5rem;
+}
+
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.notification-item {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem;
+  border-radius: 18px;
+  border: 1px solid var(--app-border);
+  background: color-mix(in srgb, var(--app-surface-soft) 78%, transparent);
+}
+
+.notification-item p {
+  margin: 0.35rem 0 0;
+  color: var(--app-text-muted);
+}
+
+.notification-side {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  align-items: flex-end;
+}

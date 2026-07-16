@@ -1,0 +1,50 @@
+.page {
+  padding: 1.5rem;
+}
+
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.comment-form,
+.comment-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.comment-item {
+  padding: 1rem;
+  border-radius: 18px;
+  border: 1px solid var(--app-border);
+  background: color-mix(in srgb, var(--app-surface-soft) 75%, transparent);
+}
+
+.comment-item-internal {
+  border-style: dashed;
+}
+
+.comment-item p,
+.comment-item strong,
+.comment-item small {
+  display: block;
+}
+
+.comment-item p {
+  margin: 0.5rem 0 0;
+}
+
+.actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 960px) {
+  .summary-grid {
+    grid-template-columns: 1fr;
+  }
+}

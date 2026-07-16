@@ -1,0 +1,16 @@
+<section class="page-card page">
+  <div class="page-heading">
+    <div>
+      <h1>Perfil</h1>
+      <p>Datos de la sesion actual y permisos efectivos.</p>
+    </div>
+  </div>
+
+  @if (authStore.currentUser(); as currentUser) {
+    <div class="grid">
+      <p-card header="Nombre">{{ currentUser.firstName }} {{ currentUser.lastName }}</p-card>
+      <p-card header="Correo">{{ currentUser.email }}</p-card>
+      <p-card header="Rol">{{ currentUser.role }}</p-card>
+    </div>
+  }
+</section>

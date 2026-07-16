@@ -1,0 +1,70 @@
+<section class="page-card page">
+  <div class="page-heading">
+    <div>
+      <h1>Tickets</h1>
+      <p>Busqueda, filtros server-side y seguimiento del estado operativo.</p>
+    </div>
+    <a pButton routerLink="/tickets/new" label="Nuevo ticket" icon="pi pi-plus"></a>
+  </div>
+
+  <form class="filters" [formGroup]="filtersForm">
+    <input
+      formControlName="search"
+      placeholder="Buscar por codigo, titulo o descripcion"
+      type="search"
+      pInputText
+    />
+    <p-select
+      [options]="statusOptions"
+      formControlName="status"
+      optionLabel="label"
+      optionValue="value"
+      placeholder="Estado"
+    ></p-select>
+    <p-select
+      [options]="priorityOptions"
+      formControlName="priority"
+      optionLabel="label"
+      optionValue="value"
+      placeholder="Prioridad"
+    ></p-select>
+    <p-select
+      [options]="categories"
+      formControlName="categoryId"
+      optionLabel="name"
+      optionValue="id"
+      placeholder="Categoria"
+    ></p-select>
+  </form>
+
+  <p-table [value]="ticketListStore.page()?.content ?? []" [loading]="ticketListStore.loading()">
+    <ng-template pTemplate="header">
+      <tr>
+        <th>Codigo</th>
+        <th>Titulo</th>
+        <th>Estado</th>
+        <th>Prioridad</th>
+        <th>Solicitante</th>
+        <th>Agente</th>
+        <th>Vence</th>
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="body" let-ticket>
+      <tr [routerLink]="['/tickets', ticket.id]" class="row-link">
+        <td>{{ ticket.code }}</td>
+        <td>{{ ticket.title }}</td>
+        <td><p-tag [value]="statusLabel(ticket.status)"></p-tag></td>
+        <td>
+          <p-tag
+            [value]="priorityLabel(ticket.priority)"
+            [severity]="priorityTagSeverity(ticket.priority)"
+          ></p-tag>
+        </td>
+        <td>{{ ticket.requesterName ?? 'Sin dato' }}</td>
+        <td>{{ ticket.assignedAgentName ?? 'Sin asignar' }}</td>
+        <td>{{ ticket.resolutionDueAt | date: 'short' }}</td>
+      </tr>
+    </ng-template>
+  </p-table>
+</section>

@@ -1,21 +1,20 @@
+import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
+import { correlationIdInterceptor } from './core/http/interceptors/correlation-id.interceptor';
+import { errorInterceptor } from './core/http/interceptors/error.interceptor';
+import { authInterceptor } from './core/http/interceptors/auth.interceptor';
+import { providePrimeNG } from 'primeng/config';
+import { provideRouter } from '@angular/router';
+import { API_BASE_URL } from './core/config/tokens/api-base-url.token';
+import { AuthStore } from './core/auth/stores/auth.store';
+import { routes } from './app.routes';
+import Aura from '@primeuix/themes/aura';
 import {
-  ApplicationConfig,
-  inject,
-  provideAppInitializer,
   provideBrowserGlobalErrorListeners,
   provideZonelessChangeDetection,
+  provideAppInitializer,
+  ApplicationConfig,
+  inject,
 } from '@angular/core';
-import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
-import { provideRouter } from '@angular/router';
-import { providePrimeNG } from 'primeng/config';
-import Aura from '@primeuix/themes/aura';
-
-import { routes } from './app.routes';
-import { authInterceptor } from './core/http/auth.interceptor';
-import { correlationIdInterceptor } from './core/http/correlation-id.interceptor';
-import { errorInterceptor } from './core/http/error.interceptor';
-import { API_BASE_URL } from './core/config/api-base-url.token';
-import { AuthStore } from './core/auth/auth.store';
 
 export const appConfig: ApplicationConfig = {
   providers: [

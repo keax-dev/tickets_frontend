@@ -1,0 +1,135 @@
+<section class="page-card page">
+  <div class="page-heading">
+    <div>
+      <h1>Usuarios</h1>
+      <p>Alta, edicion y desactivacion de cuentas operativas.</p>
+    </div>
+    <div class="heading-actions">
+      <button
+        pButton
+        type="button"
+        label="Nuevo usuario"
+        icon="pi pi-plus"
+        (click)="startCreate()"
+      ></button>
+      <button
+        pButton
+        type="button"
+        label="Recargar"
+        icon="pi pi-refresh"
+        severity="secondary"
+        (click)="loadUsers()"
+      ></button>
+    </div>
+  </div>
+
+  @if (errorMessage()) {
+    <p-message severity="error" [text]="errorMessage() ?? ''"></p-message>
+  }
+
+  <div class="layout">
+    <p-card>
+      <p-table [value]="users()" [loading]="loading()">
+        <ng-template pTemplate="header">
+          <tr>
+            <th>Nombre</th>
+            <th>Correo</th>
+            <th>Rol</th>
+            <th>Estado</th>
+            <th class="actions-column">Acciones</th>
+          </tr>
+        </ng-template>
+
+        <ng-template pTemplate="body" let-user>
+          <tr>
+            <td>{{ user.firstName }} {{ user.lastName }}</td>
+            <td>{{ user.email }}</td>
+            <td><p-tag [value]="roleLabel(user.role)" severity="info"></p-tag></td>
+            <td>
+              <p-tag
+                [value]="user.active ? 'Activo' : 'Inactivo'"
+                [severity]="user.active ? 'success' : 'secondary'"
+              ></p-tag>
+            </td>
+            <td class="actions-cell">
+              <button
+                pButton
+                type="button"
+                size="small"
+                label="Editar"
+                severity="secondary"
+                (click)="editUser(user)"
+              ></button>
+              <button
+                pButton
+                type="button"
+                size="small"
+                [label]="user.active ? 'Desactivar' : 'Activar'"
+                [severity]="user.active ? 'danger' : 'success'"
+                (click)="toggleStatus(user)"
+              ></button>
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </p-card>
+
+    <p-card [header]="isEditing() ? 'Editar usuario' : 'Crear usuario'">
+      <form class="form" [formGroup]="userForm" (ngSubmit)="submit()">
+        <label class="field">
+          <span>Nombre</span>
+          <input pInputText formControlName="firstName" />
+        </label>
+
+        <label class="field">
+          <span>Apellido</span>
+          <input pInputText formControlName="lastName" />
+        </label>
+
+        <label class="field">
+          <span>Correo</span>
+          <input pInputText type="email" formControlName="email" />
+        </label>
+
+        <label class="field">
+          <span>Rol</span>
+          <p-select
+            formControlName="role"
+            [options]="roleOptions"
+            optionLabel="label"
+            optionValue="value"
+          ></p-select>
+        </label>
+
+        @if (!isEditing()) {
+          <label class="field">
+            <span>Contrasena inicial</span>
+            <p-password
+              formControlName="password"
+              [feedback]="false"
+              [toggleMask]="true"
+            ></p-password>
+          </label>
+        } @else {
+          <p class="helper">La edicion conserva la contrasena actual del usuario.</p>
+        }
+
+        <div class="form-actions">
+          <button
+            pButton
+            type="submit"
+            [label]="isEditing() ? 'Guardar cambios' : 'Crear usuario'"
+            [loading]="saving()"
+          ></button>
+          <button
+            pButton
+            type="button"
+            label="Limpiar"
+            severity="secondary"
+            (click)="startCreate()"
+          ></button>
+        </div>
+      </form>
+    </p-card>
+  </div>
+</section>

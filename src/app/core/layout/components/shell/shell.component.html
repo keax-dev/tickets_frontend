@@ -1,0 +1,65 @@
+<div class="shell">
+  <aside class="sidebar page-card">
+    <div>
+      <p class="eyebrow">Management Tickets</p>
+      <h2>Centro de soporte</h2>
+      <p class="muted">Gestiona tickets, comentarios, prioridades y seguimiento operativo.</p>
+    </div>
+
+    <nav class="nav">
+      @for (item of navigationItems(); track item.path) {
+        <a class="nav-link" [routerLink]="item.path" routerLinkActive="nav-link-active">
+          <i [class]="item.icon"></i>
+          <span>{{ item.label }}</span>
+        </a>
+      }
+    </nav>
+
+    <p-divider />
+
+    <div class="sidebar-footer">
+      <button
+        (click)="themeStore.toggle()"
+        [label]="'Modo ' + themeStore.modeLabel()"
+        severity="contrast"
+        variant="text"
+        icon="pi pi-palette"
+        type="button"
+        pButton
+      ></button>
+      <button
+        (click)="authStore.logout()"
+        severity="danger"
+        variant="text"
+        label="Cerrar sesion"
+        icon="pi pi-sign-out"
+        type="button"
+        pButton
+      ></button>
+    </div>
+  </aside>
+
+  <div class="content">
+    <header class="topbar page-card">
+      <div>
+        <p class="eyebrow">Sesion activa</p>
+        <h1>Hola, {{ authStore.currentUser()?.firstName }}</h1>
+      </div>
+
+      <div class="user-pill">
+        <a class="notification-link" routerLink="/notifications">
+          <i class="pi pi-bell"></i>
+        </a>
+        <p-avatar [label]="authStore.userInitials()" shape="circle" />
+        <div>
+          <strong>{{ fullName() }}</strong>
+          <small>{{ authStore.currentUser()?.role }}</small>
+        </div>
+      </div>
+    </header>
+
+    <main class="main-view">
+      <router-outlet />
+    </main>
+  </div>
+</div>

@@ -1,0 +1,105 @@
+<section class="page-card page">
+  <div class="page-heading">
+    <div>
+      <h1>Categorias</h1>
+      <p>Manten el catalogo que clasifica tickets y alimenta sus reglas SLA.</p>
+    </div>
+    <div class="heading-actions">
+      <button
+        pButton
+        type="button"
+        label="Nueva categoria"
+        icon="pi pi-plus"
+        (click)="startCreate()"
+      ></button>
+      <button
+        pButton
+        type="button"
+        label="Recargar"
+        icon="pi pi-refresh"
+        severity="secondary"
+        (click)="loadCategories()"
+      ></button>
+    </div>
+  </div>
+
+  @if (errorMessage()) {
+    <p-message severity="error" [text]="errorMessage() ?? ''"></p-message>
+  }
+
+  <div class="layout">
+    <p-card>
+      <p-table [value]="categories()" [loading]="loading()">
+        <ng-template pTemplate="header">
+          <tr>
+            <th>Nombre</th>
+            <th>Descripcion</th>
+            <th>Estado</th>
+            <th class="actions-column">Acciones</th>
+          </tr>
+        </ng-template>
+
+        <ng-template pTemplate="body" let-category>
+          <tr>
+            <td>{{ category.name }}</td>
+            <td>{{ category.description || 'Sin descripcion' }}</td>
+            <td>
+              <p-tag
+                [value]="category.active ? 'Activa' : 'Inactiva'"
+                [severity]="category.active ? 'success' : 'secondary'"
+              ></p-tag>
+            </td>
+            <td class="actions-cell">
+              <button
+                pButton
+                type="button"
+                size="small"
+                label="Editar"
+                severity="secondary"
+                (click)="editCategory(category)"
+              ></button>
+              <button
+                pButton
+                type="button"
+                size="small"
+                [label]="category.active ? 'Desactivar' : 'Activar'"
+                [severity]="category.active ? 'danger' : 'success'"
+                (click)="toggleStatus(category)"
+              ></button>
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </p-card>
+
+    <p-card [header]="isEditing() ? 'Editar categoria' : 'Crear categoria'">
+      <form class="form" [formGroup]="categoryForm" (ngSubmit)="submit()">
+        <label class="field">
+          <span>Nombre</span>
+          <input pInputText formControlName="name" />
+        </label>
+
+        <label class="field">
+          <span>Descripcion</span>
+          <textarea pTextarea formControlName="description" rows="5"></textarea>
+        </label>
+
+        <div class="form-actions">
+          <button
+            pButton
+            type="submit"
+            [label]="isEditing() ? 'Guardar cambios' : 'Crear categoria'"
+            [loading]="saving()"
+          ></button>
+          <button
+            pButton
+            type="button"
+            label="Limpiar"
+            severity="secondary"
+            (click)="startCreate()"
+          ></button>
+        </div>
+      </form>
+    </p-card>
+  </div>
+</section>
