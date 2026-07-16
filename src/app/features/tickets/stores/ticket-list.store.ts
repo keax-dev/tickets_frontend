@@ -27,6 +27,9 @@ export class TicketListStore {
   private readonly searchState = signal('');
   private readonly statusState = signal<TicketStatus | null>(null);
   private readonly errorState = signal<string | null>(null);
+  private readonly currentPageState = signal(0);
+  private readonly pageSizeState = signal(10);
+  private readonly totalRecordsState = signal(0);
   private readonly pageState = signal<PageResponse<TicketSummary> | null>(null);
 
   private latestRequestId = 0;
@@ -38,6 +41,9 @@ export class TicketListStore {
   readonly loading = this.loadingState.asReadonly();
   readonly status = this.statusState.asReadonly();
   readonly search = this.searchState.asReadonly();
+  readonly currentPage = this.currentPageState.asReadonly();
+  readonly pageSize = this.pageSizeState.asReadonly();
+  readonly totalRecords = this.totalRecordsState.asReadonly();
   readonly page = this.pageState.asReadonly();
 
   constructor() {
@@ -52,6 +58,7 @@ export class TicketListStore {
 
           return this.ticketApiService.listTickets(filters).pipe(
             tap((response) => {
+              this.totalRecordsState.set(response.totalElements);
               this.pageState.set(response);
             }),
             catchError((error: ProblemDetails) => {
@@ -74,6 +81,9 @@ export class TicketListStore {
   }
 
   load(page = 0, size = 10): void {
+    this.currentPageState.set(page);
+    this.pageSizeState.set(size);
+
     this.loadRequests$.next({
       search: this.searchState(),
       status: this.statusState(),

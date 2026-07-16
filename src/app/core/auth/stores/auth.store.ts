@@ -25,11 +25,12 @@ import { resolveProblemDetailsMessage } from '../../../shared/utils/resolve-prob
   providedIn: 'root',
 })
 export class AuthStore {
+  private readonly defaultRequestedUrl = '/dashboard';
   private readonly apiBaseUrl = inject(API_BASE_URL);
   private readonly httpClient = inject(HttpClient);
   private readonly router = inject(Router);
 
-  private readonly requestedUrlState = signal('/dashboard');
+  private readonly requestedUrlState = signal(this.defaultRequestedUrl);
   private readonly accessTokenState = signal<string | null>(null);
   private readonly refreshingState = signal(false);
   private readonly restoringState = signal(true);
@@ -78,8 +79,11 @@ export class AuthStore {
       .pipe(finalize(() => this.loadingState.set(false)))
       .subscribe({
         next: (response) => {
+          const requestedUrl = this.requestedUrlState();
+
           this.applyAuthResponse(response);
-          void this.router.navigateByUrl(this.requestedUrlState());
+          this.requestedUrlState.set(this.defaultRequestedUrl);
+          void this.router.navigateByUrl(requestedUrl);
         },
         error: (error: ProblemDetails) => {
           this.errorState.set(
@@ -149,6 +153,7 @@ export class AuthStore {
   }
 
   private clearSession(): void {
+    this.requestedUrlState.set(this.defaultRequestedUrl);
     this.accessTokenState.set(null);
     this.userState.set(null);
   }

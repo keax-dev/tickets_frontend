@@ -12,24 +12,33 @@ export class NotificationStore {
 
   private readonly loadingState = signal(false);
   private readonly updatingState = signal(false);
+  private readonly currentPageState = signal(0);
+  private readonly pageSizeState = signal(10);
+  private readonly totalRecordsState = signal(0);
   private readonly pageState = signal<PageResponse<NotificationItem> | null>(null);
   private readonly errorState = signal<string | null>(null);
 
   readonly errorMessage = this.errorState.asReadonly();
   readonly loading = this.loadingState.asReadonly();
   readonly updating = this.updatingState.asReadonly();
+  readonly currentPage = this.currentPageState.asReadonly();
+  readonly pageSize = this.pageSizeState.asReadonly();
+  readonly totalRecords = this.totalRecordsState.asReadonly();
   readonly page = this.pageState.asReadonly();
 
-  load(page = 0, size = 20): void {
+  load(page = 0, size = 10): void {
     this.loadingState.set(true);
     this.errorState.set(null);
     this.pageState.set(null);
+    this.currentPageState.set(page);
+    this.pageSizeState.set(size);
 
     this.notificationApiService
       .list(page, size)
       .pipe(finalize(() => this.loadingState.set(false)))
       .subscribe({
         next: (response) => {
+          this.totalRecordsState.set(response.totalElements);
           this.pageState.set(response);
         },
         error: (error: ProblemDetails) => {
@@ -56,8 +65,8 @@ export class NotificationStore {
   }
 
   private runNotificationMutation(request$: Observable<unknown>, fallbackMessage: string): void {
-    const currentPage = this.page()?.page ?? 0;
-    const currentSize = this.page()?.size ?? 20;
+    const currentPage = this.currentPageState();
+    const currentSize = this.pageSizeState();
 
     this.updatingState.set(true);
     this.errorState.set(null);
@@ -69,6 +78,7 @@ export class NotificationStore {
       )
       .subscribe({
         next: (response) => {
+          this.totalRecordsState.set(response.totalElements);
           this.pageState.set(response);
         },
         error: (error: ProblemDetails) => {

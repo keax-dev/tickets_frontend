@@ -91,12 +91,10 @@ export class TicketListPageComponent implements OnInit {
     label,
   }));
   readonly currentFirst = computed(
-    () =>
-      (this.ticketListStore.page()?.page ?? 0) *
-      (this.ticketListStore.page()?.size ?? this.defaultRows),
+    () => this.ticketListStore.currentPage() * this.ticketListStore.pageSize(),
   );
-  readonly totalRecords = computed(() => this.ticketListStore.page()?.totalElements ?? 0);
-  readonly currentRows = computed(() => this.ticketListStore.page()?.size ?? this.defaultRows);
+  readonly totalRecords = this.ticketListStore.totalRecords;
+  readonly currentRows = this.ticketListStore.pageSize;
 
   ngOnInit(): void {
     this.ticketListStore.load(0, this.defaultRows);

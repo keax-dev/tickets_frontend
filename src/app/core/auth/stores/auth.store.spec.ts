@@ -73,6 +73,34 @@ describe('AuthStore', () => {
     expect(routerMock.navigateByUrl).toHaveBeenCalledWith('/dashboard');
   });
 
+  it('resets the requested url after logout', () => {
+    authStore.rememberRequestedUrl('/admin/users');
+
+    authStore.login({
+      email: 'ada@example.com',
+      password: 'SecurePass!234',
+    });
+
+    httpTestingController.expectOne(`${apiBaseUrl}/auth/login`).flush(authResponse);
+
+    expect(routerMock.navigateByUrl).toHaveBeenNthCalledWith(1, '/admin/users');
+
+    authStore.logout();
+
+    httpTestingController.expectOne(`${apiBaseUrl}/auth/logout`).flush({});
+
+    expect(routerMock.navigateByUrl).toHaveBeenNthCalledWith(2, '/login');
+
+    authStore.login({
+      email: 'ada@example.com',
+      password: 'SecurePass!234',
+    });
+
+    httpTestingController.expectOne(`${apiBaseUrl}/auth/login`).flush(authResponse);
+
+    expect(routerMock.navigateByUrl).toHaveBeenNthCalledWith(3, '/dashboard');
+  });
+
   it('surfaces backend login errors', () => {
     authStore.login({
       email: 'ada@example.com',

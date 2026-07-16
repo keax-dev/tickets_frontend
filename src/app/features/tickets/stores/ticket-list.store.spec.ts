@@ -84,6 +84,9 @@ describe('TicketListStore', () => {
     expect(ticketListStore.search()).toBe('network');
     expect(ticketListStore.page()?.content[0]?.id).toBe('ticket-2');
     expect(ticketListStore.loading()).toBe(false);
+    expect(ticketListStore.currentPage()).toBe(0);
+    expect(ticketListStore.pageSize()).toBe(10);
+    expect(ticketListStore.totalRecords()).toBe(1);
     expect(ticketApiServiceMock.listTickets).toHaveBeenNthCalledWith(
       2,
       expect.objectContaining({ search: 'network' }),
