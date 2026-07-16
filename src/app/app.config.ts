@@ -7,6 +7,7 @@ import { provideRouter } from '@angular/router';
 import { API_BASE_URL } from './core/config/tokens/api-base-url.token';
 import { AuthStore } from './core/auth/stores/auth.store';
 import { resolveAppConfig } from './core/config/utils/resolve-app-config';
+import { ThemeStore } from './core/theme/stores/theme.store';
 import { routes } from './app.routes';
 import Aura from '@primeuix/themes/aura';
 import { environment } from '../environments/environment';
@@ -24,6 +25,9 @@ export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
     provideZonelessChangeDetection(),
+    provideAppInitializer(() => {
+      inject(ThemeStore);
+    }),
     provideAppInitializer(() => inject(AuthStore).restoreSession()),
     provideRouter(routes),
     provideHttpClient(

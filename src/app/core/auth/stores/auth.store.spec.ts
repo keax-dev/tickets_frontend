@@ -16,7 +16,7 @@ describe('AuthStore', () => {
     id: 'user-1',
     firstName: 'Ada',
     lastName: 'Lovelace',
-    email: 'ada@tickets.local',
+    email: 'ada@example.com',
     role: 'ADMIN',
     permissions: ['USER_READ'],
   };
@@ -58,8 +58,8 @@ describe('AuthStore', () => {
 
   it('stores the authenticated session after login', () => {
     authStore.login({
-      email: 'ada@tickets.local',
-      password: 'Password123!',
+      email: 'ada@example.com',
+      password: 'SecurePass!234',
     });
 
     const request = httpTestingController.expectOne(`${apiBaseUrl}/auth/login`);
@@ -75,7 +75,7 @@ describe('AuthStore', () => {
 
   it('surfaces backend login errors', () => {
     authStore.login({
-      email: 'ada@tickets.local',
+      email: 'ada@example.com',
       password: 'wrong-password',
     });
 

@@ -28,10 +28,10 @@ export class LoginPageComponent {
   private readonly formBuilder = inject(FormBuilder);
 
   readonly loginForm = this.formBuilder.nonNullable.group({
-    email: this.formBuilder.nonNullable.control('admin@tickets.local', {
+    email: this.formBuilder.nonNullable.control('', {
       validators: [Validators.required, Validators.email],
     }),
-    password: this.formBuilder.nonNullable.control('Password123!', {
+    password: this.formBuilder.nonNullable.control('', {
       validators: [Validators.required],
     }),
   });

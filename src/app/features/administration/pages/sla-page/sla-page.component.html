@@ -20,7 +20,15 @@
 
   <div class="layout">
     <p-card>
-      <p-table [value]="policies()" [loading]="loading()">
+      <p-table
+        [value]="policies()"
+        [loading]="loading()"
+        [paginator]="true"
+        [rows]="10"
+        [rowsPerPageOptions]="[10]"
+        [showCurrentPageReport]="true"
+        currentPageReportTemplate="{first} - {last} de {totalRecords}"
+      >
         <ng-template pTemplate="header">
           <tr>
             <th>Prioridad</th>

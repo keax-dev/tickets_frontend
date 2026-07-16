@@ -1,3 +1,8 @@
+:host {
+  display: block;
+  color: var(--app-text);
+}
+
 .login-page {
   min-height: 100vh;
   display: grid;
@@ -5,16 +10,27 @@
   gap: 2rem;
   padding: 2rem;
   align-items: center;
+  color: var(--app-text);
 }
 
 .hero {
   padding: 2rem;
 }
 
+.eyebrow {
+  margin: 0 0 1rem;
+  color: var(--app-accent);
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
 .hero h1 {
   margin: 0 0 1rem;
   font-size: clamp(2.4rem, 5vw, 4.6rem);
   line-height: 0.92;
+  color: var(--app-text);
 }
 
 .hero p:last-child {
@@ -25,6 +41,26 @@
 .login-card {
   border-radius: 28px;
   overflow: hidden;
+}
+
+:host ::ng-deep .login-card .p-card {
+  border: 1px solid var(--app-border);
+  border-radius: 28px;
+  background: color-mix(in srgb, var(--app-surface-strong) 94%, transparent);
+  box-shadow: var(--app-shadow);
+  color: var(--app-text);
+}
+
+:host ::ng-deep .login-card .p-card-title {
+  color: var(--app-text);
+}
+
+:host ::ng-deep .login-card .p-card-subtitle {
+  color: var(--app-text-muted);
+}
+
+:host ::ng-deep .login-card .p-card-body {
+  gap: 1rem;
 }
 
 form {
@@ -43,17 +79,15 @@ form {
   font-weight: 600;
 }
 
-.submit-button {
-  margin-top: 0.5rem;
+:host ::ng-deep .login-card .p-inputtext,
+:host ::ng-deep .login-card .p-password,
+:host ::ng-deep .login-card .p-password-input {
+  width: 100%;
 }
 
-.helper {
-  margin-top: 1.5rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.3rem;
-  color: var(--app-text-muted);
-  font-size: 0.9rem;
+.submit-button {
+  margin-top: 0.5rem;
+  width: 100%;
 }
 
 @media (max-width: 920px) {

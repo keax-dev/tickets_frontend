@@ -2,7 +2,7 @@
   <div class="page-heading">
     <div>
       <h1>Tickets</h1>
-      <p>Busqueda, filtros server-side y seguimiento del estado operativo.</p>
+      <p>Consulta y administra el estado de los tickets.</p>
     </div>
     <a pButton routerLink="/tickets/new" label="Nuevo ticket" icon="pi pi-plus"></a>
   </div>
@@ -45,7 +45,19 @@
     <p-message severity="error" [text]="ticketListStore.errorMessage() ?? ''"></p-message>
   }
 
-  <p-table [value]="ticketListStore.page()?.content ?? []" [loading]="ticketListStore.loading()">
+  <p-table
+    [value]="ticketListStore.page()?.content ?? []"
+    [loading]="ticketListStore.loading()"
+    [first]="currentFirst()"
+    [lazy]="true"
+    [paginator]="true"
+    [rows]="currentRows()"
+    [rowsPerPageOptions]="[10]"
+    [showCurrentPageReport]="true"
+    [totalRecords]="totalRecords()"
+    currentPageReportTemplate="{first} - {last} de {totalRecords}"
+    (onPage)="onPageChange($event)"
+  >
     <ng-template pTemplate="header">
       <tr>
         <th>Codigo</th>

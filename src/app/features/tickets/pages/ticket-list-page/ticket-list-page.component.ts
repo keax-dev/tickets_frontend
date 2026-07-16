@@ -1,4 +1,4 @@
-import { DestroyRef, Component, inject, OnInit, signal } from '@angular/core';
+import { DestroyRef, Component, computed, inject, OnInit, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -11,6 +11,7 @@ import { SelectModule } from 'primeng/select';
 import { TableModule } from 'primeng/table';
 import { CardModule } from 'primeng/card';
 import { TagModule } from 'primeng/tag';
+import type { TablePageEvent } from 'primeng/types/table';
 import { TicketApiService } from '../../services/ticket-api.service';
 import { TicketListStore } from '../../stores/ticket-list.store';
 import {
@@ -40,6 +41,8 @@ import { resolveProblemDetailsMessage } from '../../../../shared/utils/resolve-p
   styleUrl: './ticket-list-page.component.css',
 })
 export class TicketListPageComponent implements OnInit {
+  readonly defaultRows = 10;
+
   private readonly destroyRef = inject(DestroyRef);
   private readonly formBuilder = inject(FormBuilder);
 
@@ -87,9 +90,16 @@ export class TicketListPageComponent implements OnInit {
     value: value as TicketPriority,
     label,
   }));
+  readonly currentFirst = computed(
+    () =>
+      (this.ticketListStore.page()?.page ?? 0) *
+      (this.ticketListStore.page()?.size ?? this.defaultRows),
+  );
+  readonly totalRecords = computed(() => this.ticketListStore.page()?.totalElements ?? 0);
+  readonly currentRows = computed(() => this.ticketListStore.page()?.size ?? this.defaultRows);
 
   ngOnInit(): void {
-    this.ticketListStore.load();
+    this.ticketListStore.load(0, this.defaultRows);
     this.loadCategories();
     this.observeSearchChanges();
     this.observeStructuredFilterChanges();
@@ -105,6 +115,13 @@ export class TicketListPageComponent implements OnInit {
 
   priorityTagSeverity(priority: TicketPriority): 'secondary' | 'info' | 'warn' | 'danger' {
     return this.prioritySeverity[priority];
+  }
+
+  onPageChange(event: TablePageEvent): void {
+    const rows = event.rows;
+    const page = Math.floor(event.first / rows);
+
+    this.ticketListStore.load(page, rows);
   }
 
   private loadCategories(): void {
