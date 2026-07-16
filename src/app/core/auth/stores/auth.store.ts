@@ -1,24 +1,25 @@
-import { Injectable, computed, inject, signal } from '@angular/core';
-import { API_BASE_URL } from '../../config/tokens/api-base-url.token';
 import { HttpClient } from '@angular/common/http';
+import { Injectable, computed, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import {
-  firstValueFrom,
-  shareReplay,
   Observable,
   catchError,
   finalize,
-  mapTo,
+  firstValueFrom,
   map,
-  tap,
+  mapTo,
   of,
+  shareReplay,
+  tap,
 } from 'rxjs';
+import { API_BASE_URL } from '../../config/tokens/api-base-url.token';
 import {
-  ProblemDetails,
   AppPermission,
   AuthResponse,
   CurrentUser,
+  ProblemDetails,
 } from '../../../shared/models/api.models';
+import { resolveProblemDetailsMessage } from '../../../shared/utils/resolve-problem-details-message';
 
 @Injectable({
   providedIn: 'root',
@@ -53,6 +54,7 @@ export class AuthStore {
     if (!currentUser) {
       return 'MT';
     }
+
     return `${currentUser.firstName.charAt(0)}${currentUser.lastName.charAt(0)}`.toUpperCase();
   });
 
@@ -80,7 +82,9 @@ export class AuthStore {
           void this.router.navigateByUrl(this.requestedUrlState());
         },
         error: (error: ProblemDetails) => {
-          this.errorState.set(error?.detail ?? 'No fue posible iniciar sesión.');
+          this.errorState.set(
+            resolveProblemDetailsMessage(error, 'No fue posible iniciar sesion.'),
+          );
         },
       });
   }
@@ -121,6 +125,7 @@ export class AuthStore {
 
   private createRefreshRequest() {
     this.refreshingState.set(true);
+
     return this.httpClient
       .post<AuthResponse>(`${this.apiBaseUrl}/auth/refresh`, {}, { withCredentials: true })
       .pipe(

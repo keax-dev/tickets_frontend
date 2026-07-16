@@ -1,8 +1,9 @@
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { DestroyRef, Component, inject, OnInit, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { TicketApiService } from '../../services/ticket-api.service';
 import { InputTextModule } from 'primeng/inputtext';
-import { TicketPriority } from '../../../../shared/models/api.models';
+import { Category, TicketPriority } from '../../../../shared/models/api.models';
 import { TextareaModule } from 'primeng/textarea';
 import { MessageModule } from 'primeng/message';
 import { SelectModule } from 'primeng/select';
@@ -11,6 +12,8 @@ import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
 import { finalize } from 'rxjs';
 import { Router } from '@angular/router';
+import { ProblemDetails } from '../../../../shared/models/api.models';
+import { resolveProblemDetailsMessage } from '../../../../shared/utils/resolve-problem-details-message';
 
 @Component({
   standalone: true,
@@ -28,10 +31,13 @@ import { Router } from '@angular/router';
   styleUrl: './ticket-create-page.component.css',
 })
 export class TicketCreatePageComponent implements OnInit {
+  private readonly destroyRef = inject(DestroyRef);
   private readonly ticketApiService = inject(TicketApiService);
   private readonly formBuilder = inject(FormBuilder);
   private readonly router = inject(Router);
 
+  readonly categories = signal<Category[]>([]);
+  readonly categoryErrorMessage = signal<string | null>(null);
   readonly errorMessage = signal<string | null>(null);
   readonly submitting = signal(false);
 
@@ -55,12 +61,22 @@ export class TicketCreatePageComponent implements OnInit {
     { label: 'Urgente', value: 'URGENT' as TicketPriority },
   ];
 
-  categories: { id: string; name: string }[] = [];
-
   ngOnInit(): void {
-    this.ticketApiService.getCategories().subscribe((categories) => {
-      this.categories = categories.filter((category) => category.active);
-    });
+    this.categoryErrorMessage.set(null);
+    this.ticketApiService
+      .getCategories()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (categories) => {
+          this.categories.set(categories.filter((category) => category.active));
+        },
+        error: (error: ProblemDetails) => {
+          this.categories.set([]);
+          this.categoryErrorMessage.set(
+            resolveProblemDetailsMessage(error, 'No fue posible cargar las categorias.'),
+          );
+        },
+      });
   }
 
   submit(): void {
@@ -79,7 +95,9 @@ export class TicketCreatePageComponent implements OnInit {
           void this.router.navigate(['/tickets', ticket.id]);
         },
         error: (error) => {
-          this.errorMessage.set(error?.error?.detail ?? 'No fue posible crear el ticket.');
+          this.errorMessage.set(
+            resolveProblemDetailsMessage(error, 'No fue posible crear el ticket.'),
+          );
         },
       });
   }

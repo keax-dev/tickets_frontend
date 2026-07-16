@@ -6,6 +6,7 @@ import {
   RecentActivity,
   ProblemDetails,
 } from '../../../shared/models/api.models';
+import { resolveProblemDetailsMessage } from '../../../shared/utils/resolve-problem-details-message';
 
 @Injectable({
   providedIn: 'root',
@@ -26,6 +27,8 @@ export class DashboardStore {
   load(): void {
     this.loadingState.set(true);
     this.errorState.set(null);
+    this.summaryState.set(null);
+    this.recentActivityState.set([]);
 
     forkJoin({
       summary: this.dashboardApiService.getSummary(),
@@ -38,7 +41,11 @@ export class DashboardStore {
           this.recentActivityState.set(recentActivity);
         },
         error: (error: ProblemDetails) => {
-          this.errorState.set(error?.detail ?? 'No fue posible cargar el dashboard.');
+          this.summaryState.set(null);
+          this.recentActivityState.set([]);
+          this.errorState.set(
+            resolveProblemDetailsMessage(error, 'No fue posible cargar el dashboard.'),
+          );
         },
       });
   }

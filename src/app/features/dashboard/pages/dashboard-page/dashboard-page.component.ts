@@ -4,15 +4,17 @@ import { DashboardStore } from '../../stores/dashboard.store';
 import { CommonModule } from '@angular/common';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
+import { MessageModule } from 'primeng/message';
 import { TagModule } from 'primeng/tag';
 
 @Component({
   standalone: true,
-  imports: [CommonModule, CardModule, SkeletonModule, TagModule, ButtonModule],
+  imports: [CommonModule, CardModule, SkeletonModule, TagModule, ButtonModule, MessageModule],
+  providers: [DashboardStore],
   templateUrl: './dashboard-page.component.html',
   styleUrl: './dashboard-page.component.css',
 })
-export class DashboardPageComponent implements OnInit{
+export class DashboardPageComponent implements OnInit {
   readonly dashboardStore = inject(DashboardStore);
   readonly skeletonCards = Array.from({ length: 4 });
   readonly objectEntries = Object.entries;

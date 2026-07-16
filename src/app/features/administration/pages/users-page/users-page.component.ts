@@ -12,6 +12,7 @@ import { TableModule } from 'primeng/table';
 import { CardModule } from 'primeng/card';
 import { TagModule } from 'primeng/tag';
 import { finalize } from 'rxjs';
+import { resolveProblemDetailsMessage } from '../../../../shared/utils/resolve-problem-details-message';
 
 @Component({
   standalone: true,
@@ -30,7 +31,7 @@ import { finalize } from 'rxjs';
   templateUrl: './users-page.component.html',
   styleUrl: './users-page.component.css',
 })
-export class UsersPageComponent implements OnInit{
+export class UsersPageComponent implements OnInit {
   private readonly administrationApiService = inject(AdministrationApiService);
   private readonly formBuilder = inject(FormBuilder);
 
@@ -62,7 +63,7 @@ export class UsersPageComponent implements OnInit{
     }),
   });
 
-  ngOnInit() :void{
+  ngOnInit(): void {
     this.loadUsers();
   }
 
@@ -78,7 +79,9 @@ export class UsersPageComponent implements OnInit{
           this.users.set(users);
         },
         error: (error: ProblemDetails) => {
-          this.errorMessage.set(error?.detail ?? 'No fue posible cargar los usuarios.');
+          this.errorMessage.set(
+            resolveProblemDetailsMessage(error, 'No fue posible cargar los usuarios.'),
+          );
         },
       });
   }
@@ -132,7 +135,9 @@ export class UsersPageComponent implements OnInit{
     this.administrationApiService.updateUserStatus(user.id, !user.active).subscribe({
       next: () => this.loadUsers(),
       error: (error: ProblemDetails) => {
-        this.errorMessage.set(error?.detail ?? 'No fue posible actualizar el estado del usuario.');
+        this.errorMessage.set(
+          resolveProblemDetailsMessage(error, 'No fue posible actualizar el estado del usuario.'),
+        );
       },
     });
   }
@@ -159,7 +164,9 @@ export class UsersPageComponent implements OnInit{
           this.loadUsers();
         },
         error: (error: ProblemDetails) => {
-          this.errorMessage.set(error?.detail ?? 'No fue posible crear el usuario.');
+          this.errorMessage.set(
+            resolveProblemDetailsMessage(error, 'No fue posible crear el usuario.'),
+          );
         },
       });
   }
@@ -185,7 +192,9 @@ export class UsersPageComponent implements OnInit{
           this.loadUsers();
         },
         error: (error: ProblemDetails) => {
-          this.errorMessage.set(error?.detail ?? 'No fue posible actualizar el usuario.');
+          this.errorMessage.set(
+            resolveProblemDetailsMessage(error, 'No fue posible actualizar el usuario.'),
+          );
         },
       });
   }

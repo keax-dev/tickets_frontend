@@ -6,6 +6,12 @@
     </div>
     <button
       (click)="notificationStore.markAllAsRead()"
+      [disabled]="
+        notificationStore.loading() ||
+        notificationStore.updating() ||
+        (notificationStore.page()?.content?.length ?? 0) === 0
+      "
+      [loading]="notificationStore.updating()"
       severity="secondary"
       label="Marcar todas"
       type="button"
@@ -13,27 +19,39 @@
     ></button>
   </div>
 
-  <div class="stack">
-    @for (notification of notificationStore.page()?.content ?? []; track notification.id) {
-      <div class="notification-item">
-        <div>
-          <strong>{{ notification.title }}</strong>
-          <p>{{ notification.message }}</p>
+  @if (notificationStore.errorMessage()) {
+    <p-message severity="error" [text]="notificationStore.errorMessage() ?? ''"></p-message>
+  }
+
+  @if (notificationStore.loading()) {
+    <p class="status-message">Cargando notificaciones...</p>
+  } @else if ((notificationStore.page()?.content?.length ?? 0) === 0) {
+    <p class="status-message">No hay notificaciones para mostrar.</p>
+  } @else {
+    <div class="stack">
+      @for (notification of notificationStore.page()?.content ?? []; track notification.id) {
+        <div class="notification-item">
+          <div>
+            <strong>{{ notification.title }}</strong>
+            <p>{{ notification.message }}</p>
+          </div>
+          <div class="notification-side">
+            <p-tag
+              [severity]="notification.read ? 'secondary' : 'success'"
+              [value]="notification.read ? 'Leida' : 'Nueva'"
+            ></p-tag>
+            <button
+              (click)="notificationStore.markAsRead(notification.id)"
+              [disabled]="notificationStore.updating() || notification.read"
+              [loading]="notificationStore.updating()"
+              variant="text"
+              label="Marcar"
+              type="button"
+              pButton
+            ></button>
+          </div>
         </div>
-        <div class="notification-side">
-          <p-tag
-            [severity]="notification.read ? 'secondary' : 'success'"
-            [value]="notification.read ? 'Leida' : 'Nueva'"
-          ></p-tag>
-          <button
-            (click)="notificationStore.markAsRead(notification.id)"
-            variant="text"
-            label="Marcar"
-            type="button"
-            pButton
-          ></button>
-        </div>
-      </div>
-    }
-  </div>
+      }
+    </div>
+  }
 </section>

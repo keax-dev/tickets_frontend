@@ -11,6 +11,7 @@ import { TableModule } from 'primeng/table';
 import { CardModule } from 'primeng/card';
 import { TagModule } from 'primeng/tag';
 import { finalize } from 'rxjs';
+import { resolveProblemDetailsMessage } from '../../../../shared/utils/resolve-problem-details-message';
 
 @Component({
   standalone: true,
@@ -60,7 +61,9 @@ export class CategoriesPageComponent implements OnInit {
           this.categories.set(categories);
         },
         error: (error: ProblemDetails) => {
-          this.errorMessage.set(error?.detail ?? 'No fue posible cargar las categorias.');
+          this.errorMessage.set(
+            resolveProblemDetailsMessage(error, 'No fue posible cargar las categorias.'),
+          );
         },
       });
   }
@@ -110,7 +113,10 @@ export class CategoriesPageComponent implements OnInit {
       next: () => this.loadCategories(),
       error: (error: ProblemDetails) => {
         this.errorMessage.set(
-          error?.detail ?? 'No fue posible actualizar el estado de la categoria.',
+          resolveProblemDetailsMessage(
+            error,
+            'No fue posible actualizar el estado de la categoria.',
+          ),
         );
       },
     });
@@ -126,7 +132,9 @@ export class CategoriesPageComponent implements OnInit {
           this.loadCategories();
         },
         error: (error: ProblemDetails) => {
-          this.errorMessage.set(error?.detail ?? 'No fue posible crear la categoria.');
+          this.errorMessage.set(
+            resolveProblemDetailsMessage(error, 'No fue posible crear la categoria.'),
+          );
         },
       });
   }
@@ -141,7 +149,9 @@ export class CategoriesPageComponent implements OnInit {
           this.loadCategories();
         },
         error: (error: ProblemDetails) => {
-          this.errorMessage.set(error?.detail ?? 'No fue posible actualizar la categoria.');
+          this.errorMessage.set(
+            resolveProblemDetailsMessage(error, 'No fue posible actualizar la categoria.'),
+          );
         },
       });
   }

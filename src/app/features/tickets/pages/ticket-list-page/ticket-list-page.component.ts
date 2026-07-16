@@ -1,16 +1,25 @@
+import { DestroyRef, Component, inject, OnInit, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
-import { TicketPriority, TicketStatus } from '../../../../shared/models/api.models';
-import { Component, inject, OnInit } from '@angular/core';
-import { TicketApiService } from '../../services/ticket-api.service';
-import { InputTextModule } from 'primeng/inputtext';
-import { TicketListStore } from '../../stores/ticket-list.store';
 import { CommonModule } from '@angular/common';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { debounceTime, distinctUntilChanged, map, merge } from 'rxjs';
+import { RouterLink } from '@angular/router';
+import { InputTextModule } from 'primeng/inputtext';
 import { ButtonModule } from 'primeng/button';
+import { MessageModule } from 'primeng/message';
 import { SelectModule } from 'primeng/select';
 import { TableModule } from 'primeng/table';
-import { RouterLink } from '@angular/router';
 import { CardModule } from 'primeng/card';
 import { TagModule } from 'primeng/tag';
+import { TicketApiService } from '../../services/ticket-api.service';
+import { TicketListStore } from '../../stores/ticket-list.store';
+import {
+  Category,
+  ProblemDetails,
+  TicketPriority,
+  TicketStatus,
+} from '../../../../shared/models/api.models';
+import { resolveProblemDetailsMessage } from '../../../../shared/utils/resolve-problem-details-message';
 
 @Component({
   standalone: true,
@@ -18,6 +27,7 @@ import { TagModule } from 'primeng/tag';
     ReactiveFormsModule,
     InputTextModule,
     ButtonModule,
+    MessageModule,
     SelectModule,
     CommonModule,
     TableModule,
@@ -25,13 +35,18 @@ import { TagModule } from 'primeng/tag';
     CardModule,
     TagModule,
   ],
+  providers: [TicketListStore],
   templateUrl: './ticket-list-page.component.html',
   styleUrl: './ticket-list-page.component.css',
 })
 export class TicketListPageComponent implements OnInit {
+  private readonly destroyRef = inject(DestroyRef);
+  private readonly formBuilder = inject(FormBuilder);
+
   readonly ticketListStore = inject(TicketListStore);
   readonly ticketApiService = inject(TicketApiService);
-  private readonly formBuilder = inject(FormBuilder);
+  readonly categoryErrorMessage = signal<string | null>(null);
+  readonly categories = signal<Category[]>([]);
 
   readonly filtersForm = this.formBuilder.group({
     search: this.formBuilder.nonNullable.control(''),
@@ -72,26 +87,12 @@ export class TicketListPageComponent implements OnInit {
     value: value as TicketPriority,
     label,
   }));
-  categories: { id: string; name: string }[] = [];
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.ticketListStore.load();
-    this.ticketApiService.getCategories().subscribe((categories) => {
-      this.categories = categories.filter((category) => category.active);
-    });
-
-    this.filtersForm.controls.search.valueChanges.subscribe((value) => {
-      this.ticketListStore.updateSearch(value ?? '');
-    });
-
-    this.filtersForm.valueChanges.subscribe((value) => {
-      this.ticketListStore.updateFilters({
-        status: value.status ?? null,
-        priority: value.priority ?? null,
-        categoryId: value.categoryId ?? null,
-        assignedAgentId: null,
-      });
-    });
+    this.loadCategories();
+    this.observeSearchChanges();
+    this.observeStructuredFilterChanges();
   }
 
   statusLabel(status: TicketStatus): string {
@@ -104,5 +105,53 @@ export class TicketListPageComponent implements OnInit {
 
   priorityTagSeverity(priority: TicketPriority): 'secondary' | 'info' | 'warn' | 'danger' {
     return this.prioritySeverity[priority];
+  }
+
+  private loadCategories(): void {
+    this.categoryErrorMessage.set(null);
+    this.ticketApiService
+      .getCategories()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (categories) => {
+          this.categories.set(categories.filter((category) => category.active));
+        },
+        error: (error: ProblemDetails) => {
+          this.categories.set([]);
+          this.categoryErrorMessage.set(
+            resolveProblemDetailsMessage(error, 'No fue posible cargar las categorias.'),
+          );
+        },
+      });
+  }
+
+  private observeSearchChanges(): void {
+    this.filtersForm.controls.search.valueChanges
+      .pipe(
+        map((value) => value.trim()),
+        debounceTime(300),
+        distinctUntilChanged(),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe((value) => {
+        this.ticketListStore.updateSearch(value);
+      });
+  }
+
+  private observeStructuredFilterChanges(): void {
+    merge(
+      this.filtersForm.controls.status.valueChanges,
+      this.filtersForm.controls.priority.valueChanges,
+      this.filtersForm.controls.categoryId.valueChanges,
+    )
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => {
+        this.ticketListStore.updateFilters({
+          status: this.filtersForm.controls.status.value ?? null,
+          priority: this.filtersForm.controls.priority.value ?? null,
+          categoryId: this.filtersForm.controls.categoryId.value ?? null,
+          assignedAgentId: null,
+        });
+      });
   }
 }

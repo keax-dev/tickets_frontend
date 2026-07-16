@@ -2,13 +2,21 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { API_BASE_URL } from '../../../core/config/tokens/api-base-url.token';
 import {
-  TicketPriority,
+  AddTicketCommentRequest,
+  AssignTicketRequest,
+  CancelTicketRequest,
   TicketComment,
   TicketHistory,
   TicketSummary,
   TicketDetail,
+  CreateTicketRequest,
   PageResponse,
-  TicketStatus,
+  ReopenTicketRequest,
+  RequestInformationRequest,
+  ResolveTicketRequest,
+  TicketListFilters,
+  TicketVersionRequest,
+  UpdateTicketRequest,
   UserRecord,
   Category,
 } from '../../../shared/models/api.models';
@@ -20,15 +28,7 @@ export class TicketApiService {
   private readonly httpClient = inject(HttpClient);
   private readonly apiBaseUrl = inject(API_BASE_URL);
 
-  listTickets(filters: {
-    search?: string;
-    status?: TicketStatus | null;
-    priority?: TicketPriority | null;
-    categoryId?: string | null;
-    assignedAgentId?: string | null;
-    page: number;
-    size: number;
-  }) {
+  listTickets(filters: TicketListFilters) {
     let params = new HttpParams()
       .set('page', filters.page)
       .set('size', filters.size)
@@ -56,12 +56,7 @@ export class TicketApiService {
     });
   }
 
-  createTicket(payload: {
-    title: string;
-    description: string;
-    categoryId: string;
-    priority: TicketPriority;
-  }) {
+  createTicket(payload: CreateTicketRequest) {
     return this.httpClient.post<TicketDetail>(`${this.apiBaseUrl}/tickets`, payload, {
       headers: {
         'Idempotency-Key': crypto.randomUUID(),
@@ -73,51 +68,53 @@ export class TicketApiService {
     return this.httpClient.get<TicketDetail>(`${this.apiBaseUrl}/tickets/${ticketId}`);
   }
 
-  updateTicket(ticketId: string, payload: Record<string, unknown>) {
+  updateTicket(ticketId: string, payload: UpdateTicketRequest) {
     return this.httpClient.patch<TicketDetail>(`${this.apiBaseUrl}/tickets/${ticketId}`, payload);
   }
 
-  assignTicket(ticketId: string, payload: { version: number; agentId: string }) {
+  assignTicket(ticketId: string, payload: AssignTicketRequest) {
     return this.httpClient.post<TicketDetail>(
       `${this.apiBaseUrl}/tickets/${ticketId}/assign`,
       payload,
     );
   }
 
-  startTicket(ticketId: string, version: number) {
-    return this.httpClient.post<TicketDetail>(`${this.apiBaseUrl}/tickets/${ticketId}/start`, {
-      version,
-    });
+  startTicket(ticketId: string, payload: TicketVersionRequest) {
+    return this.httpClient.post<TicketDetail>(
+      `${this.apiBaseUrl}/tickets/${ticketId}/start`,
+      payload,
+    );
   }
 
-  requestInformation(ticketId: string, payload: { version: number; content: string }) {
+  requestInformation(ticketId: string, payload: RequestInformationRequest) {
     return this.httpClient.post<TicketDetail>(
       `${this.apiBaseUrl}/tickets/${ticketId}/request-information`,
       payload,
     );
   }
 
-  resolveTicket(ticketId: string, payload: { version: number; resolutionSummary: string }) {
+  resolveTicket(ticketId: string, payload: ResolveTicketRequest) {
     return this.httpClient.post<TicketDetail>(
       `${this.apiBaseUrl}/tickets/${ticketId}/resolve`,
       payload,
     );
   }
 
-  closeTicket(ticketId: string, version: number) {
-    return this.httpClient.post<TicketDetail>(`${this.apiBaseUrl}/tickets/${ticketId}/close`, {
-      version,
-    });
+  closeTicket(ticketId: string, payload: TicketVersionRequest) {
+    return this.httpClient.post<TicketDetail>(
+      `${this.apiBaseUrl}/tickets/${ticketId}/close`,
+      payload,
+    );
   }
 
-  reopenTicket(ticketId: string, payload: { version: number; reason: string }) {
+  reopenTicket(ticketId: string, payload: ReopenTicketRequest) {
     return this.httpClient.post<TicketDetail>(
       `${this.apiBaseUrl}/tickets/${ticketId}/reopen`,
       payload,
     );
   }
 
-  cancelTicket(ticketId: string, payload: { version: number; reason: string }) {
+  cancelTicket(ticketId: string, payload: CancelTicketRequest) {
     return this.httpClient.post<TicketDetail>(
       `${this.apiBaseUrl}/tickets/${ticketId}/cancel`,
       payload,
@@ -128,10 +125,7 @@ export class TicketApiService {
     return this.httpClient.get<TicketComment[]>(`${this.apiBaseUrl}/tickets/${ticketId}/comments`);
   }
 
-  addComment(
-    ticketId: string,
-    payload: { version: number; content: string; visibility: 'PUBLIC' | 'INTERNAL' },
-  ) {
+  addComment(ticketId: string, payload: AddTicketCommentRequest) {
     return this.httpClient.post<TicketComment>(
       `${this.apiBaseUrl}/tickets/${ticketId}/comments`,
       payload,

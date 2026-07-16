@@ -44,6 +44,7 @@ export type TicketStatus =
   | 'CANCELLED';
 
 export type TicketPriority = 'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT';
+export type TicketCommentVisibility = 'PUBLIC' | 'INTERNAL';
 
 export interface PageResponse<T> {
   content: T[];
@@ -141,7 +142,7 @@ export interface TicketComment {
   authorId: string;
   authorName: string | null;
   content: string;
-  visibility: 'PUBLIC' | 'INTERNAL';
+  visibility: TicketCommentVisibility;
   createdAt: string;
   updatedAt: string;
 }
@@ -196,4 +197,93 @@ export interface SlaPolicy {
   resolutionHours: number;
   active: boolean;
   version: number;
+}
+
+export interface TicketListFilters {
+  search?: string;
+  status?: TicketStatus | null;
+  priority?: TicketPriority | null;
+  categoryId?: string | null;
+  assignedAgentId?: string | null;
+  page: number;
+  size: number;
+}
+
+export interface CreateTicketRequest {
+  title: string;
+  description: string;
+  categoryId: string;
+  priority: TicketPriority;
+}
+
+export interface UpdateTicketRequest {
+  version: number;
+  title?: string;
+  description?: string;
+  priority?: TicketPriority;
+  categoryId?: string;
+}
+
+export interface TicketVersionRequest {
+  version: number;
+}
+
+export interface AssignTicketRequest extends TicketVersionRequest {
+  agentId: string;
+}
+
+export interface RequestInformationRequest extends TicketVersionRequest {
+  content: string;
+}
+
+export interface ResolveTicketRequest extends TicketVersionRequest {
+  resolutionSummary: string;
+}
+
+export interface ReopenTicketRequest extends TicketVersionRequest {
+  reason: string;
+}
+
+export interface CancelTicketRequest extends TicketVersionRequest {
+  reason: string;
+}
+
+export interface AddTicketCommentRequest extends TicketVersionRequest {
+  content: string;
+  visibility: TicketCommentVisibility;
+}
+
+export interface CreateUserRequest {
+  firstName: string;
+  lastName: string;
+  email: string;
+  password: string;
+  role: AppRole;
+}
+
+export interface UpdateUserRequest {
+  firstName: string;
+  lastName: string;
+  email: string;
+  role: AppRole;
+}
+
+export interface ActivationChangeRequest {
+  active: boolean;
+}
+
+export interface CreateCategoryRequest {
+  name: string;
+  description: string | null;
+}
+
+export interface UpdateCategoryRequest {
+  name: string;
+  description: string | null;
+}
+
+export interface UpdateSlaPolicyRequest {
+  firstResponseHours: number;
+  resolutionHours: number;
+  active: boolean;
 }

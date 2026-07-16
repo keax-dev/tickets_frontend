@@ -1,7 +1,8 @@
+import { DestroyRef, Component, computed, effect, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Component, inject, OnInit, signal } from '@angular/core';
-import { TicketApiService } from '../../services/ticket-api.service';
 import { ActivatedRoute } from '@angular/router';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
+import { map } from 'rxjs';
 import { TextareaModule } from 'primeng/textarea';
 import { MessageModule } from 'primeng/message';
 import { CommonModule } from '@angular/common';
@@ -10,13 +11,8 @@ import { SelectModule } from 'primeng/select';
 import { CardModule } from 'primeng/card';
 import { TabsModule } from 'primeng/tabs';
 import { TagModule } from 'primeng/tag';
-import { AuthStore } from '../../../../core/auth/stores/auth.store';
-import {
-  TicketComment,
-  TicketHistory,
-  TicketDetail,
-  UserRecord,
-} from '../../../../shared/models/api.models';
+import { TicketDetailStore } from '../../stores/ticket-detail.store';
+import { TicketCommentVisibility } from '../../../../shared/models/api.models';
 
 @Component({
   standalone: true,
@@ -31,20 +27,34 @@ import {
     TabsModule,
     TagModule,
   ],
+  providers: [TicketDetailStore],
   templateUrl: './ticket-detail-page.component.html',
   styleUrl: './ticket-detail-page.component.css',
 })
-export class TicketDetailPageComponent implements OnInit{
-  private readonly ticketApiService = inject(TicketApiService);
+export class TicketDetailPageComponent {
+  private readonly destroyRef = inject(DestroyRef);
   private readonly formBuilder = inject(FormBuilder);
   private readonly route = inject(ActivatedRoute);
 
-  readonly supportUsers: UserRecord[] = [];
-  readonly errorMessage = signal<string | null>(null);
-  readonly authStore = inject(AuthStore);
-  readonly comments = signal<TicketComment[]>([]);
-  readonly history = signal<TicketHistory[]>([]);
-  readonly ticket = signal<TicketDetail | null>(null);
+  readonly ticketDetailStore = inject(TicketDetailStore);
+  readonly ticketId = toSignal(
+    this.route.paramMap.pipe(map((paramMap) => paramMap.get('ticketId'))),
+    {
+      initialValue: null,
+    },
+  );
+  readonly supportUsers = this.ticketDetailStore.supportUsers;
+  readonly errorMessage = this.ticketDetailStore.errorMessage;
+  readonly comments = this.ticketDetailStore.comments;
+  readonly history = this.ticketDetailStore.history;
+  readonly ticket = this.ticketDetailStore.ticket;
+  readonly currentTicket = computed(() => {
+    const ticket = this.ticket();
+    const ticketId = this.ticketId();
+
+    return ticket && ticket.id === ticketId ? ticket : null;
+  });
+  readonly loading = this.ticketDetailStore.loading;
 
   readonly assignmentForm = this.formBuilder.group({
     agentId: this.formBuilder.control<string | null>(null, {
@@ -56,7 +66,7 @@ export class TicketDetailPageComponent implements OnInit{
     content: this.formBuilder.nonNullable.control('', {
       validators: [Validators.required],
     }),
-    visibility: this.formBuilder.nonNullable.control<'PUBLIC' | 'INTERNAL'>('PUBLIC'),
+    visibility: this.formBuilder.nonNullable.control<TicketCommentVisibility>('PUBLIC'),
   });
 
   readonly requestInformationForm = this.formBuilder.nonNullable.group({
@@ -76,159 +86,92 @@ export class TicketDetailPageComponent implements OnInit{
     { label: 'Interno', value: 'INTERNAL' as const },
   ];
 
-  ngOnInit(): void {
-    const ticketId = this.route.snapshot.paramMap.get('ticketId');
-    if (!ticketId) {
-      return;
-    }
+  constructor() {
+    effect(() => {
+      const ticketId = this.ticketId();
 
-    this.ticketApiService.getUsers().subscribe((users) => {
-      this.supportUsers.splice(
-        0,
-        this.supportUsers.length,
-        ...users.filter((user) => user.role === 'SUPPORT_AGENT' || user.role === 'SUPPORT_MANAGER'),
-      );
+      if (ticketId) {
+        this.ticketDetailStore.initialize(ticketId);
+      }
     });
 
-    this.load(ticketId);
+    effect(() => {
+      this.assignmentForm.patchValue(
+        { agentId: this.currentTicket()?.assignedAgentId ?? null },
+        { emitEvent: false },
+      );
+    });
   }
 
   addComment(): void {
-    const currentTicket = this.ticket();
-    if (!currentTicket || this.commentForm.invalid) {
+    if (this.commentForm.invalid) {
       this.commentForm.markAllAsTouched();
       return;
     }
 
-    this.ticketApiService
-      .addComment(currentTicket.id, {
-        version: currentTicket.version,
-        ...this.commentForm.getRawValue(),
-      })
-      .subscribe({
-        next: () => {
+    const rawValue = this.commentForm.getRawValue();
+
+    this.ticketDetailStore
+      .addComment(rawValue.content, rawValue.visibility)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((succeeded) => {
+        if (succeeded) {
           this.commentForm.reset({ content: '', visibility: 'PUBLIC' });
-          this.load(currentTicket.id);
-        },
-        error: (error) => {
-          this.errorMessage.set(error?.error?.detail ?? 'No fue posible agregar el comentario.');
-        },
+        }
       });
   }
 
   assign(): void {
-    const currentTicket = this.ticket();
     const agentId = this.assignmentForm.controls.agentId.value;
-    if (!currentTicket || !agentId) {
+
+    if (!agentId) {
       this.assignmentForm.markAllAsTouched();
       return;
     }
 
-    this.ticketApiService
-      .assignTicket(currentTicket.id, { version: currentTicket.version, agentId })
-      .subscribe({
-        next: () => {
-          this.load(currentTicket.id);
-        },
-        error: (error) => {
-          this.errorMessage.set(error?.error?.detail ?? 'No fue posible asignar el ticket.');
-        },
-      });
+    this.ticketDetailStore
+      .assignTicket(agentId)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe();
   }
 
   start(): void {
-    const currentTicket = this.ticket();
-    if (!currentTicket) {
-      return;
-    }
-
-    this.ticketApiService.startTicket(currentTicket.id, currentTicket.version).subscribe({
-      next: () => this.load(currentTicket.id),
-      error: (error) => {
-        this.errorMessage.set(error?.error?.detail ?? 'No fue posible iniciar el ticket.');
-      },
-    });
+    this.ticketDetailStore.startTicket().pipe(takeUntilDestroyed(this.destroyRef)).subscribe();
   }
 
   requestInformation(): void {
-    const currentTicket = this.ticket();
-    if (!currentTicket || this.requestInformationForm.invalid) {
+    if (this.requestInformationForm.invalid) {
       this.requestInformationForm.markAllAsTouched();
       return;
     }
 
-    this.ticketApiService
-      .requestInformation(currentTicket.id, {
-        version: currentTicket.version,
-        content: this.requestInformationForm.getRawValue().content,
-      })
-      .subscribe({
-        next: () => {
+    this.ticketDetailStore
+      .requestInformation(this.requestInformationForm.getRawValue().content)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((succeeded) => {
+        if (succeeded) {
           this.requestInformationForm.reset({ content: '' });
-          this.load(currentTicket.id);
-        },
-        error: (error) => {
-          this.errorMessage.set(error?.error?.detail ?? 'No fue posible solicitar informacion.');
-        },
+        }
       });
   }
 
   resolve(): void {
-    const currentTicket = this.ticket();
-    if (!currentTicket || this.resolveForm.invalid) {
+    if (this.resolveForm.invalid) {
       this.resolveForm.markAllAsTouched();
       return;
     }
 
-    this.ticketApiService
-      .resolveTicket(currentTicket.id, {
-        version: currentTicket.version,
-        resolutionSummary: this.resolveForm.getRawValue().resolutionSummary,
-      })
-      .subscribe({
-        next: () => {
+    this.ticketDetailStore
+      .resolveTicket(this.resolveForm.getRawValue().resolutionSummary)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((succeeded) => {
+        if (succeeded) {
           this.resolveForm.reset({ resolutionSummary: '' });
-          this.load(currentTicket.id);
-        },
-        error: (error) => {
-          this.errorMessage.set(error?.error?.detail ?? 'No fue posible resolver el ticket.');
-        },
+        }
       });
   }
 
   close(): void {
-    const currentTicket = this.ticket();
-    if (!currentTicket) {
-      return;
-    }
-
-    this.ticketApiService.closeTicket(currentTicket.id, currentTicket.version).subscribe({
-      next: () => this.load(currentTicket.id),
-      error: (error) => {
-        this.errorMessage.set(error?.error?.detail ?? 'No fue posible cerrar el ticket.');
-      },
-    });
-  }
-
-  private load(ticketId: string): void {
-    this.errorMessage.set(null);
-
-    this.ticketApiService.getTicket(ticketId).subscribe({
-      next: (ticket) => {
-        this.ticket.set(ticket);
-        this.assignmentForm.patchValue({ agentId: ticket.assignedAgentId }, { emitEvent: false });
-      },
-      error: (error) => {
-        this.errorMessage.set(error?.error?.detail ?? 'No fue posible cargar el ticket.');
-      },
-    });
-
-    this.ticketApiService
-      .getComments(ticketId)
-      .subscribe((comments) => this.comments.set(comments));
-    this.ticketApiService.getHistory(ticketId).subscribe({
-      next: (history) => this.history.set(history),
-      error: () => this.history.set([]),
-    });
+    this.ticketDetailStore.closeTicket().pipe(takeUntilDestroyed(this.destroyRef)).subscribe();
   }
 }

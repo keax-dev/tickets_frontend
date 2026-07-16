@@ -1,14 +1,14 @@
 <section class="page-card page">
-  @if (ticket(); as currentTicket) {
+  @if (currentTicket(); as currentTicket) {
     <div class="page-heading">
       <div>
         <h1>{{ currentTicket.code }}</h1>
         <p>{{ currentTicket.title }}</p>
       </div>
       <div class="actions">
-        @if (currentTicket.availableActions.includes('assign') && supportUsers.length > 0) {
+        @if (currentTicket.availableActions.includes('assign') && supportUsers().length > 0) {
           <p-select
-            [options]="supportUsers"
+            [options]="supportUsers()"
             optionLabel="email"
             optionValue="id"
             [formControl]="assignmentForm.controls.agentId"
@@ -143,7 +143,9 @@
         </p-tabpanel>
       </p-tabpanels>
     </p-tabs>
-  } @else {
+  } @else if (loading()) {
     <p>Cargando ticket...</p>
+  } @else {
+    <p>No hay informacion del ticket disponible.</p>
   }
 </section>

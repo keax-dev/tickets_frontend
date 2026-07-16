@@ -21,7 +21,8 @@
       <label class="field">
         <span>Categoria</span>
         <p-select
-          [options]="categories"
+          [disabled]="categories().length === 0"
+          [options]="categories()"
           formControlName="categoryId"
           optionLabel="name"
           optionValue="id"
@@ -39,12 +40,22 @@
       </label>
     </div>
 
+    @if (categoryErrorMessage()) {
+      <p-message severity="warn" [text]="categoryErrorMessage() ?? ''"></p-message>
+    }
+
     @if (errorMessage()) {
       <p-message severity="error" [text]="errorMessage() ?? ''"></p-message>
     }
 
     <div class="actions">
-      <button pButton type="submit" label="Crear ticket" [loading]="submitting()"></button>
+      <button
+        pButton
+        type="submit"
+        label="Crear ticket"
+        [disabled]="categories().length === 0"
+        [loading]="submitting()"
+      ></button>
     </div>
   </form>
 </section>

@@ -29,13 +29,21 @@
       placeholder="Prioridad"
     ></p-select>
     <p-select
-      [options]="categories"
+      [options]="categories()"
       formControlName="categoryId"
       optionLabel="name"
       optionValue="id"
       placeholder="Categoria"
     ></p-select>
   </form>
+
+  @if (categoryErrorMessage()) {
+    <p-message severity="warn" [text]="categoryErrorMessage() ?? ''"></p-message>
+  }
+
+  @if (ticketListStore.errorMessage()) {
+    <p-message severity="error" [text]="ticketListStore.errorMessage() ?? ''"></p-message>
+  }
 
   <p-table [value]="ticketListStore.page()?.content ?? []" [loading]="ticketListStore.loading()">
     <ng-template pTemplate="header">

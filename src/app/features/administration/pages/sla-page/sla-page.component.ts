@@ -11,6 +11,7 @@ import { TableModule } from 'primeng/table';
 import { CardModule } from 'primeng/card';
 import { TagModule } from 'primeng/tag';
 import { finalize } from 'rxjs';
+import { resolveProblemDetailsMessage } from '../../../../shared/utils/resolve-problem-details-message';
 
 @Component({
   standalone: true,
@@ -84,7 +85,9 @@ export class SlaPageComponent {
           }
         },
         error: (error: ProblemDetails) => {
-          this.errorMessage.set(error?.detail ?? 'No fue posible cargar las politicas SLA.');
+          this.errorMessage.set(
+            resolveProblemDetailsMessage(error, 'No fue posible cargar las politicas SLA.'),
+          );
         },
       });
   }
@@ -115,7 +118,9 @@ export class SlaPageComponent {
           this.loadPolicies();
         },
         error: (error: ProblemDetails) => {
-          this.errorMessage.set(error?.detail ?? 'No fue posible actualizar la politica SLA.');
+          this.errorMessage.set(
+            resolveProblemDetailsMessage(error, 'No fue posible actualizar la politica SLA.'),
+          );
         },
       });
   }

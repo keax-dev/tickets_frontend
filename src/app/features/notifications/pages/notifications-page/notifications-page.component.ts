@@ -1,20 +1,21 @@
 import { NotificationStore } from '../../stores/notification.store';
-import { Component, inject } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ButtonModule } from 'primeng/button';
-import { CardModule } from 'primeng/card';
+import { MessageModule } from 'primeng/message';
 import { TagModule } from 'primeng/tag';
 
 @Component({
   standalone: true,
-  imports: [CommonModule, CardModule, ButtonModule, TagModule],
+  imports: [CommonModule, ButtonModule, MessageModule, TagModule],
+  providers: [NotificationStore],
   templateUrl: './notifications-page.component.html',
   styleUrl: './notifications-page.component.css',
 })
-export class NotificationsPageComponent {
+export class NotificationsPageComponent implements OnInit {
   readonly notificationStore = inject(NotificationStore);
 
-  constructor() {
+  ngOnInit(): void {
     this.notificationStore.load();
   }
 }
