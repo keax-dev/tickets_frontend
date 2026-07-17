@@ -1,19 +1,19 @@
 import { DestroyRef, Component, computed, effect, inject, untracked } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
-import { ActivatedRoute } from '@angular/router';
-import { CommonModule } from '@angular/common';
-import { map } from 'rxjs';
-import { AuthStore } from '../../../../core/auth/stores/auth.store';
 import { TicketCommentVisibility } from '../../../../shared/models/api.models';
 import { TicketDetailStore } from '../../stores/ticket-detail.store';
 import { TextareaModule } from 'primeng/textarea';
+import { ActivatedRoute } from '@angular/router';
 import { MessageModule } from 'primeng/message';
 import { ButtonModule } from 'primeng/button';
+import { CommonModule } from '@angular/common';
 import { SelectModule } from 'primeng/select';
 import { CardModule } from 'primeng/card';
 import { TabsModule } from 'primeng/tabs';
 import { TagModule } from 'primeng/tag';
+import { AuthStore } from '../../../../core/auth/stores/auth.store';
+import { map } from 'rxjs';
 
 @Component({
   standalone: true,
@@ -35,8 +35,8 @@ import { TagModule } from 'primeng/tag';
 export class TicketDetailPageComponent {
   private readonly formBuilder = inject(FormBuilder);
   private readonly destroyRef = inject(DestroyRef);
-  private readonly route = inject(ActivatedRoute);
   private readonly authStore = inject(AuthStore);
+  private readonly route = inject(ActivatedRoute);
 
   readonly ticketDetailStore = inject(TicketDetailStore);
   readonly ticketId = toSignal(
@@ -45,31 +45,37 @@ export class TicketDetailPageComponent {
       initialValue: null,
     },
   );
-  readonly supportUsers = this.ticketDetailStore.supportUsers;
   readonly supportUsersLoading = this.ticketDetailStore.supportUsersLoading;
   readonly supportUsersError = this.ticketDetailStore.supportUsersError;
+  readonly supportUsers = this.ticketDetailStore.supportUsers;
   readonly errorMessage = this.ticketDetailStore.errorMessage;
   readonly comments = this.ticketDetailStore.comments;
   readonly history = this.ticketDetailStore.history;
   readonly ticket = this.ticketDetailStore.ticket;
+
   readonly canCreateInternalComments = computed(() =>
     this.authStore.hasPermission('COMMENT_CREATE_INTERNAL'),
   );
+
   readonly canReadInternalComments = computed(() =>
     this.authStore.hasPermission('COMMENT_READ_INTERNAL'),
   );
+
   readonly canReadHistory = computed(() => this.authStore.hasPermission('AUDIT_READ'));
+
   readonly visibleComments = computed(() =>
     this.canReadInternalComments()
       ? this.comments()
       : this.comments().filter((comment) => comment.visibility === 'PUBLIC'),
   );
+
   readonly currentTicket = computed(() => {
     const ticket = this.ticket();
     const ticketId = this.ticketId();
 
     return ticket && ticket.id === ticketId ? ticket : null;
   });
+
   readonly loading = this.ticketDetailStore.loading;
 
   readonly assignmentForm = this.formBuilder.group({

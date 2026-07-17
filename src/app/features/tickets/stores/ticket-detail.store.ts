@@ -1,41 +1,41 @@
 import { DestroyRef, Injectable, inject, signal } from '@angular/core';
 import { resolveProblemDetailsMessage } from '../../../shared/utils/resolve-problem-details-message';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { AuthStore } from '../../../core/auth/stores/auth.store';
 import { TicketApiService } from '../services/ticket-api.service';
+import { AuthStore } from '../../../core/auth/stores/auth.store';
 import {
-  AddTicketCommentRequest,
-  ProblemDetails,
   RequestInformationRequest,
-  ResolveTicketRequest,
-  TicketComment,
   TicketCommentVisibility,
-  TicketDetail,
-  TicketHistory,
+  AddTicketCommentRequest,
+  ResolveTicketRequest,
   TicketVersionRequest,
+  ProblemDetails,
+  TicketComment,
+  TicketHistory,
+  TicketDetail,
   UserRecord,
 } from '../../../shared/models/api.models';
 import {
   defaultIfEmpty,
-  EMPTY,
   Observable,
-  Subject,
   catchError,
+  switchMap,
   finalize,
   forkJoin,
+  Subject,
+  EMPTY,
+  tap,
   map,
   of,
-  switchMap,
-  tap,
 } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
 })
 export class TicketDetailStore {
-  private readonly authStore = inject(AuthStore);
   private readonly ticketApiService = inject(TicketApiService);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly authStore = inject(AuthStore);
 
   private readonly supportUsersState = signal<UserRecord[]>([]);
   private readonly supportUsersLoadingState = signal(false);

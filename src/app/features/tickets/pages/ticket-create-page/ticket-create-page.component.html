@@ -1,43 +1,51 @@
-<section class="page-card page">
-  <div class="page-heading">
-    <div>
-      <h1>Nuevo ticket</h1>
-      <p>Registra una nueva solicitud para el equipo de soporte.</p>
+<section class="page-card p-4">
+  <div class="row mb-4">
+    <div class="col-12">
+      <h1 class="mb-2">Nuevo ticket</h1>
+      <p class="mb-0 ticket-create-muted">
+        Registra una nueva solicitud para el equipo de soporte.
+      </p>
     </div>
   </div>
 
-  <form class="stack" [formGroup]="ticketForm" (ngSubmit)="submit()">
-    <label class="field">
-      <span>Titulo</span>
-      <input pInputText formControlName="title" />
+  <form [formGroup]="ticketForm" (ngSubmit)="submit()" class="d-flex flex-column gap-3">
+    <label class="d-flex flex-column gap-2">
+      <span class="ticket-create-muted">Titulo</span>
+      <input class="w-100" pInputText formControlName="title" />
     </label>
 
-    <label class="field">
-      <span>Descripcion</span>
+    <label class="d-flex flex-column gap-2">
+      <span class="ticket-create-muted">Descripcion</span>
       <textarea pTextarea formControlName="description" rows="7"></textarea>
     </label>
 
-    <div class="grid">
-      <label class="field">
-        <span>Categoria</span>
-        <p-select
-          [disabled]="categories().length === 0"
-          [options]="categories()"
-          formControlName="categoryId"
-          optionLabel="name"
-          optionValue="id"
-        ></p-select>
-      </label>
+    <div class="row g-3">
+      <div class="col-12 col-md-6">
+        <label class="d-flex flex-column gap-2">
+          <span class="ticket-create-muted">Categoria</span>
+          <p-select
+            [disabled]="categories().length === 0"
+            [options]="categories()"
+            formControlName="categoryId"
+            optionLabel="name"
+            optionValue="id"
+            styleClass="w-100"
+          ></p-select>
+        </label>
+      </div>
 
-      <label class="field">
-        <span>Prioridad</span>
-        <p-select
-          [options]="priorityOptions"
-          formControlName="priority"
-          optionLabel="label"
-          optionValue="value"
-        ></p-select>
-      </label>
+      <div class="col-12 col-md-6">
+        <label class="d-flex flex-column gap-2">
+          <span class="ticket-create-muted">Prioridad</span>
+          <p-select
+            [options]="priorityOptions"
+            formControlName="priority"
+            optionLabel="label"
+            optionValue="value"
+            styleClass="w-100"
+          ></p-select>
+        </label>
+      </div>
     </div>
 
     @if (categoryErrorMessage()) {
@@ -48,13 +56,13 @@
       <p-message severity="error" [text]="errorMessage() ?? ''"></p-message>
     }
 
-    <div class="actions">
+    <div class="d-flex justify-content-end">
       <button
-        pButton
-        type="submit"
-        label="Crear ticket"
         [disabled]="categories().length === 0"
         [loading]="submitting()"
+        label="Crear ticket"
+        type="submit"
+        pButton
       ></button>
     </div>
   </form>

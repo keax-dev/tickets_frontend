@@ -1,62 +1,84 @@
-<section class="page-card page">
-  <div class="page-heading">
-    <div>
-      <h1>Tickets</h1>
-      <p>Consulta y administra el estado de los tickets.</p>
+<section class="page-card p-4">
+  <div class="row g-3 align-items-start mb-4">
+    <div class="col-12 col-md">
+      <h1 class="mb-2">Tickets</h1>
+      <p class="mb-0 ticket-list-muted">Consulta y administra el estado de los tickets.</p>
     </div>
-    <a pButton routerLink="/tickets/new" label="Nuevo ticket" icon="pi pi-plus"></a>
+    <div class="col-12 col-md-auto">
+      <a pButton routerLink="/tickets/new" label="Nuevo ticket" icon="pi pi-plus"></a>
+    </div>
   </div>
 
-  <form class="filters" [formGroup]="filtersForm">
-    <input
-      formControlName="search"
-      placeholder="Buscar por codigo, titulo o descripcion"
-      type="search"
-      pInputText
-    />
-    <p-select
-      [options]="statusOptions"
-      formControlName="status"
-      optionLabel="label"
-      optionValue="value"
-      placeholder="Estado"
-    ></p-select>
-    <p-select
-      [options]="priorityOptions"
-      formControlName="priority"
-      optionLabel="label"
-      optionValue="value"
-      placeholder="Prioridad"
-    ></p-select>
-    <p-select
-      [options]="categories()"
-      formControlName="categoryId"
-      optionLabel="name"
-      optionValue="id"
-      placeholder="Categoria"
-    ></p-select>
+  <form class="row g-3 mb-3" [formGroup]="filtersForm">
+    <div class="col-12 col-xl-4">
+      <input
+        formControlName="search"
+        placeholder="Buscar por codigo, titulo o descripcion"
+        class="w-100"
+        type="search"
+        pInputText
+      />
+    </div>
+    <div class="col-12 col-md-4 col-xl">
+      <p-select
+        [options]="statusOptions"
+        formControlName="status"
+        optionLabel="label"
+        optionValue="value"
+        placeholder="Estado"
+        styleClass="w-100"
+      ></p-select>
+    </div>
+    <div class="col-12 col-md-4 col-xl">
+      <p-select
+        [options]="priorityOptions"
+        formControlName="priority"
+        optionLabel="label"
+        optionValue="value"
+        placeholder="Prioridad"
+        styleClass="w-100"
+      ></p-select>
+    </div>
+    <div class="col-12 col-md-4 col-xl">
+      <p-select
+        [options]="categories()"
+        formControlName="categoryId"
+        optionLabel="name"
+        optionValue="id"
+        placeholder="Categoria"
+        styleClass="w-100"
+      ></p-select>
+    </div>
   </form>
 
   @if (categoryErrorMessage()) {
-    <p-message severity="warn" [text]="categoryErrorMessage() ?? ''"></p-message>
+    <div class="row mb-3">
+      <div class="col-12">
+        <p-message severity="warn" [text]="categoryErrorMessage() ?? ''"></p-message>
+      </div>
+    </div>
   }
 
   @if (ticketListStore.errorMessage()) {
-    <p-message severity="error" [text]="ticketListStore.errorMessage() ?? ''"></p-message>
+    <div class="row mb-3">
+      <div class="col-12">
+        <p-message severity="error" [text]="ticketListStore.errorMessage() ?? ''"></p-message>
+      </div>
+    </div>
   }
 
   <p-table
-    [value]="ticketListStore.page()?.content ?? []"
+    (onPage)="onPageChange($event)"
+    [showCurrentPageReport]="true"
+    [rowsPerPageOptions]="[10, 25, 50, 100]"
+    [totalRecords]="totalRecords()"
+    [paginator]="true"
     [loading]="ticketListStore.loading()"
+    [value]="ticketListStore.page()?.content ?? []"
     [first]="currentFirst()"
     [lazy]="true"
-    [paginator]="true"
     [rows]="currentRows()"
-    [rowsPerPageOptions]="[10, 25, 50, 100]"
-    [showCurrentPageReport]="true"
-    [totalRecords]="totalRecords()"
     currentPageReportTemplate="{first} - {last} de {totalRecords}"
-    (onPage)="onPageChange($event)"
   >
     <ng-template pTemplate="header">
       <tr>
@@ -77,8 +99,8 @@
         <td><p-tag [value]="statusLabel(ticket.status)"></p-tag></td>
         <td>
           <p-tag
-            [value]="priorityLabel(ticket.priority)"
             [severity]="priorityTagSeverity(ticket.priority)"
+            [value]="priorityLabel(ticket.priority)"
           ></p-tag>
         </td>
         <td>{{ ticket.requesterName ?? 'Sin dato' }}</td>

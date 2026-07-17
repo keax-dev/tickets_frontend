@@ -1,9 +1,11 @@
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { DestroyRef, Component, inject, OnInit, signal } from '@angular/core';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { resolveProblemDetailsMessage } from '../../../../shared/utils/resolve-problem-details-message';
+import { Category, TicketPriority } from '../../../../shared/models/api.models';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { TicketApiService } from '../../services/ticket-api.service';
 import { InputTextModule } from 'primeng/inputtext';
-import { Category, TicketPriority } from '../../../../shared/models/api.models';
+import { ProblemDetails } from '../../../../shared/models/api.models';
 import { TextareaModule } from 'primeng/textarea';
 import { MessageModule } from 'primeng/message';
 import { SelectModule } from 'primeng/select';
@@ -12,34 +14,32 @@ import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
 import { finalize } from 'rxjs';
 import { Router } from '@angular/router';
-import { ProblemDetails } from '../../../../shared/models/api.models';
-import { resolveProblemDetailsMessage } from '../../../../shared/utils/resolve-problem-details-message';
 
 @Component({
   standalone: true,
   imports: [
     ReactiveFormsModule,
+    InputTextModule,
     TextareaModule,
     MessageModule,
     ButtonModule,
     SelectModule,
     CommonModule,
     CardModule,
-    InputTextModule,
   ],
   templateUrl: './ticket-create-page.component.html',
   styleUrl: './ticket-create-page.component.css',
 })
 export class TicketCreatePageComponent implements OnInit {
-  private readonly destroyRef = inject(DestroyRef);
   private readonly ticketApiService = inject(TicketApiService);
   private readonly formBuilder = inject(FormBuilder);
+  private readonly destroyRef = inject(DestroyRef);
   private readonly router = inject(Router);
 
-  readonly categories = signal<Category[]>([]);
   readonly categoryErrorMessage = signal<string | null>(null);
   readonly errorMessage = signal<string | null>(null);
   readonly submitting = signal(false);
+  readonly categories = signal<Category[]>([]);
 
   readonly ticketForm = this.formBuilder.nonNullable.group({
     title: this.formBuilder.nonNullable.control('', {
@@ -85,8 +85,8 @@ export class TicketCreatePageComponent implements OnInit {
       return;
     }
 
-    this.submitting.set(true);
     this.errorMessage.set(null);
+    this.submitting.set(true);
     this.ticketApiService
       .createTicket(this.ticketForm.getRawValue())
       .pipe(finalize(() => this.submitting.set(false)))

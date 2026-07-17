@@ -1,59 +1,84 @@
-<section class="page-card page">
+<section class="page-card p-4">
   @if (errorMessage()) {
-    <p-message severity="error" [text]="errorMessage() ?? ''"></p-message>
+    <div class="row mb-3">
+      <div class="col-12">
+        <p-message severity="error" [text]="errorMessage() ?? ''"></p-message>
+      </div>
+    </div>
   }
 
   @if (currentTicket(); as currentTicket) {
-    <div class="page-heading">
-      <div>
-        <h1>{{ currentTicket.code }}</h1>
-        <p>{{ currentTicket.title }}</p>
+    <div class="row g-3 align-items-start mb-4">
+      <div class="col-12 col-xl">
+        <h1 class="mb-2">{{ currentTicket.code }}</h1>
+        <p class="mb-0 ticket-detail-muted">{{ currentTicket.title }}</p>
       </div>
-      <div class="actions">
-        @if (currentTicket.availableActions.includes('assign')) {
-          <p-select
-            [options]="supportUsers()"
-            optionLabel="email"
-            optionValue="id"
-            [formControl]="assignmentForm.controls.agentId"
-            [placeholder]="
-              supportUsersLoading() ? 'Cargando agentes...' : 'Selecciona un agente'
-            "
-          ></p-select>
-          <button
-            pButton
-            type="button"
-            label="Asignar"
-            severity="secondary"
-            [disabled]="supportUsersLoading() || !hasSelectedSupportUser()"
-            (click)="assign()"
-          ></button>
-        }
-        @if (currentTicket.availableActions.includes('start')) {
-          <button pButton type="button" label="Iniciar" (click)="start()"></button>
-        }
-        @if (currentTicket.availableActions.includes('close')) {
-          <button
-            pButton
-            type="button"
-            label="Cerrar"
-            severity="secondary"
-            (click)="close()"
-          ></button>
-        }
+      <div class="col-12 col-xl-auto">
+        <div class="row g-2 justify-content-xl-end">
+          @if (currentTicket.availableActions.includes('assign')) {
+            <div class="col-12 col-sm-auto">
+              <p-select
+                [placeholder]="
+                  supportUsersLoading() ? 'Cargando agentes...' : 'Selecciona un agente'
+                "
+                [formControl]="assignmentForm.controls.agentId"
+                [options]="supportUsers()"
+                optionLabel="email"
+                optionValue="id"
+                styleClass="w-100 ticket-detail-assignment-select"
+              ></p-select>
+            </div>
+            <div class="col-12 col-sm-auto">
+              <button
+                (click)="assign()"
+                [disabled]="supportUsersLoading() || !hasSelectedSupportUser()"
+                severity="secondary"
+                class="w-100"
+                label="Asignar"
+                type="button"
+                pButton
+              ></button>
+            </div>
+          }
+          @if (currentTicket.availableActions.includes('start')) {
+            <div class="col-12 col-sm-auto">
+              <button
+                (click)="start()"
+                class="w-100"
+                label="Iniciar"
+                type="button"
+                pButton
+              ></button>
+            </div>
+          }
+          @if (currentTicket.availableActions.includes('close')) {
+            <div class="col-12 col-sm-auto">
+              <button
+                (click)="close()"
+                severity="secondary"
+                class="w-100"
+                label="Cerrar"
+                type="button"
+                pButton
+              ></button>
+            </div>
+          }
+        </div>
       </div>
     </div>
 
     @if (currentTicket.availableActions.includes('assign') && supportUsersError()) {
-      <div class="actions assignment-feedback">
+      <div
+        class="d-flex flex-column flex-md-row align-items-start align-items-md-center gap-2 mb-3"
+      >
         <p-message severity="warn" [text]="supportUsersError() ?? ''"></p-message>
         <button
-          pButton
-          type="button"
-          label="Reintentar agentes"
+          (click)="reloadSupportUsers()"
           severity="secondary"
           variant="text"
-          (click)="reloadSupportUsers()"
+          label="Reintentar agentes"
+          type="button"
+          pButton
         ></button>
       </div>
     } @else if (
@@ -61,14 +86,34 @@
       !supportUsersLoading() &&
       supportUsers().length === 0
     ) {
-      <p-message severity="info" text="No hay agentes activos disponibles para asignar." />
+      <div class="row mb-3">
+        <div class="col-12">
+          <p-message severity="info" text="No hay agentes activos disponibles para asignar." />
+        </div>
+      </div>
     }
 
-    <div class="summary-grid">
-      <p-card header="Estado"><p-tag [value]="currentTicket.status"></p-tag></p-card>
-      <p-card header="Prioridad"><p-tag [value]="currentTicket.priority"></p-tag></p-card>
-      <p-card header="Solicitante">{{ currentTicket.requesterName ?? 'Sin dato' }}</p-card>
-      <p-card header="Agente">{{ currentTicket.assignedAgentName ?? 'Sin asignar' }}</p-card>
+    <div class="row g-3 mb-4">
+      <div class="col-12 col-sm-6 col-xl-3">
+        <p-card header="Estado" class="h-100"
+          ><p-tag [value]="currentTicket.status"></p-tag
+        ></p-card>
+      </div>
+      <div class="col-12 col-sm-6 col-xl-3">
+        <p-card header="Prioridad" class="h-100"
+          ><p-tag [value]="currentTicket.priority"></p-tag
+        ></p-card>
+      </div>
+      <div class="col-12 col-sm-6 col-xl-3">
+        <p-card header="Solicitante" class="h-100">{{
+          currentTicket.requesterName ?? 'Sin dato'
+        }}</p-card>
+      </div>
+      <div class="col-12 col-sm-6 col-xl-3">
+        <p-card header="Agente" class="h-100">{{
+          currentTicket.assignedAgentName ?? 'Sin asignar'
+        }}</p-card>
+      </div>
     </div>
 
     <p-tabs value="comments">
@@ -81,33 +126,40 @@
       </p-tablist>
       <p-tabpanels>
         <p-tabpanel value="comments">
-          <form class="comment-form" [formGroup]="commentForm" (ngSubmit)="addComment()">
+          <form
+            (ngSubmit)="addComment()"
+            [formGroup]="commentForm"
+            class="d-flex flex-column gap-3"
+          >
             <textarea
-              pTextarea
               formControlName="content"
-              rows="4"
               placeholder="Escribe un comentario"
+              rows="4"
+              pTextarea
             ></textarea>
             <p-select
-              formControlName="visibility"
               [options]="visibilityOptions()"
+              formControlName="visibility"
               optionLabel="label"
               optionValue="value"
+              styleClass="w-100"
             ></p-select>
-            <div class="actions">
+            <div class="d-flex flex-wrap gap-2">
               <button pButton type="submit" label="Agregar comentario"></button>
             </div>
           </form>
 
-          <div class="comment-list">
+          <div class="vstack gap-3 mt-4">
             @for (comment of visibleComments(); track comment.id) {
               <div
-                class="comment-item"
                 [class.comment-item-internal]="comment.visibility === 'INTERNAL'"
+                class="comment-item p-3 rounded-4 border"
               >
-                <strong>{{ comment.authorName ?? 'Usuario' }}</strong>
-                <small>{{ comment.createdAt | date: 'short' }}</small>
-                <p>{{ comment.content }}</p>
+                <strong class="d-block">{{ comment.authorName ?? 'Usuario' }}</strong>
+                <small class="d-block mt-1 ticket-detail-muted">{{
+                  comment.createdAt | date: 'short'
+                }}</small>
+                <p class="mb-0 mt-2">{{ comment.content }}</p>
               </div>
             }
           </div>
@@ -115,11 +167,11 @@
 
         @if (canReadHistory()) {
           <p-tabpanel value="history">
-            <div class="comment-list">
+            <div class="vstack gap-3">
               @for (entry of history(); track entry.id) {
-                <div class="comment-item">
-                  <strong>{{ entry.action }}</strong>
-                  <small
+                <div class="comment-item p-3 rounded-4 border">
+                  <strong class="d-block">{{ entry.action }}</strong>
+                  <small class="d-block mt-1 ticket-detail-muted"
                     >{{ entry.performedByName ?? 'Sistema' }} |
                     {{ entry.createdAt | date: 'short' }}</small
                   >
@@ -130,50 +182,58 @@
         }
 
         <p-tabpanel value="details">
-          <p>{{ currentTicket.description }}</p>
+          <p class="mb-0">{{ currentTicket.description }}</p>
           @if (currentTicket.resolutionSummary) {
-            <h3>Resumen de solucion</h3>
-            <p>{{ currentTicket.resolutionSummary }}</p>
+            <h3 class="mt-4 mb-2">Resumen de solucion</h3>
+            <p class="mb-0">{{ currentTicket.resolutionSummary }}</p>
           }
 
           @if (currentTicket.availableActions.includes('request-information')) {
             <form
-              class="comment-form"
-              [formGroup]="requestInformationForm"
               (ngSubmit)="requestInformation()"
+              [formGroup]="requestInformationForm"
+              class="d-flex flex-column gap-3 mt-4"
             >
               <textarea
-                pTextarea
                 formControlName="content"
-                rows="3"
                 placeholder="Que informacion falta"
+                rows="3"
+                pTextarea
               ></textarea>
-              <button
-                pButton
-                type="submit"
-                label="Solicitar informacion"
-                severity="secondary"
-              ></button>
+              <div class="d-flex flex-wrap gap-2">
+                <button
+                  severity="secondary"
+                  label="Solicitar informacion"
+                  type="submit"
+                  pButton
+                ></button>
+              </div>
             </form>
           }
 
           @if (currentTicket.availableActions.includes('resolve')) {
-            <form class="comment-form" [formGroup]="resolveForm" (ngSubmit)="resolve()">
+            <form
+              (ngSubmit)="resolve()"
+              [formGroup]="resolveForm"
+              class="d-flex flex-column gap-3 mt-4"
+            >
               <textarea
-                pTextarea
                 formControlName="resolutionSummary"
-                rows="4"
                 placeholder="Resumen de solucion"
+                rows="4"
+                pTextarea
               ></textarea>
-              <button pButton type="submit" label="Resolver ticket"></button>
+              <div class="d-flex flex-wrap gap-2">
+                <button pButton type="submit" label="Resolver ticket"></button>
+              </div>
             </form>
           }
         </p-tabpanel>
       </p-tabpanels>
     </p-tabs>
   } @else if (loading()) {
-    <p>Cargando ticket...</p>
+    <p class="mb-0 ticket-detail-muted">Cargando ticket...</p>
   } @else if (!errorMessage()) {
-    <p>No hay informacion del ticket disponible.</p>
+    <p class="mb-0 ticket-detail-muted">No hay informacion del ticket disponible.</p>
   }
 </section>

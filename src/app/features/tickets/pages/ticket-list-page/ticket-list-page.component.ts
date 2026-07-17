@@ -1,26 +1,26 @@
 import { DestroyRef, Component, computed, inject, OnInit, signal } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
-import { CommonModule } from '@angular/common';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { debounceTime, distinctUntilChanged, map, merge } from 'rxjs';
-import { RouterLink } from '@angular/router';
+import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
+import { resolveProblemDetailsMessage } from '../../../../shared/utils/resolve-problem-details-message';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { TicketApiService } from '../../services/ticket-api.service';
 import { InputTextModule } from 'primeng/inputtext';
-import { ButtonModule } from 'primeng/button';
+import { TicketListStore } from '../../stores/ticket-list.store';
+import { TablePageEvent } from 'primeng/types/table';
 import { MessageModule } from 'primeng/message';
+import { CommonModule } from '@angular/common';
+import { ButtonModule } from 'primeng/button';
 import { SelectModule } from 'primeng/select';
 import { TableModule } from 'primeng/table';
 import { CardModule } from 'primeng/card';
+import { RouterLink } from '@angular/router';
 import { TagModule } from 'primeng/tag';
-import type { TablePageEvent } from 'primeng/types/table';
-import { TicketApiService } from '../../services/ticket-api.service';
-import { TicketListStore } from '../../stores/ticket-list.store';
 import {
-  Category,
   ProblemDetails,
   TicketPriority,
   TicketStatus,
+  Category,
 } from '../../../../shared/models/api.models';
-import { resolveProblemDetailsMessage } from '../../../../shared/utils/resolve-problem-details-message';
 
 @Component({
   standalone: true,
@@ -43,12 +43,12 @@ import { resolveProblemDetailsMessage } from '../../../../shared/utils/resolve-p
 export class TicketListPageComponent implements OnInit {
   readonly defaultRows = 10;
 
-  private readonly destroyRef = inject(DestroyRef);
   private readonly formBuilder = inject(FormBuilder);
+  private readonly destroyRef = inject(DestroyRef);
 
-  readonly ticketListStore = inject(TicketListStore);
-  readonly ticketApiService = inject(TicketApiService);
   readonly categoryErrorMessage = signal<string | null>(null);
+  readonly ticketApiService = inject(TicketApiService);
+  readonly ticketListStore = inject(TicketListStore);
   readonly categories = signal<Category[]>([]);
 
   readonly filtersForm = this.formBuilder.group({
@@ -59,36 +59,36 @@ export class TicketListPageComponent implements OnInit {
   });
 
   readonly statusLabels: Record<TicketStatus, string> = {
-    CREATED: 'Creado',
-    ASSIGNED: 'Asignado',
-    IN_PROGRESS: 'En progreso',
     WAITING_FOR_CUSTOMER: 'Esperando al cliente',
-    RESOLVED: 'Resuelto',
-    CLOSED: 'Cerrado',
+    IN_PROGRESS: 'En progreso',
     CANCELLED: 'Cancelado',
+    ASSIGNED: 'Asignado',
+    RESOLVED: 'Resuelto',
+    CREATED: 'Creado',
+    CLOSED: 'Cerrado'
   };
 
   readonly priorityLabels: Record<TicketPriority, string> = {
-    LOW: 'Baja',
     MEDIUM: 'Media',
-    HIGH: 'Alta',
     URGENT: 'Urgente',
+    HIGH: 'Alta',
+    LOW: 'Baja'
   };
 
   readonly prioritySeverity: Record<TicketPriority, 'secondary' | 'info' | 'warn' | 'danger'> = {
-    LOW: 'secondary',
     MEDIUM: 'info',
-    HIGH: 'warn',
     URGENT: 'danger',
+    HIGH: 'warn',
+    LOW: 'secondary'
   };
 
   readonly statusOptions = Object.entries(this.statusLabels).map(([value, label]) => ({
     value: value as TicketStatus,
-    label,
+    label
   }));
   readonly priorityOptions = Object.entries(this.priorityLabels).map(([value, label]) => ({
     value: value as TicketPriority,
-    label,
+    label
   }));
   readonly currentFirst = computed(
     () => this.ticketListStore.currentPage() * this.ticketListStore.pageSize(),
