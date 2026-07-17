@@ -1,6 +1,7 @@
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ProblemDetails, SlaPolicy, TicketPriority } from '../../../../shared/models/api.models';
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
+import { resolveProblemDetailsMessage } from '../../../../shared/utils/resolve-problem-details-message';
 import { AdministrationApiService } from '../../services/administration-api.service';
 import { InputTextModule } from 'primeng/inputtext';
 import { MessageModule } from 'primeng/message';
@@ -11,7 +12,6 @@ import { TableModule } from 'primeng/table';
 import { CardModule } from 'primeng/card';
 import { TagModule } from 'primeng/tag';
 import { finalize } from 'rxjs';
-import { resolveProblemDetailsMessage } from '../../../../shared/utils/resolve-problem-details-message';
 
 @Component({
   standalone: true,
@@ -29,14 +29,14 @@ import { resolveProblemDetailsMessage } from '../../../../shared/utils/resolve-p
   templateUrl: './sla-page.component.html',
   styleUrl: './sla-page.component.css',
 })
-export class SlaPageComponent {
+export class SlaPageComponent implements OnInit {
   private readonly administrationApiService = inject(AdministrationApiService);
   private readonly formBuilder = inject(FormBuilder);
 
+  readonly errorMessage = signal<string | null>(null);
   readonly policies = signal<SlaPolicy[]>([]);
   readonly loading = signal(false);
   readonly saving = signal(false);
-  readonly errorMessage = signal<string | null>(null);
 
   readonly priorityOptions = [
     { label: 'Urgente', value: 'URGENT' as const },
@@ -63,13 +63,13 @@ export class SlaPageComponent {
     active: this.formBuilder.nonNullable.control(true, { validators: [Validators.required] }),
   });
 
-  constructor() {
+  ngOnInit(): void {
     this.loadPolicies();
   }
 
   loadPolicies(): void {
-    this.loading.set(true);
     this.errorMessage.set(null);
+    this.loading.set(true);
 
     this.administrationApiService
       .listSlaPolicies()

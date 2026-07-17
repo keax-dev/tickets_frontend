@@ -1,5 +1,6 @@
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
+import { resolveProblemDetailsMessage } from '../../../../shared/utils/resolve-problem-details-message';
 import { Category, ProblemDetails } from '../../../../shared/models/api.models';
 import { AdministrationApiService } from '../../services/administration-api.service';
 import { InputTextModule } from 'primeng/inputtext';
@@ -11,7 +12,6 @@ import { TableModule } from 'primeng/table';
 import { CardModule } from 'primeng/card';
 import { TagModule } from 'primeng/tag';
 import { finalize } from 'rxjs';
-import { resolveProblemDetailsMessage } from '../../../../shared/utils/resolve-problem-details-message';
 
 @Component({
   standalone: true,
@@ -51,8 +51,8 @@ export class CategoriesPageComponent implements OnInit {
   }
 
   loadCategories(): void {
-    this.loading.set(true);
     this.errorMessage.set(null);
+    this.loading.set(true);
 
     this.administrationApiService
       .listCategories()
