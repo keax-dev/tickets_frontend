@@ -1,25 +1,25 @@
-import { HttpClient } from '@angular/common/http';
 import { Injectable, computed, inject, signal } from '@angular/core';
+import { resolveProblemDetailsMessage } from '../../../shared/utils/resolve-problem-details-message';
+import { API_BASE_URL } from '../../config/tokens/api-base-url.token';
+import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import {
-  Observable,
-  catchError,
-  finalize,
-  firstValueFrom,
-  map,
-  mapTo,
-  of,
-  shareReplay,
-  tap,
-} from 'rxjs';
-import { API_BASE_URL } from '../../config/tokens/api-base-url.token';
-import {
+  ProblemDetails,
   AppPermission,
   AuthResponse,
   CurrentUser,
-  ProblemDetails,
 } from '../../../shared/models/api.models';
-import { resolveProblemDetailsMessage } from '../../../shared/utils/resolve-problem-details-message';
+import {
+  firstValueFrom,
+  shareReplay,
+  Observable,
+  catchError,
+  finalize,
+  mapTo,
+  map,
+  tap,
+  of,
+} from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
