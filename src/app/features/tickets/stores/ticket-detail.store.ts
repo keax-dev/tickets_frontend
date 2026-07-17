@@ -1,5 +1,8 @@
 import { DestroyRef, Injectable, inject, signal } from '@angular/core';
+import { resolveProblemDetailsMessage } from '../../../shared/utils/resolve-problem-details-message';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { AuthStore } from '../../../core/auth/stores/auth.store';
+import { TicketApiService } from '../services/ticket-api.service';
 import {
   AddTicketCommentRequest,
   ProblemDetails,
@@ -12,7 +15,6 @@ import {
   TicketVersionRequest,
   UserRecord,
 } from '../../../shared/models/api.models';
-import { TicketApiService } from '../services/ticket-api.service';
 import {
   defaultIfEmpty,
   EMPTY,
@@ -26,31 +28,36 @@ import {
   switchMap,
   tap,
 } from 'rxjs';
-import { resolveProblemDetailsMessage } from '../../../shared/utils/resolve-problem-details-message';
 
 @Injectable({
   providedIn: 'root',
 })
 export class TicketDetailStore {
-  private readonly destroyRef = inject(DestroyRef);
+  private readonly authStore = inject(AuthStore);
   private readonly ticketApiService = inject(TicketApiService);
+  private readonly destroyRef = inject(DestroyRef);
 
-  private readonly loadRequests$ = new Subject<string>();
-  private readonly ticketIdState = signal<string | null>(null);
-  private readonly loadingState = signal(false);
-  private readonly errorState = signal<string | null>(null);
   private readonly supportUsersState = signal<UserRecord[]>([]);
+  private readonly supportUsersLoadingState = signal(false);
+  private readonly supportUsersLoadedState = signal(false);
+  private readonly supportUsersErrorState = signal<string | null>(null);
+  private readonly ticketIdState = signal<string | null>(null);
+  private readonly loadRequests$ = new Subject<string>();
   private readonly commentsState = signal<TicketComment[]>([]);
+  private readonly loadingState = signal(false);
   private readonly historyState = signal<TicketHistory[]>([]);
   private readonly ticketState = signal<TicketDetail | null>(null);
+  private readonly errorState = signal<string | null>(null);
 
   private latestRequestId = 0;
 
+  readonly supportUsers = this.supportUsersState.asReadonly();
+  readonly supportUsersLoading = this.supportUsersLoadingState.asReadonly();
+  readonly supportUsersError = this.supportUsersErrorState.asReadonly();
+  readonly errorMessage = this.errorState.asReadonly();
+  readonly comments = this.commentsState.asReadonly();
   readonly ticketId = this.ticketIdState.asReadonly();
   readonly loading = this.loadingState.asReadonly();
-  readonly errorMessage = this.errorState.asReadonly();
-  readonly supportUsers = this.supportUsersState.asReadonly();
-  readonly comments = this.commentsState.asReadonly();
   readonly history = this.historyState.asReadonly();
   readonly ticket = this.ticketState.asReadonly();
 
@@ -65,12 +72,11 @@ export class TicketDetailStore {
 
   initialize(ticketId: string): void {
     this.ticketIdState.set(ticketId);
-
-    if (this.supportUsersState().length === 0) {
-      this.loadSupportUsers();
-    }
-
     this.loadRequests$.next(ticketId);
+  }
+
+  reloadSupportUsers(): void {
+    this.loadSupportUsers();
   }
 
   addComment(content: string, visibility: TicketCommentVisibility): Observable<boolean> {
@@ -132,25 +138,41 @@ export class TicketDetailStore {
   }
 
   private loadSupportUsers(): void {
+    this.supportUsersLoadingState.set(true);
+    this.supportUsersErrorState.set(null);
+
     this.ticketApiService
       .getUsers()
-      .pipe(takeUntilDestroyed(this.destroyRef))
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        finalize(() => {
+          this.supportUsersLoadingState.set(false);
+        }),
+      )
       .subscribe({
         next: (users) => {
+          this.supportUsersLoadedState.set(true);
           this.supportUsersState.set(
             users.filter(
-              (user) => user.role === 'SUPPORT_AGENT' || user.role === 'SUPPORT_MANAGER',
+              (user) =>
+                user.active &&
+                (user.role === 'SUPPORT_AGENT' || user.role === 'SUPPORT_MANAGER'),
             ),
           );
         },
-        error: () => {
+        error: (error: ProblemDetails) => {
+          this.supportUsersLoadedState.set(false);
           this.supportUsersState.set([]);
+          this.supportUsersErrorState.set(
+            resolveProblemDetailsMessage(error, 'No fue posible cargar los agentes disponibles.'),
+          );
         },
       });
   }
 
   private loadTicketBundle(ticketId: string): Observable<void> {
     const requestId = ++this.latestRequestId;
+    const canReadHistory = this.authStore.hasPermission('AUDIT_READ');
 
     this.loadingState.set(true);
     this.errorState.set(null);
@@ -158,12 +180,22 @@ export class TicketDetailStore {
     return forkJoin({
       ticket: this.ticketApiService.getTicket(ticketId),
       comments: this.ticketApiService.getComments(ticketId),
-      history: this.ticketApiService.getHistory(ticketId).pipe(catchError(() => of([]))),
+      history: canReadHistory
+        ? this.ticketApiService.getHistory(ticketId).pipe(catchError(() => of([])))
+        : of([]),
     }).pipe(
       tap(({ ticket, comments, history }) => {
         this.ticketState.set(ticket);
         this.commentsState.set(comments);
         this.historyState.set(history);
+
+        if (
+          ticket.availableActions.includes('assign') &&
+          !this.supportUsersLoadedState() &&
+          !this.supportUsersLoadingState()
+        ) {
+          this.reloadSupportUsers();
+        }
       }),
       map(() => void 0),
       catchError((error: ProblemDetails) => {

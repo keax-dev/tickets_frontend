@@ -34,6 +34,7 @@ export class CategoriesPageComponent implements OnInit {
   private readonly formBuilder = inject(FormBuilder);
 
   readonly editingCategoryId = signal<string | null>(null);
+  readonly editingCategoryVersion = signal<number | null>(null);
   readonly errorMessage = signal<string | null>(null);
   readonly categories = signal<Category[]>([]);
   readonly isEditing = computed(() => this.editingCategoryId() !== null);
@@ -70,6 +71,7 @@ export class CategoriesPageComponent implements OnInit {
 
   startCreate(): void {
     this.editingCategoryId.set(null);
+    this.editingCategoryVersion.set(null);
     this.categoryForm.reset({
       name: '',
       description: '',
@@ -78,6 +80,7 @@ export class CategoriesPageComponent implements OnInit {
 
   editCategory(category: Category): void {
     this.editingCategoryId.set(category.id);
+    this.editingCategoryVersion.set(category.version);
     this.categoryForm.reset({
       name: category.name,
       description: category.description ?? '',
@@ -109,17 +112,19 @@ export class CategoriesPageComponent implements OnInit {
 
   toggleStatus(category: Category): void {
     this.errorMessage.set(null);
-    this.administrationApiService.updateCategoryStatus(category.id, !category.active).subscribe({
-      next: () => this.loadCategories(),
-      error: (error: ProblemDetails) => {
-        this.errorMessage.set(
-          resolveProblemDetailsMessage(
-            error,
-            'No fue posible actualizar el estado de la categoria.',
-          ),
-        );
-      },
-    });
+    this.administrationApiService
+      .updateCategoryStatus(category.id, { version: category.version, active: !category.active })
+      .subscribe({
+        next: () => this.loadCategories(),
+        error: (error: ProblemDetails) => {
+          this.errorMessage.set(
+            resolveProblemDetailsMessage(
+              error,
+              'No fue posible actualizar el estado de la categoria.',
+            ),
+          );
+        },
+      });
   }
 
   private createCategory(payload: { name: string; description: string | null }): void {
@@ -141,7 +146,10 @@ export class CategoriesPageComponent implements OnInit {
 
   private updateCategory(payload: { name: string; description: string | null }): void {
     this.administrationApiService
-      .updateCategory(this.editingCategoryId()!, payload)
+      .updateCategory(this.editingCategoryId()!, {
+        version: this.editingCategoryVersion() ?? 0,
+        ...payload,
+      })
       .pipe(finalize(() => this.saving.set(false)))
       .subscribe({
         next: () => {

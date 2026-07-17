@@ -1,18 +1,19 @@
-import { DestroyRef, Component, computed, effect, inject } from '@angular/core';
+import { DestroyRef, Component, computed, effect, inject, untracked } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
+import { ActivatedRoute } from '@angular/router';
+import { CommonModule } from '@angular/common';
 import { map } from 'rxjs';
+import { AuthStore } from '../../../../core/auth/stores/auth.store';
+import { TicketCommentVisibility } from '../../../../shared/models/api.models';
+import { TicketDetailStore } from '../../stores/ticket-detail.store';
 import { TextareaModule } from 'primeng/textarea';
 import { MessageModule } from 'primeng/message';
-import { CommonModule } from '@angular/common';
 import { ButtonModule } from 'primeng/button';
 import { SelectModule } from 'primeng/select';
 import { CardModule } from 'primeng/card';
 import { TabsModule } from 'primeng/tabs';
 import { TagModule } from 'primeng/tag';
-import { TicketDetailStore } from '../../stores/ticket-detail.store';
-import { TicketCommentVisibility } from '../../../../shared/models/api.models';
 
 @Component({
   standalone: true,
@@ -32,9 +33,10 @@ import { TicketCommentVisibility } from '../../../../shared/models/api.models';
   styleUrl: './ticket-detail-page.component.css',
 })
 export class TicketDetailPageComponent {
-  private readonly destroyRef = inject(DestroyRef);
   private readonly formBuilder = inject(FormBuilder);
+  private readonly destroyRef = inject(DestroyRef);
   private readonly route = inject(ActivatedRoute);
+  private readonly authStore = inject(AuthStore);
 
   readonly ticketDetailStore = inject(TicketDetailStore);
   readonly ticketId = toSignal(
@@ -44,10 +46,24 @@ export class TicketDetailPageComponent {
     },
   );
   readonly supportUsers = this.ticketDetailStore.supportUsers;
+  readonly supportUsersLoading = this.ticketDetailStore.supportUsersLoading;
+  readonly supportUsersError = this.ticketDetailStore.supportUsersError;
   readonly errorMessage = this.ticketDetailStore.errorMessage;
   readonly comments = this.ticketDetailStore.comments;
   readonly history = this.ticketDetailStore.history;
   readonly ticket = this.ticketDetailStore.ticket;
+  readonly canCreateInternalComments = computed(() =>
+    this.authStore.hasPermission('COMMENT_CREATE_INTERNAL'),
+  );
+  readonly canReadInternalComments = computed(() =>
+    this.authStore.hasPermission('COMMENT_READ_INTERNAL'),
+  );
+  readonly canReadHistory = computed(() => this.authStore.hasPermission('AUDIT_READ'));
+  readonly visibleComments = computed(() =>
+    this.canReadInternalComments()
+      ? this.comments()
+      : this.comments().filter((comment) => comment.visibility === 'PUBLIC'),
+  );
   readonly currentTicket = computed(() => {
     const ticket = this.ticket();
     const ticketId = this.ticketId();
@@ -81,18 +97,40 @@ export class TicketDetailPageComponent {
     }),
   });
 
-  readonly visibilityOptions = [
-    { label: 'Publico', value: 'PUBLIC' as const },
-    { label: 'Interno', value: 'INTERNAL' as const },
-  ];
+  readonly visibilityOptions = computed(() => {
+    const options: Array<{ label: string; value: TicketCommentVisibility }> = [
+      { label: 'Publico', value: 'PUBLIC' },
+    ];
+
+    if (this.canCreateInternalComments()) {
+      options.push({ label: 'Interno', value: 'INTERNAL' });
+    }
+
+    return options;
+  });
 
   constructor() {
     effect(() => {
       const ticketId = this.ticketId();
 
       if (ticketId) {
-        this.ticketDetailStore.initialize(ticketId);
+        untracked(() => {
+          this.ticketDetailStore.initialize(ticketId);
+        });
       }
+    });
+
+    effect(() => {
+      const ticketId = this.ticketId();
+
+      if (!ticketId) {
+        return;
+      }
+
+      this.assignmentForm.reset({ agentId: null }, { emitEvent: false });
+      this.commentForm.reset({ content: '', visibility: 'PUBLIC' });
+      this.requestInformationForm.reset({ content: '' });
+      this.resolveForm.reset({ resolutionSummary: '' });
     });
 
     effect(() => {
@@ -100,6 +138,18 @@ export class TicketDetailPageComponent {
         { agentId: this.currentTicket()?.assignedAgentId ?? null },
         { emitEvent: false },
       );
+    });
+
+    effect(() => {
+      const agentControl = this.assignmentForm.controls.agentId;
+      const shouldDisable = this.supportUsersLoading() || this.supportUsers().length === 0;
+
+      if (shouldDisable) {
+        agentControl.disable({ emitEvent: false });
+        return;
+      }
+
+      agentControl.enable({ emitEvent: false });
     });
   }
 
@@ -124,7 +174,7 @@ export class TicketDetailPageComponent {
   assign(): void {
     const agentId = this.assignmentForm.controls.agentId.value;
 
-    if (!agentId) {
+    if (!agentId || !this.hasSelectedSupportUser()) {
       this.assignmentForm.markAllAsTouched();
       return;
     }
@@ -173,5 +223,15 @@ export class TicketDetailPageComponent {
 
   close(): void {
     this.ticketDetailStore.closeTicket().pipe(takeUntilDestroyed(this.destroyRef)).subscribe();
+  }
+
+  reloadSupportUsers(): void {
+    this.ticketDetailStore.reloadSupportUsers();
+  }
+
+  hasSelectedSupportUser(): boolean {
+    const agentId = this.assignmentForm.controls.agentId.value;
+
+    return !!agentId && this.supportUsers().some((user) => user.id === agentId);
   }
 }

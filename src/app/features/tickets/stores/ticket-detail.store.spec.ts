@@ -1,6 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { of, throwError } from 'rxjs';
 import { vi } from 'vitest';
+import { AuthStore } from '../../../core/auth/stores/auth.store';
 import { TicketApiService } from '../services/ticket-api.service';
 import { TicketDetailStore } from './ticket-detail.store';
 import { TicketDetail, TicketHistory, UserRecord } from '../../../shared/models/api.models';
@@ -24,6 +25,16 @@ describe('TicketDetailStore', () => {
       email: 'grace@example.com',
       role: 'SUPPORT_AGENT',
       active: true,
+      lastLoginAt: null,
+      version: 1,
+    },
+    {
+      id: 'user-inactive-agent',
+      firstName: 'Casey',
+      lastName: 'Inactive',
+      email: 'casey@example.com',
+      role: 'SUPPORT_AGENT',
+      active: false,
       lastLoginAt: null,
       version: 1,
     },
@@ -97,6 +108,9 @@ describe('TicketDetailStore', () => {
     resolveTicket: ReturnType<typeof vi.fn>;
     closeTicket: ReturnType<typeof vi.fn>;
   };
+  let authStoreMock: {
+    hasPermission: ReturnType<typeof vi.fn>;
+  };
   let ticketDetailStore: TicketDetailStore;
 
   beforeEach(() => {
@@ -115,10 +129,17 @@ describe('TicketDetailStore', () => {
       resolveTicket: vi.fn(),
       closeTicket: vi.fn(),
     };
+    authStoreMock = {
+      hasPermission: vi.fn((permission: string) => permission === 'AUDIT_READ'),
+    };
 
     TestBed.configureTestingModule({
       providers: [
         TicketDetailStore,
+        {
+          provide: AuthStore,
+          useValue: authStoreMock,
+        },
         {
           provide: TicketApiService,
           useValue: ticketApiServiceMock,
@@ -139,10 +160,52 @@ describe('TicketDetailStore', () => {
     expect(ticketDetailStore.ticket()?.id).toBe('ticket-1');
     expect(ticketDetailStore.comments()).toEqual([]);
     expect(ticketDetailStore.history()).toEqual(ticketHistory);
+    expect(ticketApiServiceMock.getHistory).toHaveBeenCalledWith('ticket-1');
+    expect(ticketApiServiceMock.getUsers).toHaveBeenCalledTimes(1);
     expect(ticketDetailStore.supportUsers().map((user) => user.id)).toEqual([
       'user-agent',
       'user-manager',
     ]);
+  });
+
+  it('stores an actionable error when support users cannot be loaded', () => {
+    ticketApiServiceMock.getUsers.mockReturnValueOnce(
+      throwError(() => ({
+        error: {
+          detail: 'No fue posible cargar los agentes.',
+        },
+      })),
+    );
+
+    ticketDetailStore.initialize('ticket-1');
+
+    expect(ticketDetailStore.supportUsers()).toEqual([]);
+    expect(ticketDetailStore.supportUsersLoading()).toBe(false);
+    expect(ticketDetailStore.supportUsersError()).toBe('No fue posible cargar los agentes.');
+  });
+
+  it('does not request history when the current user lacks audit permission', () => {
+    authStoreMock.hasPermission.mockReturnValue(false);
+
+    ticketDetailStore.initialize('ticket-1');
+
+    expect(ticketApiServiceMock.getHistory).not.toHaveBeenCalled();
+    expect(ticketDetailStore.history()).toEqual([]);
+  });
+
+  it('does not request support users when the ticket cannot be assigned', () => {
+    ticketApiServiceMock.getTicket.mockReset();
+    ticketApiServiceMock.getTicket.mockReturnValue(
+      of({
+        ...initialTicket,
+        availableActions: ['start'],
+      }),
+    );
+
+    ticketDetailStore.initialize('ticket-1');
+
+    expect(ticketApiServiceMock.getUsers).not.toHaveBeenCalled();
+    expect(ticketDetailStore.supportUsers()).toEqual([]);
   });
 
   it('refreshes the ticket after assigning an agent', () => {

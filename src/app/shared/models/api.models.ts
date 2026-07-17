@@ -27,8 +27,6 @@ export type AppPermission =
   | 'COMMENT_CREATE_PUBLIC'
   | 'COMMENT_CREATE_INTERNAL'
   | 'COMMENT_READ_INTERNAL'
-  | 'ATTACHMENT_CREATE'
-  | 'ATTACHMENT_DOWNLOAD'
   | 'AUDIT_READ'
   | 'DASHBOARD_READ_GLOBAL'
   | 'DASHBOARD_READ_PERSONAL'
@@ -262,6 +260,7 @@ export interface CreateUserRequest {
 }
 
 export interface UpdateUserRequest {
+  version: number;
   firstName: string;
   lastName: string;
   email: string;
@@ -269,6 +268,7 @@ export interface UpdateUserRequest {
 }
 
 export interface ActivationChangeRequest {
+  version: number;
   active: boolean;
 }
 
@@ -278,11 +278,13 @@ export interface CreateCategoryRequest {
 }
 
 export interface UpdateCategoryRequest {
+  version: number;
   name: string;
   description: string | null;
 }
 
 export interface UpdateSlaPolicyRequest {
+  version: number;
   firstResponseHours: number;
   resolutionHours: number;
   active: boolean;

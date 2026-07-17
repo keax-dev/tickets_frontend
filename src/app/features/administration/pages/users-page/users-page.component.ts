@@ -36,6 +36,7 @@ export class UsersPageComponent implements OnInit {
   private readonly formBuilder = inject(FormBuilder);
 
   readonly editingUserId = signal<string | null>(null);
+  readonly editingUserVersion = signal<number | null>(null);
   readonly errorMessage = signal<string | null>(null);
   readonly isEditing = computed(() => this.editingUserId() !== null);
   readonly loading = signal(false);
@@ -88,6 +89,7 @@ export class UsersPageComponent implements OnInit {
 
   startCreate(): void {
     this.editingUserId.set(null);
+    this.editingUserVersion.set(null);
     this.userForm.reset({
       firstName: '',
       lastName: '',
@@ -101,6 +103,7 @@ export class UsersPageComponent implements OnInit {
 
   editUser(user: UserRecord): void {
     this.editingUserId.set(user.id);
+    this.editingUserVersion.set(user.version);
     this.userForm.reset({
       firstName: user.firstName,
       lastName: user.lastName,
@@ -132,14 +135,16 @@ export class UsersPageComponent implements OnInit {
 
   toggleStatus(user: UserRecord): void {
     this.errorMessage.set(null);
-    this.administrationApiService.updateUserStatus(user.id, !user.active).subscribe({
-      next: () => this.loadUsers(),
-      error: (error: ProblemDetails) => {
-        this.errorMessage.set(
-          resolveProblemDetailsMessage(error, 'No fue posible actualizar el estado del usuario.'),
-        );
-      },
-    });
+    this.administrationApiService
+      .updateUserStatus(user.id, { version: user.version, active: !user.active })
+      .subscribe({
+        next: () => this.loadUsers(),
+        error: (error: ProblemDetails) => {
+          this.errorMessage.set(
+            resolveProblemDetailsMessage(error, 'No fue posible actualizar el estado del usuario.'),
+          );
+        },
+      });
   }
 
   private createUser(rawValue: {
@@ -180,6 +185,7 @@ export class UsersPageComponent implements OnInit {
   }): void {
     this.administrationApiService
       .updateUser(this.editingUserId()!, {
+        version: this.editingUserVersion() ?? 0,
         firstName: rawValue.firstName.trim(),
         lastName: rawValue.lastName.trim(),
         email: rawValue.email.trim(),

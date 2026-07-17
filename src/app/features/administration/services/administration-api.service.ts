@@ -33,9 +33,7 @@ export class AdministrationApiService {
     return this.httpClient.put<UserRecord>(`${this.apiBaseUrl}/users/${userId}`, payload);
   }
 
-  updateUserStatus(userId: string, active: boolean) {
-    const payload: ActivationChangeRequest = { active };
-
+  updateUserStatus(userId: string, payload: ActivationChangeRequest) {
     return this.httpClient.patch<UserRecord>(`${this.apiBaseUrl}/users/${userId}/status`, payload);
   }
 
@@ -51,9 +49,7 @@ export class AdministrationApiService {
     return this.httpClient.put<Category>(`${this.apiBaseUrl}/categories/${categoryId}`, payload);
   }
 
-  updateCategoryStatus(categoryId: string, active: boolean) {
-    const payload: ActivationChangeRequest = { active };
-
+  updateCategoryStatus(categoryId: string, payload: ActivationChangeRequest) {
     return this.httpClient.patch<Category>(
       `${this.apiBaseUrl}/categories/${categoryId}/status`,
       payload,

@@ -103,11 +103,19 @@ export class SlaPageComponent {
     }
 
     const rawValue = this.slaForm.getRawValue();
+    const selectedPolicy = this.policies().find((policy) => policy.priority === rawValue.priority);
+
+    if (!selectedPolicy) {
+      this.errorMessage.set('No fue posible identificar la politica SLA a actualizar.');
+      return;
+    }
+
     this.saving.set(true);
     this.errorMessage.set(null);
 
     this.administrationApiService
       .updateSlaPolicy(rawValue.priority, {
+        version: selectedPolicy.version,
         firstResponseHours: Number(rawValue.firstResponseHours),
         resolutionHours: Number(rawValue.resolutionHours),
         active: rawValue.active,

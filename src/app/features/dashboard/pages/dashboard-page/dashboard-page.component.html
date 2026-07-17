@@ -5,12 +5,12 @@
       <p>Vision rapida del estado operativo y del riesgo de SLA.</p>
     </div>
     <button
-      pButton
-      type="button"
+      (click)="dashboardStore.load()"
+      severity="secondary"
       label="Recargar"
       icon="pi pi-refresh"
-      severity="secondary"
-      (click)="dashboardStore.load()"
+      type="button"
+      pButton
     ></button>
   </div>
 
@@ -44,7 +44,7 @@
     </div>
 
     <div class="two-columns">
-      <p-card header="Tickets por estado">
+      <p-card header="Tickets por Estado">
         <div class="stack">
           @for (entry of objectEntries(summary.ticketsByStatus); track entry[0]) {
             <div class="metric-row">
@@ -64,7 +64,7 @@
               <div class="metric-row metric-row-block">
                 <div>
                   <strong>{{ activity.action }}</strong>
-                  <small>{{ activity.performedByName ?? 'Sistema' }}</small>
+                  <small class="mx-2">{{ activity.performedByName ?? 'Sistema' }}</small>
                 </div>
                 <small>{{ activity.createdAt | date: 'short' }}</small>
               </div>

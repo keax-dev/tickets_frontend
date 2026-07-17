@@ -1,4 +1,8 @@
 <section class="page-card page">
+  @if (errorMessage()) {
+    <p-message severity="error" [text]="errorMessage() ?? ''"></p-message>
+  }
+
   @if (currentTicket(); as currentTicket) {
     <div class="page-heading">
       <div>
@@ -6,18 +10,22 @@
         <p>{{ currentTicket.title }}</p>
       </div>
       <div class="actions">
-        @if (currentTicket.availableActions.includes('assign') && supportUsers().length > 0) {
+        @if (currentTicket.availableActions.includes('assign')) {
           <p-select
             [options]="supportUsers()"
             optionLabel="email"
             optionValue="id"
             [formControl]="assignmentForm.controls.agentId"
+            [placeholder]="
+              supportUsersLoading() ? 'Cargando agentes...' : 'Selecciona un agente'
+            "
           ></p-select>
           <button
             pButton
             type="button"
             label="Asignar"
             severity="secondary"
+            [disabled]="supportUsersLoading() || !hasSelectedSupportUser()"
             (click)="assign()"
           ></button>
         }
@@ -36,6 +44,26 @@
       </div>
     </div>
 
+    @if (currentTicket.availableActions.includes('assign') && supportUsersError()) {
+      <div class="actions assignment-feedback">
+        <p-message severity="warn" [text]="supportUsersError() ?? ''"></p-message>
+        <button
+          pButton
+          type="button"
+          label="Reintentar agentes"
+          severity="secondary"
+          variant="text"
+          (click)="reloadSupportUsers()"
+        ></button>
+      </div>
+    } @else if (
+      currentTicket.availableActions.includes('assign') &&
+      !supportUsersLoading() &&
+      supportUsers().length === 0
+    ) {
+      <p-message severity="info" text="No hay agentes activos disponibles para asignar." />
+    }
+
     <div class="summary-grid">
       <p-card header="Estado"><p-tag [value]="currentTicket.status"></p-tag></p-card>
       <p-card header="Prioridad"><p-tag [value]="currentTicket.priority"></p-tag></p-card>
@@ -43,14 +71,12 @@
       <p-card header="Agente">{{ currentTicket.assignedAgentName ?? 'Sin asignar' }}</p-card>
     </div>
 
-    @if (errorMessage()) {
-      <p-message severity="error" [text]="errorMessage() ?? ''"></p-message>
-    }
-
     <p-tabs value="comments">
       <p-tablist>
         <p-tab value="comments">Comentarios</p-tab>
-        <p-tab value="history">Historial</p-tab>
+        @if (canReadHistory()) {
+          <p-tab value="history">Historial</p-tab>
+        }
         <p-tab value="details">Detalle</p-tab>
       </p-tablist>
       <p-tabpanels>
@@ -64,7 +90,7 @@
             ></textarea>
             <p-select
               formControlName="visibility"
-              [options]="visibilityOptions"
+              [options]="visibilityOptions()"
               optionLabel="label"
               optionValue="value"
             ></p-select>
@@ -74,7 +100,7 @@
           </form>
 
           <div class="comment-list">
-            @for (comment of comments(); track comment.id) {
+            @for (comment of visibleComments(); track comment.id) {
               <div
                 class="comment-item"
                 [class.comment-item-internal]="comment.visibility === 'INTERNAL'"
@@ -87,19 +113,21 @@
           </div>
         </p-tabpanel>
 
-        <p-tabpanel value="history">
-          <div class="comment-list">
-            @for (entry of history(); track entry.id) {
-              <div class="comment-item">
-                <strong>{{ entry.action }}</strong>
-                <small
-                  >{{ entry.performedByName ?? 'Sistema' }} |
-                  {{ entry.createdAt | date: 'short' }}</small
-                >
-              </div>
-            }
-          </div>
-        </p-tabpanel>
+        @if (canReadHistory()) {
+          <p-tabpanel value="history">
+            <div class="comment-list">
+              @for (entry of history(); track entry.id) {
+                <div class="comment-item">
+                  <strong>{{ entry.action }}</strong>
+                  <small
+                    >{{ entry.performedByName ?? 'Sistema' }} |
+                    {{ entry.createdAt | date: 'short' }}</small
+                  >
+                </div>
+              }
+            </div>
+          </p-tabpanel>
+        }
 
         <p-tabpanel value="details">
           <p>{{ currentTicket.description }}</p>
@@ -145,7 +173,7 @@
     </p-tabs>
   } @else if (loading()) {
     <p>Cargando ticket...</p>
-  } @else {
+  } @else if (!errorMessage()) {
     <p>No hay informacion del ticket disponible.</p>
   }
 </section>
