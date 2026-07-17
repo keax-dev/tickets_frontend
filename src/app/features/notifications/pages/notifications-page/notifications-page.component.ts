@@ -1,11 +1,11 @@
-import { NotificationStore } from '../../stores/notification.store';
 import { Component, OnInit, computed, inject } from '@angular/core';
+import { NotificationStore } from '../../stores/notification.store';
+import { PaginatorState } from 'primeng/types/paginator';
+import { PaginatorModule } from 'primeng/paginator';
 import { CommonModule } from '@angular/common';
 import { ButtonModule } from 'primeng/button';
 import { MessageModule } from 'primeng/message';
-import { PaginatorModule } from 'primeng/paginator';
 import { TagModule } from 'primeng/tag';
-import type { PaginatorState } from 'primeng/types/paginator';
 
 @Component({
   standalone: true,
@@ -15,10 +15,11 @@ import type { PaginatorState } from 'primeng/types/paginator';
   styleUrl: './notifications-page.component.css',
 })
 export class NotificationsPageComponent implements OnInit {
-  readonly defaultRows = 10;
   readonly notificationStore = inject(NotificationStore);
+  readonly defaultRows = 10;
+
   readonly currentFirst = computed(
-    () => this.notificationStore.currentPage() * this.notificationStore.pageSize(),
+    () => this.notificationStore.currentPage() * this.notificationStore.pageSize()
   );
 
   ngOnInit(): void {

@@ -1,67 +1,92 @@
-<section class="page-card page">
-  <div class="page-heading">
-    <div>
-      <h1>Notificaciones</h1>
-      <p>Seguimiento personal de eventos relevantes del flujo de tickets.</p>
+<section class="container-fluid page-card p-4">
+  <div class="row align-items-start g-3 mb-4">
+    <div class="col-12 col-sm">
+      <h1 class="mb-2">Notifications</h1>
+      <p class="mb-0 notifications-muted">
+        Personal tracking for relevant events across the ticket workflow.
+      </p>
     </div>
-    <button
-      (click)="notificationStore.markAllAsRead()"
-      [disabled]="
-        notificationStore.loading() ||
-        notificationStore.updating() ||
-        notificationStore.totalRecords() === 0
-      "
-      [loading]="notificationStore.updating()"
-      severity="secondary"
-      label="Marcar todas"
-      type="button"
-      pButton
-    ></button>
+    <div class="col-12 col-sm-auto">
+      <button
+        (click)="notificationStore.markAllAsRead()"
+        [disabled]="
+          notificationStore.loading() ||
+          notificationStore.updating() ||
+          notificationStore.totalRecords() === 0
+        "
+        [loading]="notificationStore.updating()"
+        severity="secondary"
+        class="w-100"
+        label="Mark all as read"
+        type="button"
+        pButton
+      ></button>
+    </div>
   </div>
 
   @if (notificationStore.errorMessage()) {
-    <p-message severity="error" [text]="notificationStore.errorMessage() ?? ''"></p-message>
+    <div class="row mb-3">
+      <div class="col-12">
+        <p-message [text]="notificationStore.errorMessage() ?? ''" severity="error"></p-message>
+      </div>
+    </div>
   }
 
   @if (notificationStore.loading()) {
-    <p class="status-message">Cargando notificaciones...</p>
+    <div class="row">
+      <div class="col-12">
+        <p class="mb-0 notifications-muted">Loading notifications...</p>
+      </div>
+    </div>
   } @else if ((notificationStore.page()?.content?.length ?? 0) === 0) {
-    <p class="status-message">No hay notificaciones para mostrar.</p>
+    <div class="row">
+      <div class="col-12">
+        <p class="mb-0 notifications-muted">No notifications available.</p>
+      </div>
+    </div>
   } @else {
-    <div class="stack">
+    <div class="row g-3">
       @for (notification of notificationStore.page()?.content ?? []; track notification.id) {
-        <div class="notification-item">
-          <div>
-            <strong>{{ notification.title }}</strong>
-            <p>{{ notification.message }}</p>
+        <article class="col-12 notification-item rounded-4 border p-3">
+          <div class="row g-3 align-items-start">
+            <div class="col-12 col-md-9">
+              <strong class="d-block fs-5">{{ notification.title }}</strong>
+              <p class="mb-0 mt-2 notifications-muted">{{ notification.message }}</p>
+            </div>
+            <div
+              class="col-12 col-md-3 d-flex flex-column align-items-start align-items-md-end gap-2"
+            >
+              <p-tag
+                [severity]="notification.read ? 'secondary' : 'success'"
+                [value]="notification.read ? 'Read' : 'New'"
+              ></p-tag>
+              <button
+                (click)="notificationStore.markAsRead(notification.id)"
+                [disabled]="notificationStore.updating() || notification.read"
+                [loading]="notificationStore.updating()"
+                variant="text"
+                label="Mark as read"
+                type="button"
+                pButton
+              ></button>
+            </div>
           </div>
-          <div class="notification-side">
-            <p-tag
-              [severity]="notification.read ? 'secondary' : 'success'"
-              [value]="notification.read ? 'Leida' : 'Nueva'"
-            ></p-tag>
-            <button
-              (click)="notificationStore.markAsRead(notification.id)"
-              [disabled]="notificationStore.updating() || notification.read"
-              [loading]="notificationStore.updating()"
-              variant="text"
-              label="Marcar"
-              type="button"
-              pButton
-            ></button>
-          </div>
-        </div>
+        </article>
       }
     </div>
 
-    <p-paginator
-      [first]="currentFirst()"
-      [rows]="notificationStore.pageSize()"
-      [rowsPerPageOptions]="[10, 25, 50, 100]"
-      [showCurrentPageReport]="true"
-      [totalRecords]="notificationStore.totalRecords()"
-      currentPageReportTemplate="{first} - {last} de {totalRecords}"
-      (onPageChange)="onPageChange($event)"
-    />
+    <div class="row mt-3">
+      <div class="col-12">
+        <p-paginator
+          (onPageChange)="onPageChange($event)"
+          [showCurrentPageReport]="true"
+          [rowsPerPageOptions]="[10, 25, 50, 100]"
+          [totalRecords]="notificationStore.totalRecords()"
+          [first]="currentFirst()"
+          [rows]="notificationStore.pageSize()"
+          currentPageReportTemplate="{first} - {last} of {totalRecords}"
+        />
+      </div>
+    </div>
   }
 </section>

@@ -1,8 +1,8 @@
 import { NotificationItem, PageResponse, ProblemDetails } from '../../../shared/models/api.models';
-import { Injectable, inject, signal } from '@angular/core';
-import { NotificationApiService } from '../services/notification-api.service';
 import { Observable, finalize, switchMap } from 'rxjs';
 import { resolveProblemDetailsMessage } from '../../../shared/utils/resolve-problem-details-message';
+import { Injectable, inject, signal } from '@angular/core';
+import { NotificationApiService } from '../services/notification-api.service';
 
 @Injectable({
   providedIn: 'root',
@@ -10,28 +10,30 @@ import { resolveProblemDetailsMessage } from '../../../shared/utils/resolve-prob
 export class NotificationStore {
   private readonly notificationApiService = inject(NotificationApiService);
 
-  private readonly loadingState = signal(false);
-  private readonly updatingState = signal(false);
+  private readonly totalRecordsState = signal(0);
   private readonly currentPageState = signal(0);
   private readonly pageSizeState = signal(10);
-  private readonly totalRecordsState = signal(0);
+
+  private readonly updatingState = signal(false);
+  private readonly loadingState = signal(false);
+
   private readonly pageState = signal<PageResponse<NotificationItem> | null>(null);
   private readonly errorState = signal<string | null>(null);
 
-  readonly errorMessage = this.errorState.asReadonly();
-  readonly loading = this.loadingState.asReadonly();
-  readonly updating = this.updatingState.asReadonly();
-  readonly currentPage = this.currentPageState.asReadonly();
-  readonly pageSize = this.pageSizeState.asReadonly();
   readonly totalRecords = this.totalRecordsState.asReadonly();
+  readonly errorMessage = this.errorState.asReadonly();
+  readonly currentPage = this.currentPageState.asReadonly();
+  readonly updating = this.updatingState.asReadonly();
+  readonly pageSize = this.pageSizeState.asReadonly();
+  readonly loading = this.loadingState.asReadonly();
   readonly page = this.pageState.asReadonly();
 
   load(page = 0, size = 10): void {
+    this.currentPageState.set(page);
+    this.pageSizeState.set(size);
     this.loadingState.set(true);
     this.errorState.set(null);
     this.pageState.set(null);
-    this.currentPageState.set(page);
-    this.pageSizeState.set(size);
 
     this.notificationApiService
       .list(page, size)
@@ -83,7 +85,7 @@ export class NotificationStore {
         },
         error: (error: ProblemDetails) => {
           this.errorState.set(resolveProblemDetailsMessage(error, fallbackMessage));
-        },
+        }
       });
   }
 }
