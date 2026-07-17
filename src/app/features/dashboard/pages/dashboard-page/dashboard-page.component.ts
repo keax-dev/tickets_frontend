@@ -1,10 +1,10 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { SkeletonModule } from 'primeng/skeleton';
 import { DashboardStore } from '../../stores/dashboard.store';
+import { MessageModule } from 'primeng/message';
 import { CommonModule } from '@angular/common';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
-import { MessageModule } from 'primeng/message';
 import { TagModule } from 'primeng/tag';
 
 @Component({
@@ -16,16 +16,17 @@ import { TagModule } from 'primeng/tag';
 })
 export class DashboardPageComponent implements OnInit {
   readonly dashboardStore = inject(DashboardStore);
-  readonly skeletonCards = Array.from({ length: 4 });
+  readonly skeletonCards = Array.from({ length: 6 });
   readonly objectEntries = Object.entries;
+
   readonly statusLabels: Record<string, string> = {
-    CREATED: 'Creado',
-    ASSIGNED: 'Asignado',
-    IN_PROGRESS: 'En progreso',
-    WAITING_FOR_CUSTOMER: 'Esperando al cliente',
-    RESOLVED: 'Resuelto',
-    CLOSED: 'Cerrado',
-    CANCELLED: 'Cancelado',
+    CREATED: 'Created',
+    ASSIGNED: 'Assigned',
+    IN_PROGRESS: 'In progress',
+    WAITING_FOR_CUSTOMER: 'Waiting for customer',
+    RESOLVED: 'Resolved',
+    CLOSED: 'Closed',
+    CANCELLED: 'Cancelled',
   };
 
   ngOnInit(): void {

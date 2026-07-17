@@ -1,3 +1,4 @@
+import { resolveProblemDetailsMessage } from '../../../shared/utils/resolve-problem-details-message';
 import { Injectable, inject, signal } from '@angular/core';
 import { DashboardApiService } from '../services/dashboard-api.service';
 import { finalize, forkJoin } from 'rxjs';
@@ -6,7 +7,6 @@ import {
   RecentActivity,
   ProblemDetails,
 } from '../../../shared/models/api.models';
-import { resolveProblemDetailsMessage } from '../../../shared/utils/resolve-problem-details-message';
 
 @Injectable({
   providedIn: 'root',
@@ -25,26 +25,26 @@ export class DashboardStore {
   readonly summary = this.summaryState.asReadonly();
 
   load(): void {
-    this.loadingState.set(true);
-    this.errorState.set(null);
-    this.summaryState.set(null);
     this.recentActivityState.set([]);
+    this.loadingState.set(true);
+    this.summaryState.set(null);
+    this.errorState.set(null);
 
     forkJoin({
-      summary: this.dashboardApiService.getSummary(),
       recentActivity: this.dashboardApiService.getRecentActivity(),
+      summary: this.dashboardApiService.getSummary(),
     })
       .pipe(finalize(() => this.loadingState.set(false)))
       .subscribe({
-        next: ({ summary, recentActivity }) => {
-          this.summaryState.set(summary);
+        next: ({ recentActivity, summary }) => {
           this.recentActivityState.set(recentActivity);
+          this.summaryState.set(summary);
         },
         error: (error: ProblemDetails) => {
-          this.summaryState.set(null);
           this.recentActivityState.set([]);
+          this.summaryState.set(null);
           this.errorState.set(
-            resolveProblemDetailsMessage(error, 'No fue posible cargar el dashboard.'),
+            resolveProblemDetailsMessage(error, 'No fue posible cargar el dashboard.')
           );
         },
       });
