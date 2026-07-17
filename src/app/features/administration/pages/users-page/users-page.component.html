@@ -1,143 +1,153 @@
-<section class="page-card page">
-  <div class="page-heading">
-    <div>
-      <h1>Usuarios</h1>
-      <p>Alta, edicion y desactivacion de cuentas operativas.</p>
+<section class="container-fluid page-card p-4">
+  <div class="row g-3 align-items-start mb-4">
+    <div class="col-12 col-md">
+      <h1 class="mb-2">Usuarios</h1>
+      <p class="mb-0 users-muted">Alta, edicion y desactivacion de cuentas operativas.</p>
     </div>
-    <div class="heading-actions">
-      <button
-        pButton
-        type="button"
-        label="Nuevo usuario"
-        icon="pi pi-plus"
-        (click)="startCreate()"
-      ></button>
-      <button
-        pButton
-        type="button"
-        label="Recargar"
-        icon="pi pi-refresh"
-        severity="secondary"
-        (click)="loadUsers()"
-      ></button>
+    <div class="col-12 col-md-auto">
+      <div class="d-flex flex-wrap justify-content-center justify-content-md-end gap-2">
+        <button
+          (click)="startCreate()"
+          type="button"
+          label="Nuevo usuario"
+          icon="pi pi-plus"
+          pButton
+        ></button>
+        <button
+          (click)="loadUsers()"
+          severity="secondary"
+          label="Recargar"
+          icon="pi pi-refresh"
+          type="button"
+          pButton
+        ></button>
+      </div>
     </div>
   </div>
 
   @if (errorMessage()) {
-    <p-message severity="error" [text]="errorMessage() ?? ''"></p-message>
+    <div class="row mb-3">
+      <div class="col-12">
+        <p-message severity="error" [text]="errorMessage() ?? ''"></p-message>
+      </div>
+    </div>
   }
 
-  <div class="layout">
-    <p-card>
-      <p-table
-        [value]="users()"
-        [loading]="loading()"
-        [paginator]="true"
-        [rows]="10"
-        [rowsPerPageOptions]="[10, 25, 50, 100]"
-        [showCurrentPageReport]="true"
-        currentPageReportTemplate="{first} - {last} de {totalRecords}"
-      >
-        <ng-template pTemplate="header">
-          <tr>
-            <th>Nombre</th>
-            <th>Correo</th>
-            <th>Rol</th>
-            <th>Estado</th>
-            <th class="actions-column">Acciones</th>
-          </tr>
-        </ng-template>
+  <div class="row gx-4 gy-3">
+    <div class="col-12 col-md-8">
+      <p-card class="h-100">
+        <p-table
+          [showCurrentPageReport]="true"
+          [rowsPerPageOptions]="[10, 25, 50, 100]"
+          [loading]="loading()"
+          [paginator]="true"
+          [value]="users()"
+          [rows]="10"
+          currentPageReportTemplate="{first} - {last} de {totalRecords}"
+        >
+          <ng-template pTemplate="header">
+            <tr>
+              <th>Nombre</th>
+              <th>Correo</th>
+              <th>Rol</th>
+              <th>Estado</th>
+              <th class="actions-column">Acciones</th>
+            </tr>
+          </ng-template>
 
-        <ng-template pTemplate="body" let-user>
-          <tr>
-            <td>{{ user.firstName }} {{ user.lastName }}</td>
-            <td>{{ user.email }}</td>
-            <td><p-tag [value]="roleLabel(user.role)" severity="info"></p-tag></td>
-            <td>
-              <p-tag
-                [value]="user.active ? 'Activo' : 'Inactivo'"
-                [severity]="user.active ? 'success' : 'secondary'"
-              ></p-tag>
-            </td>
-            <td class="actions-cell">
-              <button
-                pButton
-                type="button"
-                size="small"
-                label="Editar"
-                severity="secondary"
-                (click)="editUser(user)"
-              ></button>
-              <button
-                pButton
-                type="button"
-                size="small"
-                [label]="user.active ? 'Desactivar' : 'Activar'"
-                [severity]="user.active ? 'danger' : 'success'"
-                (click)="toggleStatus(user)"
-              ></button>
-            </td>
-          </tr>
-        </ng-template>
-      </p-table>
-    </p-card>
+          <ng-template pTemplate="body" let-user>
+            <tr>
+              <td>{{ user.firstName }} {{ user.lastName }}</td>
+              <td>{{ user.email }}</td>
+              <td><p-tag [value]="roleLabel(user.role)" severity="info"></p-tag></td>
+              <td>
+                <p-tag
+                  [severity]="user.active ? 'success' : 'secondary'"
+                  [value]="user.active ? 'Activo' : 'Inactivo'"
+                ></p-tag>
+              </td>
+              <td class="d-flex flex-wrap gap-2">
+                <button
+                  (click)="editUser(user)"
+                  severity="secondary"
+                  label="Editar"
+                  size="small"
+                  type="button"
+                  pButton
+                ></button>
+                <button
+                  (click)="toggleStatus(user)"
+                  [severity]="user.active ? 'danger' : 'success'"
+                  [label]="user.active ? 'Desactivar' : 'Activar'"
+                  type="button"
+                  size="small"
+                  pButton
+                ></button>
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </p-card>
+    </div>
 
-    <p-card [header]="isEditing() ? 'Editar usuario' : 'Crear usuario'">
-      <form class="form" [formGroup]="userForm" (ngSubmit)="submit()">
-        <label class="field">
-          <span>Nombre</span>
-          <input pInputText formControlName="firstName" />
-        </label>
-
-        <label class="field">
-          <span>Apellido</span>
-          <input pInputText formControlName="lastName" />
-        </label>
-
-        <label class="field">
-          <span>Correo</span>
-          <input pInputText type="email" formControlName="email" />
-        </label>
-
-        <label class="field">
-          <span>Rol</span>
-          <p-select
-            formControlName="role"
-            [options]="roleOptions"
-            optionLabel="label"
-            optionValue="value"
-          ></p-select>
-        </label>
-
-        @if (!isEditing()) {
-          <label class="field">
-            <span>Contrasena inicial</span>
-            <p-password
-              formControlName="password"
-              [feedback]="false"
-              [toggleMask]="true"
-            ></p-password>
+    <div class="col-12 col-md-4">
+      <p-card [header]="isEditing() ? 'Editar usuario' : 'Crear usuario'" class="h-100">
+        <form (ngSubmit)="submit()" [formGroup]="userForm" class="d-flex flex-column gap-3">
+          <label class="d-flex flex-column gap-2">
+            <span class="users-muted">Nombre</span>
+            <input pInputText formControlName="firstName" />
           </label>
-        } @else {
-          <p class="helper">La edicion conserva la contrasena actual del usuario.</p>
-        }
 
-        <div class="form-actions">
-          <button
-            pButton
-            type="submit"
-            [label]="isEditing() ? 'Guardar cambios' : 'Crear usuario'"
-            [loading]="saving()"
-          ></button>
-          <button
-            pButton
-            type="button"
-            label="Limpiar"
-            severity="secondary"
-            (click)="startCreate()"
-          ></button>
-        </div>
-      </form>
-    </p-card>
+          <label class="d-flex flex-column gap-2">
+            <span class="users-muted">Apellido</span>
+            <input pInputText formControlName="lastName" />
+          </label>
+
+          <label class="d-flex flex-column gap-2">
+            <span class="users-muted">Correo</span>
+            <input pInputText type="email" formControlName="email" />
+          </label>
+
+          <label class="d-flex flex-column gap-2">
+            <span class="users-muted">Rol</span>
+            <p-select
+              [options]="roleOptions"
+              formControlName="role"
+              optionLabel="label"
+              optionValue="value"
+            ></p-select>
+          </label>
+
+          @if (!isEditing()) {
+            <label class="d-flex flex-column gap-2">
+              <span class="users-muted">Contrasena inicial</span>
+              <p-password
+                [toggleMask]="true"
+                [feedback]="false"
+                formControlName="password"
+              ></p-password>
+            </label>
+          } @else {
+            <p class="mb-0 users-muted">La edicion conserva la contrasena actual del usuario.</p>
+          }
+
+          <div class="d-flex flex-wrap gap-2">
+            <button
+              [loading]="saving()"
+              [label]="isEditing() ? 'Guardar cambios' : 'Crear usuario'"
+              type="submit"
+              pButton
+            ></button>
+            <button
+              (click)="startCreate()"
+              severity="secondary"
+              label="Limpiar"
+              type="button"
+              pButton
+            ></button>
+          </div>
+        </form>
+      </p-card>
+    </div>
   </div>
 </section>

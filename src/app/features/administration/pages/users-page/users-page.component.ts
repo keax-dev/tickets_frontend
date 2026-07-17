@@ -1,6 +1,7 @@
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { AppRole, ProblemDetails, UserRecord } from '../../../../shared/models/api.models';
+import { resolveProblemDetailsMessage } from '../../../../shared/utils/resolve-problem-details-message';
 import { AdministrationApiService } from '../../services/administration-api.service';
 import { InputTextModule } from 'primeng/inputtext';
 import { PasswordModule } from 'primeng/password';
@@ -12,7 +13,6 @@ import { TableModule } from 'primeng/table';
 import { CardModule } from 'primeng/card';
 import { TagModule } from 'primeng/tag';
 import { finalize } from 'rxjs';
-import { resolveProblemDetailsMessage } from '../../../../shared/utils/resolve-problem-details-message';
 
 @Component({
   standalone: true,
@@ -35,8 +35,8 @@ export class UsersPageComponent implements OnInit {
   private readonly administrationApiService = inject(AdministrationApiService);
   private readonly formBuilder = inject(FormBuilder);
 
-  readonly editingUserId = signal<string | null>(null);
   readonly editingUserVersion = signal<number | null>(null);
+  readonly editingUserId = signal<string | null>(null);
   readonly errorMessage = signal<string | null>(null);
   readonly isEditing = computed(() => this.editingUserId() !== null);
   readonly loading = signal(false);
@@ -47,7 +47,7 @@ export class UsersPageComponent implements OnInit {
     { label: 'Administrador', value: 'ADMIN' as const },
     { label: 'Manager de soporte', value: 'SUPPORT_MANAGER' as const },
     { label: 'Agente de soporte', value: 'SUPPORT_AGENT' as const },
-    { label: 'Cliente', value: 'CUSTOMER' as const },
+    { label: 'Cliente', value: 'CUSTOMER' as const }
   ];
 
   readonly userForm = this.formBuilder.nonNullable.group({
@@ -69,8 +69,8 @@ export class UsersPageComponent implements OnInit {
   }
 
   loadUsers(): void {
-    this.loading.set(true);
     this.errorMessage.set(null);
+    this.loading.set(true);
 
     this.administrationApiService
       .listUsers()
@@ -88,22 +88,22 @@ export class UsersPageComponent implements OnInit {
   }
 
   startCreate(): void {
-    this.editingUserId.set(null);
     this.editingUserVersion.set(null);
+    this.editingUserId.set(null);
     this.userForm.reset({
       firstName: '',
       lastName: '',
-      email: '',
       password: '',
-      role: 'SUPPORT_AGENT',
+      email: '',
+      role: 'SUPPORT_AGENT'
     });
     this.userForm.controls.password.setValidators([Validators.required, Validators.minLength(8)]);
     this.userForm.controls.password.updateValueAndValidity();
   }
 
   editUser(user: UserRecord): void {
-    this.editingUserId.set(user.id);
     this.editingUserVersion.set(user.version);
+    this.editingUserId.set(user.id);
     this.userForm.reset({
       firstName: user.firstName,
       lastName: user.lastName,
