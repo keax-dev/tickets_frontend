@@ -43,9 +43,7 @@ export class NotificationStore {
         },
         error: (error: ProblemDetails) => {
           this.pageState.set(null);
-          this.errorState.set(
-            resolveProblemDetailsMessage(error, 'No fue posible cargar las notificaciones.'),
-          );
+          this.errorState.set(resolveProblemDetailsMessage(error, 'Unable to load notifications.'));
         },
       });
   }
@@ -53,14 +51,14 @@ export class NotificationStore {
   markAsRead(notificationId: string): void {
     this.runNotificationMutation(
       this.notificationApiService.markAsRead(notificationId),
-      'No fue posible marcar la notificacion como leida.',
+      'Unable to mark the notification as read.',
     );
   }
 
   markAllAsRead(): void {
     this.runNotificationMutation(
       this.notificationApiService.markAllAsRead(),
-      'No fue posible marcar las notificaciones como leidas.',
+      'Unable to mark notifications as read.',
     );
   }
 
@@ -83,7 +81,7 @@ export class NotificationStore {
         },
         error: (error: ProblemDetails) => {
           this.errorState.set(resolveProblemDetailsMessage(error, fallbackMessage));
-        }
+        },
       });
   }
 }

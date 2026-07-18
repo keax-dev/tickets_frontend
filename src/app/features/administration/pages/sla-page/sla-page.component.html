@@ -3,14 +3,14 @@
     <div class="col-12 col-md">
       <h1 class="mb-2">SLA</h1>
       <p class="mb-0 sla-muted">
-        Define ventanas objetivo por prioridad para primera respuesta y resolucion.
+        Define target windows by priority for first response and resolution.
       </p>
     </div>
     <div class="col-12 col-md-auto">
       <button
         (click)="loadPolicies()"
         severity="secondary"
-        label="Recargar"
+        label="Refresh"
         icon="pi pi-refresh"
         type="button"
         pButton
@@ -36,15 +36,15 @@
           [loading]="loading()"
           [value]="policies()"
           [rows]="10"
-          currentPageReportTemplate="{first} - {last} de {totalRecords}"
+          currentPageReportTemplate="{first} - {last} of {totalRecords}"
         >
           <ng-template pTemplate="header">
             <tr>
-              <th>Prioridad</th>
-              <th>Primera respuesta</th>
-              <th>Resolucion</th>
-              <th>Estado</th>
-              <th class="actions-column">Acciones</th>
+              <th>Priority</th>
+              <th>First response</th>
+              <th>Resolution</th>
+              <th>Status</th>
+              <th class="actions-column">Actions</th>
             </tr>
           </ng-template>
 
@@ -61,14 +61,14 @@
               <td>
                 <p-tag
                   [severity]="policy.active ? 'success' : 'secondary'"
-                  [value]="policy.active ? 'Activa' : 'Inactiva'"
+                  [value]="activeStateLabel(policy.active)"
                 ></p-tag>
               </td>
               <td class="d-flex flex-wrap gap-2">
                 <button
                   (click)="selectPolicy(policy)"
                   severity="secondary"
-                  label="Editar"
+                  label="Edit"
                   type="button"
                   size="small"
                   pButton
@@ -81,10 +81,10 @@
     </div>
 
     <div class="col-12 col-md-4">
-      <p-card header="Editar politica" class="h-100">
+      <p-card header="Edit policy" class="h-100">
         <form [formGroup]="slaForm" (ngSubmit)="submit()" class="d-flex flex-column gap-3">
           <label class="d-flex flex-column gap-2">
-            <span class="sla-muted">Prioridad</span>
+            <span class="sla-muted">Priority</span>
             <p-select
               [options]="priorityOptions"
               formControlName="priority"
@@ -94,17 +94,17 @@
           </label>
 
           <label class="d-flex flex-column gap-2">
-            <span class="sla-muted">Primera respuesta (horas)</span>
+            <span class="sla-muted">First response (hours)</span>
             <input pInputText type="number" min="1" formControlName="firstResponseHours" />
           </label>
 
           <label class="d-flex flex-column gap-2">
-            <span class="sla-muted">Resolucion (horas)</span>
+            <span class="sla-muted">Resolution (hours)</span>
             <input pInputText type="number" min="1" formControlName="resolutionHours" />
           </label>
 
           <label class="d-flex flex-column gap-2">
-            <span class="sla-muted">Estado</span>
+            <span class="sla-muted">Status</span>
             <p-select
               [options]="activeOptions"
               formControlName="active"
@@ -114,7 +114,7 @@
           </label>
 
           <div class="d-flex flex-wrap gap-2">
-            <button pButton type="submit" label="Guardar SLA" [loading]="saving()"></button>
+            <button pButton type="submit" label="Save SLA" [loading]="saving()"></button>
           </div>
         </form>
       </p-card>

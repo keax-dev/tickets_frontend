@@ -1,6 +1,12 @@
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Component, computed, effect, inject, OnInit, signal, untracked } from '@angular/core';
 import { AppRole, UserRecord } from '../../../../shared/models/api.models';
+import {
+  APP_ROLE_OPTIONS,
+  getActivationActionLabel,
+  getActiveStateLabel,
+  getAppRoleLabel,
+} from '../../../../shared/constants/ui.constants';
 import { InputTextModule } from 'primeng/inputtext';
 import { PasswordModule } from 'primeng/password';
 import { MessageModule } from 'primeng/message';
@@ -42,12 +48,7 @@ export class UsersPageComponent implements OnInit {
   readonly saving = this.usersPageStore.saving;
   readonly users = this.usersPageStore.users;
 
-  readonly roleOptions = [
-    { label: 'Administrador', value: 'ADMIN' as const },
-    { label: 'Manager de soporte', value: 'SUPPORT_MANAGER' as const },
-    { label: 'Agente de soporte', value: 'SUPPORT_AGENT' as const },
-    { label: 'Cliente', value: 'CUSTOMER' as const },
-  ];
+  readonly roleOptions = APP_ROLE_OPTIONS;
 
   readonly userForm = this.formBuilder.nonNullable.group({
     firstName: this.formBuilder.nonNullable.control('', { validators: [Validators.required] }),
@@ -162,6 +163,14 @@ export class UsersPageComponent implements OnInit {
   }
 
   roleLabel(role: AppRole): string {
-    return this.roleOptions.find((option) => option.value === role)?.label ?? role;
+    return getAppRoleLabel(role);
+  }
+
+  activeStateLabel(active: boolean): string {
+    return getActiveStateLabel(active);
+  }
+
+  activationActionLabel(active: boolean): string {
+    return getActivationActionLabel(active);
   }
 }

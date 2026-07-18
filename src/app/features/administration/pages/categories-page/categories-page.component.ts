@@ -1,6 +1,10 @@
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Component, computed, effect, inject, OnInit, signal, untracked } from '@angular/core';
 import { Category } from '../../../../shared/models/api.models';
+import {
+  getActivationActionLabel,
+  getActiveStateLabel,
+} from '../../../../shared/constants/ui.constants';
 import { InputTextModule } from 'primeng/inputtext';
 import { MessageModule } from 'primeng/message';
 import { TextareaModule } from 'primeng/textarea';
@@ -114,5 +118,13 @@ export class CategoriesPageComponent implements OnInit {
       version: this.editingCategoryVersion() ?? 0,
       ...payload,
     });
+  }
+
+  activeStateLabel(active: boolean): string {
+    return getActiveStateLabel(active);
+  }
+
+  activationActionLabel(active: boolean): string {
+    return getActivationActionLabel(active);
   }
 }

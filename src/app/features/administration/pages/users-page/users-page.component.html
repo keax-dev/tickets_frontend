@@ -1,22 +1,22 @@
 <section class="container-fluid page-card p-4">
   <div class="row g-3 align-items-start mb-4">
     <div class="col-12 col-md">
-      <h1 class="mb-2">Usuarios</h1>
-      <p class="mb-0 users-muted">Alta, edicion y desactivacion de cuentas operativas.</p>
+      <h1 class="mb-2">Users</h1>
+      <p class="mb-0 users-muted">Create, update, and deactivate operational user accounts.</p>
     </div>
     <div class="col-12 col-md-auto">
       <div class="d-flex flex-wrap justify-content-center justify-content-md-end gap-2">
         <button
           (click)="startCreate()"
           type="button"
-          label="Nuevo usuario"
+          label="New user"
           icon="pi pi-plus"
           pButton
         ></button>
         <button
           (click)="loadUsers()"
           severity="secondary"
-          label="Recargar"
+          label="Refresh"
           icon="pi pi-refresh"
           type="button"
           pButton
@@ -43,15 +43,15 @@
           [paginator]="true"
           [value]="users()"
           [rows]="10"
-          currentPageReportTemplate="{first} - {last} de {totalRecords}"
+          currentPageReportTemplate="{first} - {last} of {totalRecords}"
         >
           <ng-template pTemplate="header">
             <tr>
-              <th>Nombre</th>
-              <th>Correo</th>
-              <th>Rol</th>
-              <th>Estado</th>
-              <th class="actions-column">Acciones</th>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Role</th>
+              <th>Status</th>
+              <th class="actions-column">Actions</th>
             </tr>
           </ng-template>
 
@@ -63,14 +63,14 @@
               <td>
                 <p-tag
                   [severity]="user.active ? 'success' : 'secondary'"
-                  [value]="user.active ? 'Activo' : 'Inactivo'"
+                  [value]="activeStateLabel(user.active)"
                 ></p-tag>
               </td>
               <td class="d-flex flex-wrap gap-2">
                 <button
                   (click)="editUser(user)"
                   severity="secondary"
-                  label="Editar"
+                  label="Edit"
                   size="small"
                   type="button"
                   pButton
@@ -78,7 +78,7 @@
                 <button
                   (click)="toggleStatus(user)"
                   [severity]="user.active ? 'danger' : 'success'"
-                  [label]="user.active ? 'Desactivar' : 'Activar'"
+                  [label]="activationActionLabel(user.active)"
                   type="button"
                   size="small"
                   pButton
@@ -91,25 +91,25 @@
     </div>
 
     <div class="col-12 col-md-4">
-      <p-card [header]="isEditing() ? 'Editar usuario' : 'Crear usuario'" class="h-100">
+      <p-card [header]="isEditing() ? 'Edit user' : 'Create user'" class="h-100">
         <form (ngSubmit)="submit()" [formGroup]="userForm" class="d-flex flex-column gap-3">
           <label class="d-flex flex-column gap-2">
-            <span class="users-muted">Nombre</span>
+            <span class="users-muted">First name</span>
             <input pInputText formControlName="firstName" />
           </label>
 
           <label class="d-flex flex-column gap-2">
-            <span class="users-muted">Apellido</span>
+            <span class="users-muted">Last name</span>
             <input pInputText formControlName="lastName" />
           </label>
 
           <label class="d-flex flex-column gap-2">
-            <span class="users-muted">Correo</span>
+            <span class="users-muted">Email</span>
             <input pInputText type="email" formControlName="email" />
           </label>
 
           <label class="d-flex flex-column gap-2">
-            <span class="users-muted">Rol</span>
+            <span class="users-muted">Role</span>
             <p-select
               [options]="roleOptions"
               formControlName="role"
@@ -120,7 +120,7 @@
 
           @if (!isEditing()) {
             <label class="d-flex flex-column gap-2">
-              <span class="users-muted">Contrasena inicial</span>
+              <span class="users-muted">Initial password</span>
               <p-password
                 [toggleMask]="true"
                 [feedback]="false"
@@ -128,20 +128,20 @@
               ></p-password>
             </label>
           } @else {
-            <p class="mb-0 users-muted">La edicion conserva la contrasena actual del usuario.</p>
+            <p class="mb-0 users-muted">Editing keeps the user's current password unchanged.</p>
           }
 
           <div class="d-flex flex-wrap gap-2">
             <button
               [loading]="saving()"
-              [label]="isEditing() ? 'Guardar cambios' : 'Crear usuario'"
+              [label]="isEditing() ? 'Save changes' : 'Create user'"
               type="submit"
               pButton
             ></button>
             <button
               (click)="startCreate()"
               severity="secondary"
-              label="Limpiar"
+              label="Clear"
               type="button"
               pButton
             ></button>

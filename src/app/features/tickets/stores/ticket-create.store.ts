@@ -36,7 +36,7 @@ export class TicketCreateStore {
         error: (error: ProblemDetails) => {
           this.categoriesState.set([]);
           this.categoryErrorState.set(
-            resolveProblemDetailsMessage(error, 'No fue posible cargar las categorias.'),
+            resolveProblemDetailsMessage(error, 'Unable to load categories.'),
           );
         },
       });
@@ -54,9 +54,7 @@ export class TicketCreateStore {
           void this.router.navigate(['/tickets', ticket.id]);
         },
         error: (error: ProblemDetails) => {
-          this.errorState.set(
-            resolveProblemDetailsMessage(error, 'No fue posible crear el ticket.'),
-          );
+          this.errorState.set(resolveProblemDetailsMessage(error, 'Unable to create the ticket.'));
         },
       });
   }

@@ -88,14 +88,14 @@ export class TicketDetailStore {
       };
 
       return this.ticketApiService.addComment(ticket.id, payload);
-    }, 'No fue posible agregar el comentario.');
+    }, 'Unable to add the comment.');
   }
 
   assignTicket(agentId: string): Observable<boolean> {
     return this.runTicketMutation(
       (ticket) =>
         this.ticketApiService.assignTicket(ticket.id, { version: ticket.version, agentId }),
-      'No fue posible asignar el ticket.',
+      'Unable to assign the ticket.',
     );
   }
 
@@ -104,7 +104,7 @@ export class TicketDetailStore {
       const payload: TicketVersionRequest = { version: ticket.version };
 
       return this.ticketApiService.startTicket(ticket.id, payload);
-    }, 'No fue posible iniciar el ticket.');
+    }, 'Unable to start the ticket.');
   }
 
   requestInformation(content: string): Observable<boolean> {
@@ -115,7 +115,7 @@ export class TicketDetailStore {
       };
 
       return this.ticketApiService.requestInformation(ticket.id, payload);
-    }, 'No fue posible solicitar informacion.');
+    }, 'Unable to request more information.');
   }
 
   resolveTicket(resolutionSummary: string): Observable<boolean> {
@@ -126,7 +126,7 @@ export class TicketDetailStore {
       };
 
       return this.ticketApiService.resolveTicket(ticket.id, payload);
-    }, 'No fue posible resolver el ticket.');
+    }, 'Unable to resolve the ticket.');
   }
 
   closeTicket(): Observable<boolean> {
@@ -134,7 +134,7 @@ export class TicketDetailStore {
       const payload: TicketVersionRequest = { version: ticket.version };
 
       return this.ticketApiService.closeTicket(ticket.id, payload);
-    }, 'No fue posible cerrar el ticket.');
+    }, 'Unable to close the ticket.');
   }
 
   private loadSupportUsers(): void {
@@ -155,8 +155,7 @@ export class TicketDetailStore {
           this.supportUsersState.set(
             users.filter(
               (user) =>
-                user.active &&
-                (user.role === 'SUPPORT_AGENT' || user.role === 'SUPPORT_MANAGER'),
+                user.active && (user.role === 'SUPPORT_AGENT' || user.role === 'SUPPORT_MANAGER'),
             ),
           );
         },
@@ -164,7 +163,7 @@ export class TicketDetailStore {
           this.supportUsersLoadedState.set(false);
           this.supportUsersState.set([]);
           this.supportUsersErrorState.set(
-            resolveProblemDetailsMessage(error, 'No fue posible cargar los agentes disponibles.'),
+            resolveProblemDetailsMessage(error, 'Unable to load available agents.'),
           );
         },
       });
@@ -198,9 +197,7 @@ export class TicketDetailStore {
       }),
       map(() => void 0),
       catchError((error: ProblemDetails) => {
-        this.errorState.set(
-          resolveProblemDetailsMessage(error, 'No fue posible cargar el ticket.'),
-        );
+        this.errorState.set(resolveProblemDetailsMessage(error, 'Unable to load the ticket.'));
         return EMPTY;
       }),
       finalize(() => {
@@ -218,7 +215,7 @@ export class TicketDetailStore {
     const currentTicket = this.ticketState();
 
     if (!currentTicket) {
-      this.errorState.set('No hay un ticket cargado para ejecutar esta accion.');
+      this.errorState.set('There is no loaded ticket for this action.');
       return of(false);
     }
 
@@ -246,7 +243,7 @@ export class TicketDetailStore {
     return this.ticketApiService.getHistory(ticketId).pipe(
       catchError((error: ProblemDetails) => {
         this.historyErrorState.set(
-          resolveProblemDetailsMessage(error, 'No fue posible cargar el historial del ticket.'),
+          resolveProblemDetailsMessage(error, 'Unable to load the ticket history.'),
         );
         return of([]);
       }),

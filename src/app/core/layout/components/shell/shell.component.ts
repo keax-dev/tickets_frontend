@@ -1,5 +1,6 @@
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { Component, computed, inject } from '@angular/core';
+import { ROUTE_TITLES, getAppRoleLabel } from '../../../../shared/constants/ui.constants';
 import { DividerModule } from 'primeng/divider';
 import { AvatarModule } from 'primeng/avatar';
 import { ButtonModule } from 'primeng/button';
@@ -29,21 +30,25 @@ export class ShellComponent {
   readonly authStore = inject(AuthStore);
 
   readonly navigationItems = computed(() => {
-    const baseItems = [
-      { path: '/dashboard', label: 'Dashboard', icon: 'pi pi-chart-bar' },
-      { path: '/tickets', label: 'Tickets', icon: 'pi pi-ticket' },
-      { path: '/notifications', label: 'Notificaciones', icon: 'pi pi-bell' },
-      { path: '/profile', label: 'Perfil', icon: 'pi pi-user' },
+    const baseItems: Array<{ path: string; label: string; icon: string }> = [
+      { path: '/dashboard', label: ROUTE_TITLES.dashboard, icon: 'pi pi-chart-bar' },
+      { path: '/tickets', label: ROUTE_TITLES.tickets, icon: 'pi pi-ticket' },
+      { path: '/notifications', label: ROUTE_TITLES.notifications, icon: 'pi pi-bell' },
+      { path: '/profile', label: ROUTE_TITLES.profile, icon: 'pi pi-user' },
     ];
 
     if (this.authStore.hasPermission('USER_READ')) {
-      baseItems.push({ path: '/admin/users', label: 'Usuarios', icon: 'pi pi-users' });
+      baseItems.push({ path: '/admin/users', label: ROUTE_TITLES.users, icon: 'pi pi-users' });
     }
     if (this.authStore.hasPermission('CATEGORY_READ')) {
-      baseItems.push({ path: '/admin/categories', label: 'Categorias', icon: 'pi pi-folder' });
+      baseItems.push({
+        path: '/admin/categories',
+        label: ROUTE_TITLES.categories,
+        icon: 'pi pi-folder',
+      });
     }
     if (this.authStore.hasPermission('SLA_READ')) {
-      baseItems.push({ path: '/admin/sla', label: 'SLA', icon: 'pi pi-stopwatch' });
+      baseItems.push({ path: '/admin/sla', label: ROUTE_TITLES.sla, icon: 'pi pi-stopwatch' });
     }
 
     return baseItems;
@@ -51,6 +56,11 @@ export class ShellComponent {
 
   readonly fullName = computed(() => {
     const user = this.authStore.currentUser();
-    return user ? `${user.firstName} ${user.lastName}` : 'Invitado';
+    return user ? `${user.firstName} ${user.lastName}` : 'Guest';
+  });
+
+  readonly currentRoleLabel = computed(() => {
+    const user = this.authStore.currentUser();
+    return user ? getAppRoleLabel(user.role) : 'Guest';
   });
 }

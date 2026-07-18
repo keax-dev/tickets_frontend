@@ -1,28 +1,26 @@
 <section class="page-card p-4">
   <div class="row mb-4">
     <div class="col-12">
-      <h1 class="mb-2">Nuevo ticket</h1>
-      <p class="mb-0 ticket-create-muted">
-        Registra una nueva solicitud para el equipo de soporte.
-      </p>
+      <h1 class="mb-2">New ticket</h1>
+      <p class="mb-0 ticket-create-muted">Register a new request for the support team.</p>
     </div>
   </div>
 
   <form [formGroup]="ticketForm" (ngSubmit)="submit()" class="d-flex flex-column gap-3">
     <label class="d-flex flex-column gap-2">
-      <span class="ticket-create-muted">Titulo</span>
+      <span class="ticket-create-muted">Title</span>
       <input class="w-100" pInputText formControlName="title" />
     </label>
 
     <label class="d-flex flex-column gap-2">
-      <span class="ticket-create-muted">Descripcion</span>
+      <span class="ticket-create-muted">Description</span>
       <textarea pTextarea formControlName="description" rows="7"></textarea>
     </label>
 
     <div class="row g-3">
       <div class="col-12 col-md-6">
         <label class="d-flex flex-column gap-2">
-          <span class="ticket-create-muted">Categoria</span>
+          <span class="ticket-create-muted">Category</span>
           <p-select
             [disabled]="categories().length === 0"
             [options]="categories()"
@@ -36,7 +34,7 @@
 
       <div class="col-12 col-md-6">
         <label class="d-flex flex-column gap-2">
-          <span class="ticket-create-muted">Prioridad</span>
+          <span class="ticket-create-muted">Priority</span>
           <p-select
             [options]="priorityOptions"
             formControlName="priority"
@@ -60,7 +58,7 @@
       <button
         [disabled]="categories().length === 0"
         [loading]="submitting()"
-        label="Crear ticket"
+        label="Create ticket"
         type="submit"
         pButton
       ></button>

@@ -8,7 +8,7 @@
       @if (canAssign()) {
         <div class="col-12 col-sm-auto">
           <p-select
-            [placeholder]="supportUsersLoading() ? 'Cargando agentes...' : 'Selecciona un agente'"
+            [placeholder]="supportUsersLoading() ? 'Loading agents...' : 'Select an agent'"
             [formControl]="assignmentForm.controls.agentId"
             [options]="supportUsers()"
             optionLabel="email"
@@ -19,10 +19,12 @@
         <div class="col-12 col-sm-auto">
           <button
             (click)="assign()"
-            [disabled]="supportUsersLoading() || assignmentSubmitting() || !hasSelectedSupportUser()"
+            [disabled]="
+              supportUsersLoading() || assignmentSubmitting() || !hasSelectedSupportUser()
+            "
             severity="secondary"
             class="w-100"
-            label="Asignar"
+            label="Assign"
             type="button"
             pButton
           ></button>
@@ -30,13 +32,7 @@
       }
       @if (canStart()) {
         <div class="col-12 col-sm-auto">
-          <button
-            (click)="start()"
-            class="w-100"
-            label="Iniciar"
-            type="button"
-            pButton
-          ></button>
+          <button (click)="start()" class="w-100" label="Start" type="button" pButton></button>
         </div>
       }
       @if (canClose()) {
@@ -45,7 +41,7 @@
             (click)="close()"
             severity="secondary"
             class="w-100"
-            label="Cerrar"
+            label="Close"
             type="button"
             pButton
           ></button>
@@ -62,7 +58,7 @@
       (click)="reloadSupportUsers()"
       severity="secondary"
       variant="text"
-      label="Reintentar agentes"
+      label="Retry agents"
       type="button"
       pButton
     ></button>
@@ -70,7 +66,7 @@
 } @else if (showSupportUsersEmptyState()) {
   <div class="row mb-3">
     <div class="col-12">
-      <p-message severity="info" text="No hay agentes activos disponibles para asignar." />
+      <p-message severity="info" text="No active agents are available for assignment." />
     </div>
   </div>
 }

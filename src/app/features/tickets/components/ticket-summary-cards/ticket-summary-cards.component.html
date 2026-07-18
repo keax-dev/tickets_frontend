@@ -1,16 +1,18 @@
 <div class="row g-3 mb-4">
   <div class="col-12 col-sm-6 col-xl-3">
-    <p-card header="Estado" class="h-100"><p-tag [value]="ticket().status"></p-tag></p-card>
+    <p-card header="Status" class="h-100">
+      <p-tag [value]="statusLabel(ticket().status)"></p-tag>
+    </p-card>
   </div>
   <div class="col-12 col-sm-6 col-xl-3">
-    <p-card header="Prioridad" class="h-100"><p-tag [value]="ticket().priority"></p-tag></p-card>
+    <p-card header="Priority" class="h-100">
+      <p-tag [value]="priorityLabel(ticket().priority)"></p-tag>
+    </p-card>
   </div>
   <div class="col-12 col-sm-6 col-xl-3">
-    <p-card header="Solicitante" class="h-100">{{ ticket().requesterName ?? 'Sin dato' }}</p-card>
+    <p-card header="Requester" class="h-100">{{ ticket().requesterName ?? 'No data' }}</p-card>
   </div>
   <div class="col-12 col-sm-6 col-xl-3">
-    <p-card header="Agente" class="h-100">{{
-      ticket().assignedAgentName ?? 'Sin asignar'
-    }}</p-card>
+    <p-card header="Agent" class="h-100">{{ ticket().assignedAgentName ?? 'Unassigned' }}</p-card>
   </div>
 </div>

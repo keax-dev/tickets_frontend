@@ -1,6 +1,7 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TicketPriority } from '../../../../shared/models/api.models';
+import { TICKET_PRIORITY_OPTIONS } from '../../../../shared/constants/ui.constants';
 import { InputTextModule } from 'primeng/inputtext';
 import { TextareaModule } from 'primeng/textarea';
 import { MessageModule } from 'primeng/message';
@@ -48,12 +49,7 @@ export class TicketCreatePageComponent implements OnInit {
     priority: this.formBuilder.nonNullable.control<TicketPriority>('MEDIUM'),
   });
 
-  readonly priorityOptions = [
-    { label: 'Baja', value: 'LOW' as TicketPriority },
-    { label: 'Media', value: 'MEDIUM' as TicketPriority },
-    { label: 'Alta', value: 'HIGH' as TicketPriority },
-    { label: 'Urgente', value: 'URGENT' as TicketPriority },
-  ];
+  readonly priorityOptions = TICKET_PRIORITY_OPTIONS;
 
   ngOnInit(): void {
     this.ticketCreateStore.loadCategories();

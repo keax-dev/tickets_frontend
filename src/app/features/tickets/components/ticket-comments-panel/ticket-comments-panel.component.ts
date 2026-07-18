@@ -2,6 +2,7 @@ import { Component, DestroyRef, computed, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { TicketCommentVisibility } from '../../../../shared/models/api.models';
+import { getTicketCommentVisibilityOptions } from '../../../../shared/constants/ui.constants';
 import { TicketDetailStore } from '../../stores/ticket-detail.store';
 import { AuthStore } from '../../../../core/auth/stores/auth.store';
 import { TextareaModule } from 'primeng/textarea';
@@ -46,15 +47,7 @@ export class TicketCommentsPanelComponent {
   });
 
   readonly visibilityOptions = computed(() => {
-    const options: Array<{ label: string; value: TicketCommentVisibility }> = [
-      { label: 'Publico', value: 'PUBLIC' },
-    ];
-
-    if (this.canCreateInternalComments()) {
-      options.push({ label: 'Interno', value: 'INTERNAL' });
-    }
-
-    return options;
+    return getTicketCommentVisibilityOptions(this.canCreateInternalComments());
   });
 
   addComment(): void {

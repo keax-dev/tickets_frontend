@@ -1,6 +1,13 @@
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { SlaPolicy, TicketPriority } from '../../../../shared/models/api.models';
 import {
+  ACTIVE_STATE_OPTIONS,
+  TICKET_PRIORITY_OPTIONS,
+  getActiveStateLabel,
+  getTicketPriorityLabel,
+  getTicketPriorityTagSeverity,
+} from '../../../../shared/constants/ui.constants';
+import {
   Component,
   DestroyRef,
   computed,
@@ -51,17 +58,9 @@ export class SlaPageComponent implements OnInit {
   readonly loading = this.slaPageStore.loading;
   readonly saving = this.slaPageStore.saving;
 
-  readonly priorityOptions = [
-    { label: 'Urgente', value: 'URGENT' as const },
-    { label: 'Alta', value: 'HIGH' as const },
-    { label: 'Media', value: 'MEDIUM' as const },
-    { label: 'Baja', value: 'LOW' as const },
-  ];
+  readonly priorityOptions = TICKET_PRIORITY_OPTIONS;
 
-  readonly activeOptions = [
-    { label: 'Activa', value: true },
-    { label: 'Inactiva', value: false },
-  ];
+  readonly activeOptions = ACTIVE_STATE_OPTIONS;
 
   readonly slaForm = this.formBuilder.nonNullable.group({
     priority: this.formBuilder.nonNullable.control<TicketPriority>('URGENT', {
@@ -126,7 +125,7 @@ export class SlaPageComponent implements OnInit {
     const selectedPolicy = this.policies().find((policy) => policy.priority === rawValue.priority);
 
     if (!selectedPolicy) {
-      this.validationErrorMessage.set('No fue posible identificar la politica SLA a actualizar.');
+      this.validationErrorMessage.set('Unable to identify the SLA policy to update.');
       return;
     }
 
@@ -139,20 +138,15 @@ export class SlaPageComponent implements OnInit {
   }
 
   priorityLabel(priority: TicketPriority): string {
-    return this.priorityOptions.find((option) => option.value === priority)?.label ?? priority;
+    return getTicketPriorityLabel(priority);
   }
 
   prioritySeverity(priority: TicketPriority): 'danger' | 'warn' | 'info' | 'secondary' {
-    switch (priority) {
-      case 'URGENT':
-        return 'danger';
-      case 'HIGH':
-        return 'warn';
-      case 'MEDIUM':
-        return 'info';
-      default:
-        return 'secondary';
-    }
+    return getTicketPriorityTagSeverity(priority);
+  }
+
+  activeStateLabel(active: boolean): string {
+    return getActiveStateLabel(active);
   }
 
   private patchForm(policy: SlaPolicy): void {

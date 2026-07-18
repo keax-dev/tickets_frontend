@@ -2,8 +2,8 @@
   <aside class="sidebar page-card">
     <div>
       <p class="eyebrow">Management Tickets</p>
-      <h2>Centro de soporte</h2>
-      <p class="muted">Gestiona tickets, comentarios, prioridades y seguimiento operativo.</p>
+      <h2>Support center</h2>
+      <p class="muted">Manage tickets, comments, priorities, and operational follow-up.</p>
     </div>
 
     <nav class="nav">
@@ -20,7 +20,7 @@
     <div class="sidebar-footer">
       <button
         (click)="themeStore.toggle()"
-        [label]="'Modo ' + themeStore.modeLabel()"
+        [label]="themeStore.modeLabel()"
         severity="contrast"
         variant="text"
         icon="pi pi-palette"
@@ -31,7 +31,7 @@
         (click)="authStore.logout()"
         severity="danger"
         variant="text"
-        label="Cerrar sesion"
+        label="Sign out"
         icon="pi pi-sign-out"
         type="button"
         pButton
@@ -42,8 +42,8 @@
   <div class="content">
     <header class="topbar page-card">
       <div>
-        <p class="eyebrow">Sesion activa</p>
-        <h1>Hola, {{ authStore.currentUser()?.firstName }}</h1>
+        <p class="eyebrow">Active session</p>
+        <h1>Hello, {{ authStore.currentUser()?.firstName }}</h1>
       </div>
 
       <div class="user-pill">
@@ -53,7 +53,7 @@
         <p-avatar [label]="authStore.userInitials()" shape="circle" />
         <div>
           <strong>{{ fullName() }}</strong>
-          <small>{{ authStore.currentUser()?.role }}</small>
+          <small>{{ currentRoleLabel() }}</small>
         </div>
       </div>
     </header>

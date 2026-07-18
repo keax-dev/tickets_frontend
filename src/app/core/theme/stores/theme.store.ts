@@ -9,7 +9,7 @@ export class ThemeStore {
   private readonly document = inject(DOCUMENT);
 
   readonly darkMode = this.darkModeState.asReadonly();
-  readonly modeLabel = computed(() => (!this.darkModeState() ? 'Oscuro' : 'Claro'));
+  readonly modeLabel = computed(() => (this.darkModeState() ? 'Light mode' : 'Dark mode'));
 
   constructor() {
     this.applyMode(this.darkModeState());

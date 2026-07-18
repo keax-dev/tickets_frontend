@@ -37,9 +37,7 @@ export class CategoriesPageStore {
           this.categoriesState.set(categories);
         },
         error: (error: ProblemDetails) => {
-          this.errorState.set(
-            resolveProblemDetailsMessage(error, 'No fue posible cargar las categorias.'),
-          );
+          this.errorState.set(resolveProblemDetailsMessage(error, 'Unable to load categories.'));
         },
       });
   }
@@ -47,14 +45,14 @@ export class CategoriesPageStore {
   create(payload: CreateCategoryRequest): void {
     this.runSave(
       this.categoriesAdminApiService.createCategory(payload),
-      'No fue posible crear la categoria.',
+      'Unable to create the category.',
     );
   }
 
   update(categoryId: string, payload: UpdateCategoryRequest): void {
     this.runSave(
       this.categoriesAdminApiService.updateCategory(categoryId, payload),
-      'No fue posible actualizar la categoria.',
+      'Unable to update the category.',
     );
   }
 
@@ -73,10 +71,7 @@ export class CategoriesPageStore {
         },
         error: (error: ProblemDetails) => {
           this.errorState.set(
-            resolveProblemDetailsMessage(
-              error,
-              'No fue posible actualizar el estado de la categoria.',
-            ),
+            resolveProblemDetailsMessage(error, 'Unable to update the category status.'),
           );
         },
       });

@@ -4,6 +4,13 @@ import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { resolveProblemDetailsMessage } from '../../../../shared/utils/resolve-problem-details-message';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { TicketApiService } from '../../services/ticket-api.service';
+import {
+  TICKET_PRIORITY_OPTIONS,
+  TICKET_STATUS_OPTIONS,
+  getTicketPriorityLabel,
+  getTicketPriorityTagSeverity,
+  getTicketStatusLabel,
+} from '../../../../shared/constants/ui.constants';
 import { InputTextModule } from 'primeng/inputtext';
 import { TicketListStore } from '../../stores/ticket-list.store';
 import { TablePageEvent } from 'primeng/types/table';
@@ -58,38 +65,8 @@ export class TicketListPageComponent implements OnInit {
     categoryId: this.formBuilder.control<string | null>(null),
   });
 
-  readonly statusLabels: Record<TicketStatus, string> = {
-    WAITING_FOR_CUSTOMER: 'Esperando al cliente',
-    IN_PROGRESS: 'En progreso',
-    CANCELLED: 'Cancelado',
-    ASSIGNED: 'Asignado',
-    RESOLVED: 'Resuelto',
-    CREATED: 'Creado',
-    CLOSED: 'Cerrado'
-  };
-
-  readonly priorityLabels: Record<TicketPriority, string> = {
-    MEDIUM: 'Media',
-    URGENT: 'Urgente',
-    HIGH: 'Alta',
-    LOW: 'Baja'
-  };
-
-  readonly prioritySeverity: Record<TicketPriority, 'secondary' | 'info' | 'warn' | 'danger'> = {
-    MEDIUM: 'info',
-    URGENT: 'danger',
-    HIGH: 'warn',
-    LOW: 'secondary'
-  };
-
-  readonly statusOptions = Object.entries(this.statusLabels).map(([value, label]) => ({
-    value: value as TicketStatus,
-    label
-  }));
-  readonly priorityOptions = Object.entries(this.priorityLabels).map(([value, label]) => ({
-    value: value as TicketPriority,
-    label
-  }));
+  readonly statusOptions = TICKET_STATUS_OPTIONS;
+  readonly priorityOptions = TICKET_PRIORITY_OPTIONS;
   readonly currentFirst = computed(
     () => this.ticketListStore.currentPage() * this.ticketListStore.pageSize(),
   );
@@ -104,15 +81,15 @@ export class TicketListPageComponent implements OnInit {
   }
 
   statusLabel(status: TicketStatus): string {
-    return this.statusLabels[status];
+    return getTicketStatusLabel(status);
   }
 
   priorityLabel(priority: TicketPriority): string {
-    return this.priorityLabels[priority];
+    return getTicketPriorityLabel(priority);
   }
 
   priorityTagSeverity(priority: TicketPriority): 'secondary' | 'info' | 'warn' | 'danger' {
-    return this.prioritySeverity[priority];
+    return getTicketPriorityTagSeverity(priority);
   }
 
   onPageChange(event: TablePageEvent): void {
@@ -134,7 +111,7 @@ export class TicketListPageComponent implements OnInit {
         error: (error: ProblemDetails) => {
           this.categories.set([]);
           this.categoryErrorMessage.set(
-            resolveProblemDetailsMessage(error, 'No fue posible cargar las categorias.'),
+            resolveProblemDetailsMessage(error, 'Unable to load categories.'),
           );
         },
       });

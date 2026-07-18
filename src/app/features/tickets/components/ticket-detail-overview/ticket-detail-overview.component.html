@@ -1,7 +1,7 @@
 <p class="mb-0">{{ ticket().description }}</p>
 
 @if (ticket().resolutionSummary) {
-  <h3 class="mt-4 mb-2">Resumen de solucion</h3>
+  <h3 class="mt-4 mb-2">Resolution summary</h3>
   <p class="mb-0">{{ ticket().resolutionSummary }}</p>
 }
 
@@ -13,17 +13,12 @@
   >
     <textarea
       formControlName="content"
-      placeholder="Que informacion falta"
+      placeholder="What information is missing?"
       rows="3"
       pTextarea
     ></textarea>
     <div class="d-flex flex-wrap gap-2">
-      <button
-        severity="secondary"
-        label="Solicitar informacion"
-        type="submit"
-        pButton
-      ></button>
+      <button severity="secondary" label="Request information" type="submit" pButton></button>
     </div>
   </form>
 }
@@ -32,12 +27,12 @@
   <form (ngSubmit)="resolve()" [formGroup]="resolveForm" class="d-flex flex-column gap-3 mt-4">
     <textarea
       formControlName="resolutionSummary"
-      placeholder="Resumen de solucion"
+      placeholder="Resolution summary"
       rows="4"
       pTextarea
     ></textarea>
     <div class="d-flex flex-wrap gap-2">
-      <button pButton type="submit" label="Resolver ticket"></button>
+      <button pButton type="submit" label="Resolve ticket"></button>
     </div>
   </form>
 }

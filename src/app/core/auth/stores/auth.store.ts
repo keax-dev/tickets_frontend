@@ -86,9 +86,7 @@ export class AuthStore {
           void this.router.navigateByUrl(requestedUrl);
         },
         error: (error: ProblemDetails) => {
-          this.errorState.set(
-            resolveProblemDetailsMessage(error, 'No fue posible iniciar sesion.'),
-          );
+          this.errorState.set(resolveProblemDetailsMessage(error, 'Unable to sign in.'));
         },
       });
   }

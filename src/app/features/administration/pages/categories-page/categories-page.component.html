@@ -1,16 +1,16 @@
 <section class="page-card p-4">
   <div class="row g-3 align-items-start mb-4">
     <div class="col-12 col-md">
-      <h1 class="mb-2">Categorias</h1>
+      <h1 class="mb-2">Categories</h1>
       <p class="mb-0 categories-muted">
-        Manten el catalogo que clasifica tickets y alimenta sus reglas SLA.
+        Maintain the category catalog that classifies tickets and supports SLA rules.
       </p>
     </div>
     <div class="col-12 col-md-auto">
       <div class="d-flex flex-wrap justify-content-center justify-content-md-end gap-2">
         <button
           (click)="startCreate()"
-          label="Nueva categoria"
+          label="New category"
           icon="pi pi-plus"
           type="button"
           pButton
@@ -18,7 +18,7 @@
         <button
           (click)="loadCategories()"
           severity="secondary"
-          label="Recargar"
+          label="Refresh"
           type="button"
           icon="pi pi-refresh"
           pButton
@@ -45,32 +45,32 @@
           [loading]="loading()"
           [value]="categories()"
           [rows]="10"
-          currentPageReportTemplate="{first} - {last} de {totalRecords}"
+          currentPageReportTemplate="{first} - {last} of {totalRecords}"
         >
           <ng-template pTemplate="header">
             <tr>
-              <th>Nombre</th>
-              <th>Descripcion</th>
-              <th>Estado</th>
-              <th class="actions-column">Acciones</th>
+              <th>Name</th>
+              <th>Description</th>
+              <th>Status</th>
+              <th class="actions-column">Actions</th>
             </tr>
           </ng-template>
 
           <ng-template pTemplate="body" let-category>
             <tr>
               <td>{{ category.name }}</td>
-              <td>{{ category.description || 'Sin descripcion' }}</td>
+              <td>{{ category.description || 'No description' }}</td>
               <td>
                 <p-tag
                   [severity]="category.active ? 'success' : 'secondary'"
-                  [value]="category.active ? 'Activa' : 'Inactiva'"
+                  [value]="activeStateLabel(category.active)"
                 ></p-tag>
               </td>
               <td class="d-flex flex-wrap gap-2">
                 <button
                   (click)="editCategory(category)"
                   severity="secondary"
-                  label="Editar"
+                  label="Edit"
                   type="button"
                   size="small"
                   pButton
@@ -78,7 +78,7 @@
                 <button
                   (click)="toggleStatus(category)"
                   [severity]="category.active ? 'danger' : 'success'"
-                  [label]="category.active ? 'Desactivar' : 'Activar'"
+                  [label]="activationActionLabel(category.active)"
                   type="button"
                   size="small"
                   pButton
@@ -91,29 +91,29 @@
     </div>
 
     <div class="col-12 col-md-4">
-      <p-card [header]="isEditing() ? 'Editar categoria' : 'Crear categoria'">
+      <p-card [header]="isEditing() ? 'Edit category' : 'Create category'">
         <form (ngSubmit)="submit()" [formGroup]="categoryForm" class="d-flex flex-column gap-3">
           <label class="d-flex flex-column gap-2">
-            <span class="categories-muted">Nombre</span>
+            <span class="categories-muted">Name</span>
             <input pInputText formControlName="name" />
           </label>
 
           <label class="d-flex flex-column gap-2">
-            <span class="categories-muted">Descripcion</span>
+            <span class="categories-muted">Description</span>
             <textarea pTextarea formControlName="description" rows="5"></textarea>
           </label>
 
           <div class="d-flex flex-wrap gap-2">
             <button
               [loading]="saving()"
-              [label]="isEditing() ? 'Guardar cambios' : 'Crear categoria'"
+              [label]="isEditing() ? 'Save changes' : 'Create category'"
               type="submit"
               pButton
             ></button>
             <button
               (click)="startCreate()"
               severity="secondary"
-              label="Limpiar"
+              label="Clear"
               type="button"
               pButton
             ></button>

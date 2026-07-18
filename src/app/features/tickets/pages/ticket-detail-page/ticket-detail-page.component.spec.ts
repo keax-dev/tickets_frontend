@@ -216,7 +216,7 @@ describe('TicketDetailPageComponent', () => {
       canReadHistory: false,
     });
 
-    expect(fixture.nativeElement.textContent).not.toContain('Historial');
+    expect(fixture.nativeElement.textContent).not.toContain('History');
   });
 
   it('does not reinitialize when store signals touched inside initialize change', async () => {
@@ -230,7 +230,7 @@ describe('TicketDetailPageComponent', () => {
     fixture.detectChanges();
     await fixture.whenStable();
 
-    storeMock.supportUsersError.set('No fue posible cargar los agentes.');
+    storeMock.supportUsersError.set('Unable to load agents.');
     fixture.detectChanges();
     await fixture.whenStable();
 

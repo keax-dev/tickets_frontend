@@ -1,4 +1,5 @@
 import { authGuard, guestGuard, permissionGuard } from './core/auth/guards/auth.guards';
+import { ROUTE_TITLES } from './shared/constants/ui.constants';
 import { ShellComponent } from './core/layout/components/shell/shell.component';
 import { Routes } from '@angular/router';
 
@@ -6,7 +7,7 @@ export const routes: Routes = [
   {
     path: 'login',
     canActivate: [guestGuard],
-    title: 'Iniciar sesion',
+    title: ROUTE_TITLES.login,
     loadComponent: () =>
       import('./features/auth/pages/login-page/login-page.component').then(
         (module) => module.LoginPageComponent,
@@ -19,7 +20,7 @@ export const routes: Routes = [
     children: [
       {
         path: 'dashboard',
-        title: 'Dashboard',
+        title: ROUTE_TITLES.dashboard,
         loadComponent: () =>
           import('./features/dashboard/pages/dashboard-page/dashboard-page.component').then(
             (module) => module.DashboardPageComponent,
@@ -27,7 +28,7 @@ export const routes: Routes = [
       },
       {
         path: 'tickets',
-        title: 'Tickets',
+        title: ROUTE_TITLES.tickets,
         loadComponent: () =>
           import('./features/tickets/pages/ticket-list-page/ticket-list-page.component').then(
             (module) => module.TicketListPageComponent,
@@ -35,7 +36,7 @@ export const routes: Routes = [
       },
       {
         path: 'tickets/new',
-        title: 'Nuevo ticket',
+        title: ROUTE_TITLES.ticketCreate,
         loadComponent: () =>
           import('./features/tickets/pages/ticket-create-page/ticket-create-page.component').then(
             (module) => module.TicketCreatePageComponent,
@@ -43,7 +44,7 @@ export const routes: Routes = [
       },
       {
         path: 'tickets/:ticketId',
-        title: 'Detalle del ticket',
+        title: ROUTE_TITLES.ticketDetail,
         loadComponent: () =>
           import('./features/tickets/pages/ticket-detail-page/ticket-detail-page.component').then(
             (module) => module.TicketDetailPageComponent,
@@ -51,7 +52,7 @@ export const routes: Routes = [
       },
       {
         path: 'notifications',
-        title: 'Notificaciones',
+        title: ROUTE_TITLES.notifications,
         loadComponent: () =>
           import('./features/notifications/pages/notifications-page/notifications-page.component').then(
             (module) => module.NotificationsPageComponent,
@@ -59,7 +60,7 @@ export const routes: Routes = [
       },
       {
         path: 'profile',
-        title: 'Perfil',
+        title: ROUTE_TITLES.profile,
         loadComponent: () =>
           import('./features/profile/pages/profile-page/profile-page.component').then(
             (module) => module.ProfilePageComponent,
@@ -67,7 +68,7 @@ export const routes: Routes = [
       },
       {
         path: 'admin/users',
-        title: 'Usuarios',
+        title: ROUTE_TITLES.users,
         canActivate: [permissionGuard],
         data: {
           permission: 'USER_READ',
@@ -79,7 +80,7 @@ export const routes: Routes = [
       },
       {
         path: 'admin/categories',
-        title: 'Categorias',
+        title: ROUTE_TITLES.categories,
         canActivate: [permissionGuard],
         data: {
           permission: 'CATEGORY_READ',
@@ -91,7 +92,7 @@ export const routes: Routes = [
       },
       {
         path: 'admin/sla',
-        title: 'SLA',
+        title: ROUTE_TITLES.sla,
         canActivate: [permissionGuard],
         data: {
           permission: 'SLA_READ',
@@ -110,7 +111,7 @@ export const routes: Routes = [
   },
   {
     path: 'forbidden',
-    title: 'Acceso denegado',
+    title: ROUTE_TITLES.forbidden,
     loadComponent: () =>
       import('./features/system/pages/forbidden-page/forbidden-page.component').then(
         (module) => module.ForbiddenPageComponent,
@@ -118,7 +119,7 @@ export const routes: Routes = [
   },
   {
     path: '**',
-    title: 'Pagina no encontrada',
+    title: ROUTE_TITLES.notFound,
     loadComponent: () =>
       import('./features/system/pages/not-found-page/not-found-page.component').then(
         (module) => module.NotFoundPageComponent,

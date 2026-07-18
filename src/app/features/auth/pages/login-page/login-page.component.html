@@ -1,39 +1,39 @@
 <div class="login-page">
   <div class="hero">
     <p class="eyebrow">Management Tickets</p>
-    <h1>Gestiona la operacion de soporte desde un solo lugar.</h1>
-    <p>Accede con tu cuenta para revisar tickets, prioridades, SLA y seguimiento operativo.</p>
+    <h1>Manage support operations from one place.</h1>
+    <p>Sign in to review tickets, priorities, SLA windows, and operational follow-up.</p>
   </div>
 
   <p-card class="login-card">
-    <ng-template pTemplate="title">Ingresar</ng-template>
-    <ng-template pTemplate="subtitle">Ingresa tus credenciales para continuar.</ng-template>
+    <ng-template pTemplate="title">Sign in</ng-template>
+    <ng-template pTemplate="subtitle">Enter your credentials to continue.</ng-template>
 
     <form (ngSubmit)="submit()" [formGroup]="loginForm">
       <label class="field">
-        <span>Correo</span>
+        <span>Email</span>
         <input
           pInputText
           type="email"
           formControlName="email"
-          placeholder="tu@empresa.com"
+          placeholder="you@company.com"
           autocomplete="username"
         />
       </label>
 
       <label class="field">
-        <span>Contrasena</span>
+        <span>Password</span>
         <p-password
           [toggleMask]="true"
           [feedback]="false"
           formControlName="password"
           inputStyleClass="w-full"
-          placeholder="Ingresa tu contrasena"
+          placeholder="Enter your password"
         />
       </label>
 
       @if (showValidationError()) {
-        <p-message severity="warn" text="Completa correo y contrasena para continuar." />
+        <p-message severity="warn" text="Enter both email and password to continue." />
       }
 
       @if (authStore.errorMessage()) {
@@ -42,7 +42,7 @@
 
       <button
         [loading]="authStore.loading()"
-        label="Ingresar"
+        label="Sign in"
         class="submit-button"
         type="submit"
         pButton

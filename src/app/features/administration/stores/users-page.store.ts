@@ -37,21 +37,19 @@ export class UsersPageStore {
           this.usersState.set(users);
         },
         error: (error: ProblemDetails) => {
-          this.errorState.set(
-            resolveProblemDetailsMessage(error, 'No fue posible cargar los usuarios.'),
-          );
+          this.errorState.set(resolveProblemDetailsMessage(error, 'Unable to load users.'));
         },
       });
   }
 
   create(payload: CreateUserRequest): void {
-    this.runSave(this.usersAdminApiService.createUser(payload), 'No fue posible crear el usuario.');
+    this.runSave(this.usersAdminApiService.createUser(payload), 'Unable to create the user.');
   }
 
   update(userId: string, payload: UpdateUserRequest): void {
     this.runSave(
       this.usersAdminApiService.updateUser(userId, payload),
-      'No fue posible actualizar el usuario.',
+      'Unable to update the user.',
     );
   }
 
@@ -67,7 +65,7 @@ export class UsersPageStore {
         },
         error: (error: ProblemDetails) => {
           this.errorState.set(
-            resolveProblemDetailsMessage(error, 'No fue posible actualizar el estado del usuario.'),
+            resolveProblemDetailsMessage(error, 'Unable to update the user status.'),
           );
         },
       });

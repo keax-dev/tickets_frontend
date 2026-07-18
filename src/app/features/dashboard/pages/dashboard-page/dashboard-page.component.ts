@@ -1,5 +1,6 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { SkeletonModule } from 'primeng/skeleton';
+import { TICKET_STATUS_LABELS } from '../../../../shared/constants/ui.constants';
 import { DashboardStore } from '../../stores/dashboard.store';
 import { MessageModule } from 'primeng/message';
 import { CommonModule } from '@angular/common';
@@ -18,16 +19,7 @@ export class DashboardPageComponent implements OnInit {
   readonly dashboardStore = inject(DashboardStore);
   readonly skeletonCards = Array.from({ length: 6 });
   readonly objectEntries = Object.entries;
-
-  readonly statusLabels: Record<string, string> = {
-    CREATED: 'Created',
-    ASSIGNED: 'Assigned',
-    IN_PROGRESS: 'In progress',
-    WAITING_FOR_CUSTOMER: 'Waiting for customer',
-    RESOLVED: 'Resolved',
-    CLOSED: 'Closed',
-    CANCELLED: 'Cancelled',
-  };
+  readonly statusLabels = TICKET_STATUS_LABELS;
 
   ngOnInit(): void {
     this.dashboardStore.load();

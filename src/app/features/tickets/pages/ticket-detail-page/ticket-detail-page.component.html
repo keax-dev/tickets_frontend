@@ -13,11 +13,11 @@
 
     <p-tabs value="comments">
       <p-tablist>
-        <p-tab value="comments">Comentarios</p-tab>
+        <p-tab value="comments">Comments</p-tab>
         @if (canReadHistory()) {
-          <p-tab value="history">Historial</p-tab>
+          <p-tab value="history">History</p-tab>
         }
-        <p-tab value="details">Detalle</p-tab>
+        <p-tab value="details">Details</p-tab>
       </p-tablist>
       <p-tabpanels>
         <p-tabpanel value="comments">
@@ -36,8 +36,8 @@
       </p-tabpanels>
     </p-tabs>
   } @else if (loading()) {
-    <p class="mb-0 ticket-detail-muted">Cargando ticket...</p>
+    <p class="mb-0 ticket-detail-muted">Loading ticket...</p>
   } @else if (!errorMessage()) {
-    <p class="mb-0 ticket-detail-muted">No hay informacion del ticket disponible.</p>
+    <p class="mb-0 ticket-detail-muted">No ticket information is available.</p>
   }
 </section>
