@@ -39,28 +39,21 @@
 }
 
 .login-card {
-  border-radius: 28px;
-  overflow: hidden;
-}
-
-:host ::ng-deep .login-card .p-card {
+  display: block;
   border: 1px solid var(--app-border);
   border-radius: 28px;
   background: color-mix(in srgb, var(--app-surface-strong) 94%, transparent);
   box-shadow: var(--app-shadow);
   color: var(--app-text);
+  overflow: hidden;
 }
 
-:host ::ng-deep .login-card .p-card-title {
+.login-card-title {
   color: var(--app-text);
 }
 
-:host ::ng-deep .login-card .p-card-subtitle {
+.login-card-subtitle {
   color: var(--app-text-muted);
-}
-
-:host ::ng-deep .login-card .p-card-body {
-  gap: 1rem;
 }
 
 form {
@@ -79,10 +72,13 @@ form {
   font-weight: 600;
 }
 
-:host ::ng-deep .login-card .p-inputtext,
-:host ::ng-deep .login-card .p-password,
-:host ::ng-deep .login-card .p-password-input {
+.field input,
+.field p-password {
   width: 100%;
+}
+
+.field p-password {
+  display: block;
 }
 
 .submit-button {

@@ -5,9 +5,13 @@
     <p>Sign in to review tickets, priorities, SLA windows, and operational follow-up.</p>
   </div>
 
-  <p-card class="login-card">
-    <ng-template pTemplate="title">Sign in</ng-template>
-    <ng-template pTemplate="subtitle">Enter your credentials to continue.</ng-template>
+  <p-card styleClass="login-card">
+    <ng-template pTemplate="title">
+      <span class="login-card-title">Sign in</span>
+    </ng-template>
+    <ng-template pTemplate="subtitle">
+      <span class="login-card-subtitle">Enter your credentials to continue.</span>
+    </ng-template>
 
     <form (ngSubmit)="submit()" [formGroup]="loginForm">
       <label class="field">
@@ -27,7 +31,8 @@
           [toggleMask]="true"
           [feedback]="false"
           formControlName="password"
-          inputStyleClass="w-full"
+          styleClass="w-100"
+          inputStyleClass="w-100"
           placeholder="Enter your password"
         />
       </label>

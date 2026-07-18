@@ -7,7 +7,7 @@
   background: color-mix(in srgb, var(--app-surface-soft) 78%, transparent);
 }
 
-:host ::ng-deep .p-paginator {
+.notifications-paginator {
   border-radius: 18px;
   border: 1px solid var(--app-border);
   background: color-mix(in srgb, var(--app-surface-soft) 78%, transparent);
