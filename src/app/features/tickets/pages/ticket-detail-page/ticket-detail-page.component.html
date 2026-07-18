@@ -8,113 +8,8 @@
   }
 
   @if (currentTicket(); as currentTicket) {
-    <div class="row g-3 align-items-start mb-4">
-      <div class="col-12 col-xl">
-        <h1 class="mb-2">{{ currentTicket.code }}</h1>
-        <p class="mb-0 ticket-detail-muted">{{ currentTicket.title }}</p>
-      </div>
-      <div class="col-12 col-xl-auto">
-        <div class="row g-2 justify-content-xl-end">
-          @if (currentTicket.availableActions.includes('assign')) {
-            <div class="col-12 col-sm-auto">
-              <p-select
-                [placeholder]="
-                  supportUsersLoading() ? 'Cargando agentes...' : 'Selecciona un agente'
-                "
-                [formControl]="assignmentForm.controls.agentId"
-                [options]="supportUsers()"
-                optionLabel="email"
-                optionValue="id"
-                styleClass="w-100 ticket-detail-assignment-select"
-              ></p-select>
-            </div>
-            <div class="col-12 col-sm-auto">
-              <button
-                (click)="assign()"
-                [disabled]="supportUsersLoading() || !hasSelectedSupportUser()"
-                severity="secondary"
-                class="w-100"
-                label="Asignar"
-                type="button"
-                pButton
-              ></button>
-            </div>
-          }
-          @if (currentTicket.availableActions.includes('start')) {
-            <div class="col-12 col-sm-auto">
-              <button
-                (click)="start()"
-                class="w-100"
-                label="Iniciar"
-                type="button"
-                pButton
-              ></button>
-            </div>
-          }
-          @if (currentTicket.availableActions.includes('close')) {
-            <div class="col-12 col-sm-auto">
-              <button
-                (click)="close()"
-                severity="secondary"
-                class="w-100"
-                label="Cerrar"
-                type="button"
-                pButton
-              ></button>
-            </div>
-          }
-        </div>
-      </div>
-    </div>
-
-    @if (currentTicket.availableActions.includes('assign') && supportUsersError()) {
-      <div
-        class="d-flex flex-column flex-md-row align-items-start align-items-md-center gap-2 mb-3"
-      >
-        <p-message severity="warn" [text]="supportUsersError() ?? ''"></p-message>
-        <button
-          (click)="reloadSupportUsers()"
-          severity="secondary"
-          variant="text"
-          label="Reintentar agentes"
-          type="button"
-          pButton
-        ></button>
-      </div>
-    } @else if (
-      currentTicket.availableActions.includes('assign') &&
-      !supportUsersLoading() &&
-      supportUsers().length === 0
-    ) {
-      <div class="row mb-3">
-        <div class="col-12">
-          <p-message severity="info" text="No hay agentes activos disponibles para asignar." />
-        </div>
-      </div>
-    }
-
-    <div class="row g-3 mb-4">
-      <div class="col-12 col-sm-6 col-xl-3">
-        <p-card header="Estado" class="h-100"
-          ><p-tag [value]="currentTicket.status"></p-tag
-        ></p-card>
-      </div>
-      <div class="col-12 col-sm-6 col-xl-3">
-        <p-card header="Prioridad" class="h-100"
-          ><p-tag [value]="currentTicket.priority"></p-tag
-        ></p-card>
-      </div>
-      <div class="col-12 col-sm-6 col-xl-3">
-        <p-card header="Solicitante" class="h-100">{{
-          currentTicket.requesterName ?? 'Sin dato'
-        }}</p-card>
-      </div>
-      <div class="col-12 col-sm-6 col-xl-3">
-        <p-card header="Agente" class="h-100">{{
-          currentTicket.assignedAgentName ?? 'Sin asignar'
-        }}</p-card>
-      </div>
-    </div>
+    <app-ticket-detail-header [ticket]="currentTicket"></app-ticket-detail-header>
+    <app-ticket-summary-cards [ticket]="currentTicket"></app-ticket-summary-cards>
 
     <p-tabs value="comments">
       <p-tablist>
@@ -126,108 +21,17 @@
       </p-tablist>
       <p-tabpanels>
         <p-tabpanel value="comments">
-          <form
-            (ngSubmit)="addComment()"
-            [formGroup]="commentForm"
-            class="d-flex flex-column gap-3"
-          >
-            <textarea
-              formControlName="content"
-              placeholder="Escribe un comentario"
-              rows="4"
-              pTextarea
-            ></textarea>
-            <p-select
-              [options]="visibilityOptions()"
-              formControlName="visibility"
-              optionLabel="label"
-              optionValue="value"
-              styleClass="w-100"
-            ></p-select>
-            <div class="d-flex flex-wrap gap-2">
-              <button pButton type="submit" label="Agregar comentario"></button>
-            </div>
-          </form>
-
-          <div class="vstack gap-3 mt-4">
-            @for (comment of visibleComments(); track comment.id) {
-              <div
-                [class.comment-item-internal]="comment.visibility === 'INTERNAL'"
-                class="comment-item p-3 rounded-4 border"
-              >
-                <strong class="d-block">{{ comment.authorName ?? 'Usuario' }}</strong>
-                <small class="d-block mt-1 ticket-detail-muted">{{
-                  comment.createdAt | date: 'short'
-                }}</small>
-                <p class="mb-0 mt-2">{{ comment.content }}</p>
-              </div>
-            }
-          </div>
+          <app-ticket-comments-panel></app-ticket-comments-panel>
         </p-tabpanel>
 
         @if (canReadHistory()) {
           <p-tabpanel value="history">
-            <div class="vstack gap-3">
-              @for (entry of history(); track entry.id) {
-                <div class="comment-item p-3 rounded-4 border">
-                  <strong class="d-block">{{ entry.action }}</strong>
-                  <small class="d-block mt-1 ticket-detail-muted"
-                    >{{ entry.performedByName ?? 'Sistema' }} |
-                    {{ entry.createdAt | date: 'short' }}</small
-                  >
-                </div>
-              }
-            </div>
+            <app-ticket-history-panel></app-ticket-history-panel>
           </p-tabpanel>
         }
 
         <p-tabpanel value="details">
-          <p class="mb-0">{{ currentTicket.description }}</p>
-          @if (currentTicket.resolutionSummary) {
-            <h3 class="mt-4 mb-2">Resumen de solucion</h3>
-            <p class="mb-0">{{ currentTicket.resolutionSummary }}</p>
-          }
-
-          @if (currentTicket.availableActions.includes('request-information')) {
-            <form
-              (ngSubmit)="requestInformation()"
-              [formGroup]="requestInformationForm"
-              class="d-flex flex-column gap-3 mt-4"
-            >
-              <textarea
-                formControlName="content"
-                placeholder="Que informacion falta"
-                rows="3"
-                pTextarea
-              ></textarea>
-              <div class="d-flex flex-wrap gap-2">
-                <button
-                  severity="secondary"
-                  label="Solicitar informacion"
-                  type="submit"
-                  pButton
-                ></button>
-              </div>
-            </form>
-          }
-
-          @if (currentTicket.availableActions.includes('resolve')) {
-            <form
-              (ngSubmit)="resolve()"
-              [formGroup]="resolveForm"
-              class="d-flex flex-column gap-3 mt-4"
-            >
-              <textarea
-                formControlName="resolutionSummary"
-                placeholder="Resumen de solucion"
-                rows="4"
-                pTextarea
-              ></textarea>
-              <div class="d-flex flex-wrap gap-2">
-                <button pButton type="submit" label="Resolver ticket"></button>
-              </div>
-            </form>
-          }
+          <app-ticket-detail-overview [ticket]="currentTicket"></app-ticket-detail-overview>
         </p-tabpanel>
       </p-tabpanels>
     </p-tabs>

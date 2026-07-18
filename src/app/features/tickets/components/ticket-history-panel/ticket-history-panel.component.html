@@ -1,0 +1,22 @@
+@if (historyError()) {
+  <div class="row mb-3">
+    <div class="col-12">
+      <p-message severity="warn" [text]="historyError() ?? ''"></p-message>
+    </div>
+  </div>
+}
+
+@if (history().length === 0) {
+  <p class="mb-0 ticket-detail-muted">No hay historial disponible.</p>
+} @else {
+  <div class="vstack gap-3">
+    @for (entry of history(); track entry.id) {
+      <div class="comment-item p-3 rounded-4 border">
+        <strong class="d-block">{{ entry.action }}</strong>
+        <small class="d-block mt-1 ticket-detail-muted"
+          >{{ entry.performedByName ?? 'Sistema' }} | {{ entry.createdAt | date: 'short' }}</small
+        >
+      </div>
+    }
+  </div>
+}

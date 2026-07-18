@@ -191,6 +191,7 @@ describe('TicketDetailStore', () => {
 
     expect(ticketApiServiceMock.getHistory).not.toHaveBeenCalled();
     expect(ticketDetailStore.history()).toEqual([]);
+    expect(ticketDetailStore.historyError()).toBeNull();
   });
 
   it('does not request support users when the ticket cannot be assigned', () => {
@@ -206,6 +207,23 @@ describe('TicketDetailStore', () => {
 
     expect(ticketApiServiceMock.getUsers).not.toHaveBeenCalled();
     expect(ticketDetailStore.supportUsers()).toEqual([]);
+  });
+
+  it('keeps the ticket loaded and exposes a dedicated error when history fails', () => {
+    ticketApiServiceMock.getHistory.mockReturnValueOnce(
+      throwError(() => ({
+        error: {
+          detail: 'No fue posible cargar el historial.',
+        },
+      })),
+    );
+
+    ticketDetailStore.initialize('ticket-1');
+
+    expect(ticketDetailStore.ticket()?.id).toBe('ticket-1');
+    expect(ticketDetailStore.comments()).toEqual([]);
+    expect(ticketDetailStore.history()).toEqual([]);
+    expect(ticketDetailStore.historyError()).toBe('No fue posible cargar el historial.');
   });
 
   it('refreshes the ticket after assigning an agent', () => {
@@ -245,5 +263,19 @@ describe('TicketDetailStore', () => {
 
     expect(succeeded).toBe(false);
     expect(ticketDetailStore.errorMessage()).toBe('No fue posible recargar el ticket.');
+  });
+
+  it('fails fast when a mutation is attempted without a loaded ticket', () => {
+    let succeeded: boolean | undefined;
+
+    ticketDetailStore.assignTicket('user-agent').subscribe((result) => {
+      succeeded = result;
+    });
+
+    expect(succeeded).toBe(false);
+    expect(ticketApiServiceMock.assignTicket).not.toHaveBeenCalled();
+    expect(ticketDetailStore.errorMessage()).toBe(
+      'No hay un ticket cargado para ejecutar esta accion.',
+    );
   });
 });

@@ -41,6 +41,7 @@ export class TicketDetailStore {
   private readonly supportUsersLoadingState = signal(false);
   private readonly supportUsersLoadedState = signal(false);
   private readonly supportUsersErrorState = signal<string | null>(null);
+  private readonly historyErrorState = signal<string | null>(null);
   private readonly ticketIdState = signal<string | null>(null);
   private readonly loadRequests$ = new Subject<string>();
   private readonly commentsState = signal<TicketComment[]>([]);
@@ -54,6 +55,7 @@ export class TicketDetailStore {
   readonly supportUsers = this.supportUsersState.asReadonly();
   readonly supportUsersLoading = this.supportUsersLoadingState.asReadonly();
   readonly supportUsersError = this.supportUsersErrorState.asReadonly();
+  readonly historyError = this.historyErrorState.asReadonly();
   readonly errorMessage = this.errorState.asReadonly();
   readonly comments = this.commentsState.asReadonly();
   readonly ticketId = this.ticketIdState.asReadonly();
@@ -176,13 +178,12 @@ export class TicketDetailStore {
 
     this.loadingState.set(true);
     this.errorState.set(null);
+    this.historyErrorState.set(null);
 
     return forkJoin({
       ticket: this.ticketApiService.getTicket(ticketId),
       comments: this.ticketApiService.getComments(ticketId),
-      history: canReadHistory
-        ? this.ticketApiService.getHistory(ticketId).pipe(catchError(() => of([])))
-        : of([]),
+      history: this.loadHistory(ticketId, canReadHistory),
     }).pipe(
       tap(({ ticket, comments, history }) => {
         this.ticketState.set(ticket);
@@ -219,6 +220,7 @@ export class TicketDetailStore {
     const currentTicket = this.ticketState();
 
     if (!currentTicket) {
+      this.errorState.set('No hay un ticket cargado para ejecutar esta accion.');
       return of(false);
     }
 
@@ -234,6 +236,21 @@ export class TicketDetailStore {
       catchError((error: ProblemDetails) => {
         this.errorState.set(resolveProblemDetailsMessage(error, fallbackMessage));
         return of(false);
+      }),
+    );
+  }
+
+  private loadHistory(ticketId: string, canReadHistory: boolean): Observable<TicketHistory[]> {
+    if (!canReadHistory) {
+      return of([]);
+    }
+
+    return this.ticketApiService.getHistory(ticketId).pipe(
+      catchError((error: ProblemDetails) => {
+        this.historyErrorState.set(
+          resolveProblemDetailsMessage(error, 'No fue posible cargar el historial del ticket.'),
+        );
+        return of([]);
       }),
     );
   }

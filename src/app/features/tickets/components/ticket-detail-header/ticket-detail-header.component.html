@@ -1,0 +1,76 @@
+<div class="row g-3 align-items-start mb-4">
+  <div class="col-12 col-xl">
+    <h1 class="mb-2">{{ ticket().code }}</h1>
+    <p class="mb-0 ticket-detail-muted">{{ ticket().title }}</p>
+  </div>
+  <div class="col-12 col-xl-auto">
+    <div class="row g-2 justify-content-xl-end">
+      @if (canAssign()) {
+        <div class="col-12 col-sm-auto">
+          <p-select
+            [placeholder]="supportUsersLoading() ? 'Cargando agentes...' : 'Selecciona un agente'"
+            [formControl]="assignmentForm.controls.agentId"
+            [options]="supportUsers()"
+            optionLabel="email"
+            optionValue="id"
+            styleClass="w-100 ticket-detail-assignment-select"
+          ></p-select>
+        </div>
+        <div class="col-12 col-sm-auto">
+          <button
+            (click)="assign()"
+            [disabled]="supportUsersLoading() || assignmentSubmitting() || !hasSelectedSupportUser()"
+            severity="secondary"
+            class="w-100"
+            label="Asignar"
+            type="button"
+            pButton
+          ></button>
+        </div>
+      }
+      @if (canStart()) {
+        <div class="col-12 col-sm-auto">
+          <button
+            (click)="start()"
+            class="w-100"
+            label="Iniciar"
+            type="button"
+            pButton
+          ></button>
+        </div>
+      }
+      @if (canClose()) {
+        <div class="col-12 col-sm-auto">
+          <button
+            (click)="close()"
+            severity="secondary"
+            class="w-100"
+            label="Cerrar"
+            type="button"
+            pButton
+          ></button>
+        </div>
+      }
+    </div>
+  </div>
+</div>
+
+@if (canAssign() && supportUsersError()) {
+  <div class="d-flex flex-column flex-md-row align-items-start align-items-md-center gap-2 mb-3">
+    <p-message severity="warn" [text]="supportUsersError() ?? ''"></p-message>
+    <button
+      (click)="reloadSupportUsers()"
+      severity="secondary"
+      variant="text"
+      label="Reintentar agentes"
+      type="button"
+      pButton
+    ></button>
+  </div>
+} @else if (showSupportUsersEmptyState()) {
+  <div class="row mb-3">
+    <div class="col-12">
+      <p-message severity="info" text="No hay agentes activos disponibles para asignar." />
+    </div>
+  </div>
+}

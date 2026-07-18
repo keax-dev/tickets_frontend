@@ -1,0 +1,11 @@
+:host {
+  display: block;
+}
+
+.ticket-detail-muted {
+  color: var(--app-text-muted);
+}
+
+:host ::ng-deep .ticket-detail-assignment-select {
+  min-width: min(100%, 16rem);
+}

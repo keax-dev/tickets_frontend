@@ -1,0 +1,16 @@
+:host {
+  display: block;
+}
+
+.ticket-detail-muted {
+  color: var(--app-text-muted);
+}
+
+.comment-item {
+  background: color-mix(in srgb, var(--app-surface-soft) 75%, transparent);
+  border-color: var(--app-border) !important;
+}
+
+.comment-item-internal {
+  border-style: dashed;
+}

@@ -109,6 +109,7 @@ describe('TicketDetailPageComponent', () => {
       supportUsers: signal(supportUsers),
       supportUsersLoading: signal(false),
       supportUsersError: signal<string | null>(null),
+      historyError: signal<string | null>(null),
       errorMessage: signal<string | null>(null),
       comments: signal(comments),
       history: signal(history),
@@ -181,19 +182,15 @@ describe('TicketDetailPageComponent', () => {
 
     return {
       fixture,
-      component: fixture.componentInstance,
       paramMapSubject,
       storeMock,
     };
   }
 
-  it('resets draft forms when the route ticket changes', async () => {
-    const { component, fixture, paramMapSubject, storeMock } = await setup();
+  it('reinitializes when the route ticket changes and hides stale ticket details', async () => {
+    const { fixture, paramMapSubject, storeMock } = await setup();
 
-    component.commentForm.setValue({ content: 'Pending note', visibility: 'INTERNAL' });
-    component.requestInformationForm.setValue({ content: 'Need logs' });
-    component.resolveForm.setValue({ resolutionSummary: 'Workaround ready' });
-    component.assignmentForm.setValue({ agentId: 'user-agent' });
+    expect(fixture.nativeElement.textContent).toContain('MT-1');
 
     paramMapSubject.next(convertToParamMap({ ticketId: 'ticket-2' }));
     fixture.detectChanges();
@@ -201,31 +198,24 @@ describe('TicketDetailPageComponent', () => {
 
     expect(storeMock.initialize).toHaveBeenNthCalledWith(1, 'ticket-1');
     expect(storeMock.initialize).toHaveBeenNthCalledWith(2, 'ticket-2');
-    expect(component.assignmentForm.getRawValue()).toEqual({ agentId: null });
-    expect(component.commentForm.getRawValue()).toEqual({
-      content: '',
-      visibility: 'PUBLIC',
-    });
-    expect(component.requestInformationForm.getRawValue()).toEqual({ content: '' });
-    expect(component.resolveForm.getRawValue()).toEqual({ resolutionSummary: '' });
+    expect(fixture.nativeElement.textContent).not.toContain('MT-1');
   });
 
   it('hides internal comment affordances without the required permissions', async () => {
-    const { component } = await setup({
+    const { fixture } = await setup({
       canCreateInternalComments: false,
       canReadInternalComments: false,
     });
 
-    expect(component.visibilityOptions().map((option) => option.value)).toEqual(['PUBLIC']);
-    expect(component.visibleComments().map((comment) => comment.id)).toEqual(['comment-public']);
+    expect(fixture.nativeElement.textContent).toContain('Public comment');
+    expect(fixture.nativeElement.textContent).not.toContain('Internal note');
   });
 
   it('hides history access without audit permission', async () => {
-    const { component, fixture } = await setup({
+    const { fixture } = await setup({
       canReadHistory: false,
     });
 
-    expect(component.canReadHistory()).toBe(false);
     expect(fixture.nativeElement.textContent).not.toContain('Historial');
   });
 
