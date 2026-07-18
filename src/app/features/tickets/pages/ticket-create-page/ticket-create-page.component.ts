@@ -1,19 +1,14 @@
-import { DestroyRef, Component, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { resolveProblemDetailsMessage } from '../../../../shared/utils/resolve-problem-details-message';
-import { Category, TicketPriority } from '../../../../shared/models/api.models';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { TicketApiService } from '../../services/ticket-api.service';
+import { TicketPriority } from '../../../../shared/models/api.models';
 import { InputTextModule } from 'primeng/inputtext';
-import { ProblemDetails } from '../../../../shared/models/api.models';
 import { TextareaModule } from 'primeng/textarea';
 import { MessageModule } from 'primeng/message';
 import { SelectModule } from 'primeng/select';
 import { CommonModule } from '@angular/common';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
-import { finalize } from 'rxjs';
-import { Router } from '@angular/router';
+import { TicketCreateStore } from '../../stores/ticket-create.store';
 
 @Component({
   standalone: true,
@@ -27,19 +22,18 @@ import { Router } from '@angular/router';
     CommonModule,
     CardModule,
   ],
+  providers: [TicketCreateStore],
   templateUrl: './ticket-create-page.component.html',
   styleUrl: './ticket-create-page.component.css',
 })
 export class TicketCreatePageComponent implements OnInit {
-  private readonly ticketApiService = inject(TicketApiService);
+  private readonly ticketCreateStore = inject(TicketCreateStore);
   private readonly formBuilder = inject(FormBuilder);
-  private readonly destroyRef = inject(DestroyRef);
-  private readonly router = inject(Router);
 
-  readonly categoryErrorMessage = signal<string | null>(null);
-  readonly errorMessage = signal<string | null>(null);
-  readonly submitting = signal(false);
-  readonly categories = signal<Category[]>([]);
+  readonly categoryErrorMessage = this.ticketCreateStore.categoryErrorMessage;
+  readonly errorMessage = this.ticketCreateStore.errorMessage;
+  readonly submitting = this.ticketCreateStore.submitting;
+  readonly categories = this.ticketCreateStore.categories;
 
   readonly ticketForm = this.formBuilder.nonNullable.group({
     title: this.formBuilder.nonNullable.control('', {
@@ -62,21 +56,7 @@ export class TicketCreatePageComponent implements OnInit {
   ];
 
   ngOnInit(): void {
-    this.categoryErrorMessage.set(null);
-    this.ticketApiService
-      .getCategories()
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: (categories) => {
-          this.categories.set(categories.filter((category) => category.active));
-        },
-        error: (error: ProblemDetails) => {
-          this.categories.set([]);
-          this.categoryErrorMessage.set(
-            resolveProblemDetailsMessage(error, 'No fue posible cargar las categorias.'),
-          );
-        },
-      });
+    this.ticketCreateStore.loadCategories();
   }
 
   submit(): void {
@@ -85,20 +65,6 @@ export class TicketCreatePageComponent implements OnInit {
       return;
     }
 
-    this.errorMessage.set(null);
-    this.submitting.set(true);
-    this.ticketApiService
-      .createTicket(this.ticketForm.getRawValue())
-      .pipe(finalize(() => this.submitting.set(false)))
-      .subscribe({
-        next: (ticket) => {
-          void this.router.navigate(['/tickets', ticket.id]);
-        },
-        error: (error) => {
-          this.errorMessage.set(
-            resolveProblemDetailsMessage(error, 'No fue posible crear el ticket.'),
-          );
-        },
-      });
+    this.ticketCreateStore.create(this.ticketForm.getRawValue());
   }
 }

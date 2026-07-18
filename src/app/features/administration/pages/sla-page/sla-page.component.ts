@@ -1,8 +1,15 @@
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ProblemDetails, SlaPolicy, TicketPriority } from '../../../../shared/models/api.models';
-import { Component, inject, OnInit, signal } from '@angular/core';
-import { resolveProblemDetailsMessage } from '../../../../shared/utils/resolve-problem-details-message';
-import { AdministrationApiService } from '../../services/administration-api.service';
+import { SlaPolicy, TicketPriority } from '../../../../shared/models/api.models';
+import {
+  Component,
+  DestroyRef,
+  computed,
+  effect,
+  inject,
+  OnInit,
+  signal,
+  untracked,
+} from '@angular/core';
 import { InputTextModule } from 'primeng/inputtext';
 import { MessageModule } from 'primeng/message';
 import { SelectModule } from 'primeng/select';
@@ -11,7 +18,8 @@ import { ButtonModule } from 'primeng/button';
 import { TableModule } from 'primeng/table';
 import { CardModule } from 'primeng/card';
 import { TagModule } from 'primeng/tag';
-import { finalize } from 'rxjs';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { SlaPageStore } from '../../stores/sla-page.store';
 
 @Component({
   standalone: true,
@@ -26,17 +34,22 @@ import { finalize } from 'rxjs';
     CardModule,
     TagModule,
   ],
+  providers: [SlaPageStore],
   templateUrl: './sla-page.component.html',
   styleUrl: './sla-page.component.css',
 })
 export class SlaPageComponent implements OnInit {
-  private readonly administrationApiService = inject(AdministrationApiService);
+  private readonly destroyRef = inject(DestroyRef);
+  private readonly slaPageStore = inject(SlaPageStore);
   private readonly formBuilder = inject(FormBuilder);
 
-  readonly errorMessage = signal<string | null>(null);
-  readonly policies = signal<SlaPolicy[]>([]);
-  readonly loading = signal(false);
-  readonly saving = signal(false);
+  readonly validationErrorMessage = signal<string | null>(null);
+  readonly errorMessage = computed(
+    () => this.validationErrorMessage() ?? this.slaPageStore.errorMessage(),
+  );
+  readonly policies = this.slaPageStore.policies;
+  readonly loading = this.slaPageStore.loading;
+  readonly saving = this.slaPageStore.saving;
 
   readonly priorityOptions = [
     { label: 'Urgente', value: 'URGENT' as const },
@@ -63,33 +76,38 @@ export class SlaPageComponent implements OnInit {
     active: this.formBuilder.nonNullable.control(true, { validators: [Validators.required] }),
   });
 
+  constructor() {
+    effect(() => {
+      const policies = this.policies();
+
+      if (policies.length === 0) {
+        return;
+      }
+
+      const currentPriority = untracked(() => this.slaForm.controls.priority.getRawValue());
+      const activePolicy =
+        policies.find((policy) => policy.priority === currentPriority) ?? policies[0];
+
+      untracked(() => this.patchForm(activePolicy));
+    });
+
+    this.slaForm.controls.priority.valueChanges
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((priority) => {
+        const selectedPolicy = this.policies().find((policy) => policy.priority === priority);
+
+        if (selectedPolicy) {
+          this.patchForm(selectedPolicy);
+        }
+      });
+  }
+
   ngOnInit(): void {
     this.loadPolicies();
   }
 
   loadPolicies(): void {
-    this.errorMessage.set(null);
-    this.loading.set(true);
-
-    this.administrationApiService
-      .listSlaPolicies()
-      .pipe(finalize(() => this.loading.set(false)))
-      .subscribe({
-        next: (policies) => {
-          this.policies.set(policies);
-          const activePolicy =
-            policies.find((policy) => policy.priority === this.slaForm.controls.priority.value) ??
-            policies[0];
-          if (activePolicy) {
-            this.patchForm(activePolicy);
-          }
-        },
-        error: (error: ProblemDetails) => {
-          this.errorMessage.set(
-            resolveProblemDetailsMessage(error, 'No fue posible cargar las politicas SLA.'),
-          );
-        },
-      });
+    this.slaPageStore.load();
   }
 
   selectPolicy(policy: SlaPolicy): void {
@@ -102,35 +120,22 @@ export class SlaPageComponent implements OnInit {
       return;
     }
 
+    this.validationErrorMessage.set(null);
+
     const rawValue = this.slaForm.getRawValue();
     const selectedPolicy = this.policies().find((policy) => policy.priority === rawValue.priority);
 
     if (!selectedPolicy) {
-      this.errorMessage.set('No fue posible identificar la politica SLA a actualizar.');
+      this.validationErrorMessage.set('No fue posible identificar la politica SLA a actualizar.');
       return;
     }
 
-    this.saving.set(true);
-    this.errorMessage.set(null);
-
-    this.administrationApiService
-      .updateSlaPolicy(rawValue.priority, {
-        version: selectedPolicy.version,
-        firstResponseHours: Number(rawValue.firstResponseHours),
-        resolutionHours: Number(rawValue.resolutionHours),
-        active: rawValue.active,
-      })
-      .pipe(finalize(() => this.saving.set(false)))
-      .subscribe({
-        next: () => {
-          this.loadPolicies();
-        },
-        error: (error: ProblemDetails) => {
-          this.errorMessage.set(
-            resolveProblemDetailsMessage(error, 'No fue posible actualizar la politica SLA.'),
-          );
-        },
-      });
+    this.slaPageStore.update(rawValue.priority, {
+      version: selectedPolicy.version,
+      firstResponseHours: Number(rawValue.firstResponseHours),
+      resolutionHours: Number(rawValue.resolutionHours),
+      active: rawValue.active,
+    });
   }
 
   priorityLabel(priority: TicketPriority): string {
@@ -151,11 +156,14 @@ export class SlaPageComponent implements OnInit {
   }
 
   private patchForm(policy: SlaPolicy): void {
-    this.slaForm.reset({
-      priority: policy.priority,
-      firstResponseHours: policy.firstResponseHours,
-      resolutionHours: policy.resolutionHours,
-      active: policy.active,
-    });
+    this.slaForm.reset(
+      {
+        priority: policy.priority,
+        firstResponseHours: policy.firstResponseHours,
+        resolutionHours: policy.resolutionHours,
+        active: policy.active,
+      },
+      { emitEvent: false },
+    );
   }
 }

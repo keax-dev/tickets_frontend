@@ -1,8 +1,6 @@
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Component, computed, inject, OnInit, signal } from '@angular/core';
-import { resolveProblemDetailsMessage } from '../../../../shared/utils/resolve-problem-details-message';
-import { Category, ProblemDetails } from '../../../../shared/models/api.models';
-import { AdministrationApiService } from '../../services/administration-api.service';
+import { Component, computed, effect, inject, OnInit, signal, untracked } from '@angular/core';
+import { Category } from '../../../../shared/models/api.models';
 import { InputTextModule } from 'primeng/inputtext';
 import { MessageModule } from 'primeng/message';
 import { TextareaModule } from 'primeng/textarea';
@@ -11,7 +9,7 @@ import { ButtonModule } from 'primeng/button';
 import { TableModule } from 'primeng/table';
 import { CardModule } from 'primeng/card';
 import { TagModule } from 'primeng/tag';
-import { finalize } from 'rxjs';
+import { CategoriesPageStore } from '../../stores/categories-page.store';
 
 @Component({
   standalone: true,
@@ -26,47 +24,43 @@ import { finalize } from 'rxjs';
     CardModule,
     TagModule,
   ],
+  providers: [CategoriesPageStore],
   templateUrl: './categories-page.component.html',
   styleUrl: './categories-page.component.css',
 })
 export class CategoriesPageComponent implements OnInit {
-  private readonly administrationApiService = inject(AdministrationApiService);
+  private readonly categoriesPageStore = inject(CategoriesPageStore);
   private readonly formBuilder = inject(FormBuilder);
 
   readonly editingCategoryId = signal<string | null>(null);
   readonly editingCategoryVersion = signal<number | null>(null);
-  readonly errorMessage = signal<string | null>(null);
-  readonly categories = signal<Category[]>([]);
   readonly isEditing = computed(() => this.editingCategoryId() !== null);
-  readonly loading = signal(false);
-  readonly saving = signal(false);
+  readonly errorMessage = this.categoriesPageStore.errorMessage;
+  readonly categories = this.categoriesPageStore.categories;
+  readonly loading = this.categoriesPageStore.loading;
+  readonly saving = this.categoriesPageStore.saving;
 
   readonly categoryForm = this.formBuilder.nonNullable.group({
     name: this.formBuilder.nonNullable.control('', { validators: [Validators.required] }),
     description: this.formBuilder.nonNullable.control(''),
   });
 
+  constructor() {
+    effect(() => {
+      const saveCompleted = this.categoriesPageStore.saveCompleted();
+
+      if (saveCompleted > 0) {
+        untracked(() => this.startCreate());
+      }
+    });
+  }
+
   ngOnInit(): void {
     this.loadCategories();
   }
 
   loadCategories(): void {
-    this.errorMessage.set(null);
-    this.loading.set(true);
-
-    this.administrationApiService
-      .listCategories()
-      .pipe(finalize(() => this.loading.set(false)))
-      .subscribe({
-        next: (categories) => {
-          this.categories.set(categories);
-        },
-        error: (error: ProblemDetails) => {
-          this.errorMessage.set(
-            resolveProblemDetailsMessage(error, 'No fue posible cargar las categorias.'),
-          );
-        },
-      });
+    this.categoriesPageStore.load();
   }
 
   startCreate(): void {
@@ -99,9 +93,6 @@ export class CategoriesPageComponent implements OnInit {
       description: rawValue.description.trim() || null,
     };
 
-    this.saving.set(true);
-    this.errorMessage.set(null);
-
     if (this.isEditing()) {
       this.updateCategory(payload);
       return;
@@ -111,56 +102,17 @@ export class CategoriesPageComponent implements OnInit {
   }
 
   toggleStatus(category: Category): void {
-    this.errorMessage.set(null);
-    this.administrationApiService
-      .updateCategoryStatus(category.id, { version: category.version, active: !category.active })
-      .subscribe({
-        next: () => this.loadCategories(),
-        error: (error: ProblemDetails) => {
-          this.errorMessage.set(
-            resolveProblemDetailsMessage(
-              error,
-              'No fue posible actualizar el estado de la categoria.',
-            ),
-          );
-        },
-      });
+    this.categoriesPageStore.toggleStatus(category);
   }
 
   private createCategory(payload: { name: string; description: string | null }): void {
-    this.administrationApiService
-      .createCategory(payload)
-      .pipe(finalize(() => this.saving.set(false)))
-      .subscribe({
-        next: () => {
-          this.startCreate();
-          this.loadCategories();
-        },
-        error: (error: ProblemDetails) => {
-          this.errorMessage.set(
-            resolveProblemDetailsMessage(error, 'No fue posible crear la categoria.'),
-          );
-        },
-      });
+    this.categoriesPageStore.create(payload);
   }
 
   private updateCategory(payload: { name: string; description: string | null }): void {
-    this.administrationApiService
-      .updateCategory(this.editingCategoryId()!, {
-        version: this.editingCategoryVersion() ?? 0,
-        ...payload,
-      })
-      .pipe(finalize(() => this.saving.set(false)))
-      .subscribe({
-        next: () => {
-          this.startCreate();
-          this.loadCategories();
-        },
-        error: (error: ProblemDetails) => {
-          this.errorMessage.set(
-            resolveProblemDetailsMessage(error, 'No fue posible actualizar la categoria.'),
-          );
-        },
-      });
+    this.categoriesPageStore.update(this.editingCategoryId()!, {
+      version: this.editingCategoryVersion() ?? 0,
+      ...payload,
+    });
   }
 }

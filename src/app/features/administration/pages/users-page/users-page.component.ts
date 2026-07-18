@@ -1,8 +1,6 @@
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Component, computed, inject, OnInit, signal } from '@angular/core';
-import { AppRole, ProblemDetails, UserRecord } from '../../../../shared/models/api.models';
-import { resolveProblemDetailsMessage } from '../../../../shared/utils/resolve-problem-details-message';
-import { AdministrationApiService } from '../../services/administration-api.service';
+import { Component, computed, effect, inject, OnInit, signal, untracked } from '@angular/core';
+import { AppRole, UserRecord } from '../../../../shared/models/api.models';
 import { InputTextModule } from 'primeng/inputtext';
 import { PasswordModule } from 'primeng/password';
 import { MessageModule } from 'primeng/message';
@@ -12,7 +10,7 @@ import { SelectModule } from 'primeng/select';
 import { TableModule } from 'primeng/table';
 import { CardModule } from 'primeng/card';
 import { TagModule } from 'primeng/tag';
-import { finalize } from 'rxjs';
+import { UsersPageStore } from '../../stores/users-page.store';
 
 @Component({
   standalone: true,
@@ -28,26 +26,27 @@ import { finalize } from 'rxjs';
     CardModule,
     TagModule,
   ],
+  providers: [UsersPageStore],
   templateUrl: './users-page.component.html',
   styleUrl: './users-page.component.css',
 })
 export class UsersPageComponent implements OnInit {
-  private readonly administrationApiService = inject(AdministrationApiService);
+  private readonly usersPageStore = inject(UsersPageStore);
   private readonly formBuilder = inject(FormBuilder);
 
   readonly editingUserVersion = signal<number | null>(null);
   readonly editingUserId = signal<string | null>(null);
-  readonly errorMessage = signal<string | null>(null);
   readonly isEditing = computed(() => this.editingUserId() !== null);
-  readonly loading = signal(false);
-  readonly saving = signal(false);
-  readonly users = signal<UserRecord[]>([]);
+  readonly errorMessage = this.usersPageStore.errorMessage;
+  readonly loading = this.usersPageStore.loading;
+  readonly saving = this.usersPageStore.saving;
+  readonly users = this.usersPageStore.users;
 
   readonly roleOptions = [
     { label: 'Administrador', value: 'ADMIN' as const },
     { label: 'Manager de soporte', value: 'SUPPORT_MANAGER' as const },
     { label: 'Agente de soporte', value: 'SUPPORT_AGENT' as const },
-    { label: 'Cliente', value: 'CUSTOMER' as const }
+    { label: 'Cliente', value: 'CUSTOMER' as const },
   ];
 
   readonly userForm = this.formBuilder.nonNullable.group({
@@ -64,27 +63,22 @@ export class UsersPageComponent implements OnInit {
     }),
   });
 
+  constructor() {
+    effect(() => {
+      const saveCompleted = this.usersPageStore.saveCompleted();
+
+      if (saveCompleted > 0) {
+        untracked(() => this.startCreate());
+      }
+    });
+  }
+
   ngOnInit(): void {
     this.loadUsers();
   }
 
   loadUsers(): void {
-    this.errorMessage.set(null);
-    this.loading.set(true);
-
-    this.administrationApiService
-      .listUsers()
-      .pipe(finalize(() => this.loading.set(false)))
-      .subscribe({
-        next: (users) => {
-          this.users.set(users);
-        },
-        error: (error: ProblemDetails) => {
-          this.errorMessage.set(
-            resolveProblemDetailsMessage(error, 'No fue posible cargar los usuarios.'),
-          );
-        },
-      });
+    this.usersPageStore.load();
   }
 
   startCreate(): void {
@@ -95,7 +89,7 @@ export class UsersPageComponent implements OnInit {
       lastName: '',
       password: '',
       email: '',
-      role: 'SUPPORT_AGENT'
+      role: 'SUPPORT_AGENT',
     });
     this.userForm.controls.password.setValidators([Validators.required, Validators.minLength(8)]);
     this.userForm.controls.password.updateValueAndValidity();
@@ -122,8 +116,6 @@ export class UsersPageComponent implements OnInit {
     }
 
     const rawValue = this.userForm.getRawValue();
-    this.saving.set(true);
-    this.errorMessage.set(null);
 
     if (this.isEditing()) {
       this.updateUser(rawValue);
@@ -134,17 +126,7 @@ export class UsersPageComponent implements OnInit {
   }
 
   toggleStatus(user: UserRecord): void {
-    this.errorMessage.set(null);
-    this.administrationApiService
-      .updateUserStatus(user.id, { version: user.version, active: !user.active })
-      .subscribe({
-        next: () => this.loadUsers(),
-        error: (error: ProblemDetails) => {
-          this.errorMessage.set(
-            resolveProblemDetailsMessage(error, 'No fue posible actualizar el estado del usuario.'),
-          );
-        },
-      });
+    this.usersPageStore.toggleStatus(user);
   }
 
   private createUser(rawValue: {
@@ -154,26 +136,13 @@ export class UsersPageComponent implements OnInit {
     password: string;
     role: AppRole;
   }): void {
-    this.administrationApiService
-      .createUser({
-        firstName: rawValue.firstName.trim(),
-        lastName: rawValue.lastName.trim(),
-        email: rawValue.email.trim(),
-        password: rawValue.password,
-        role: rawValue.role,
-      })
-      .pipe(finalize(() => this.saving.set(false)))
-      .subscribe({
-        next: () => {
-          this.startCreate();
-          this.loadUsers();
-        },
-        error: (error: ProblemDetails) => {
-          this.errorMessage.set(
-            resolveProblemDetailsMessage(error, 'No fue posible crear el usuario.'),
-          );
-        },
-      });
+    this.usersPageStore.create({
+      firstName: rawValue.firstName.trim(),
+      lastName: rawValue.lastName.trim(),
+      email: rawValue.email.trim(),
+      password: rawValue.password,
+      role: rawValue.role,
+    });
   }
 
   private updateUser(rawValue: {
@@ -183,26 +152,13 @@ export class UsersPageComponent implements OnInit {
     password: string;
     role: AppRole;
   }): void {
-    this.administrationApiService
-      .updateUser(this.editingUserId()!, {
-        version: this.editingUserVersion() ?? 0,
-        firstName: rawValue.firstName.trim(),
-        lastName: rawValue.lastName.trim(),
-        email: rawValue.email.trim(),
-        role: rawValue.role,
-      })
-      .pipe(finalize(() => this.saving.set(false)))
-      .subscribe({
-        next: () => {
-          this.startCreate();
-          this.loadUsers();
-        },
-        error: (error: ProblemDetails) => {
-          this.errorMessage.set(
-            resolveProblemDetailsMessage(error, 'No fue posible actualizar el usuario.'),
-          );
-        },
-      });
+    this.usersPageStore.update(this.editingUserId()!, {
+      version: this.editingUserVersion() ?? 0,
+      firstName: rawValue.firstName.trim(),
+      lastName: rawValue.lastName.trim(),
+      email: rawValue.email.trim(),
+      role: rawValue.role,
+    });
   }
 
   roleLabel(role: AppRole): string {
