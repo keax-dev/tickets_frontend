@@ -178,7 +178,6 @@ describe('TicketDetailPageComponent', () => {
     const fixture = TestBed.createComponent(TicketDetailPageComponent);
 
     fixture.detectChanges();
-    await fixture.whenStable();
 
     return {
       fixture,
@@ -194,7 +193,7 @@ describe('TicketDetailPageComponent', () => {
 
     paramMapSubject.next(convertToParamMap({ ticketId: 'ticket-2' }));
     fixture.detectChanges();
-    await fixture.whenStable();
+    await Promise.resolve();
 
     expect(storeMock.initialize).toHaveBeenNthCalledWith(1, 'ticket-1');
     expect(storeMock.initialize).toHaveBeenNthCalledWith(2, 'ticket-2');
@@ -228,11 +227,11 @@ describe('TicketDetailPageComponent', () => {
 
     storeMock.supportUsersLoading.set(true);
     fixture.detectChanges();
-    await fixture.whenStable();
+    await Promise.resolve();
 
     storeMock.supportUsersError.set('Unable to load agents.');
     fixture.detectChanges();
-    await fixture.whenStable();
+    await Promise.resolve();
 
     expect(storeMock.initialize).toHaveBeenCalledTimes(1);
   });

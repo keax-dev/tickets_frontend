@@ -80,6 +80,8 @@ describe('TicketDetailHeaderComponent', () => {
   });
 
   async function setup() {
+    vi.clearAllMocks();
+
     const storeMock = {
       supportUsers: signal(supportUsers),
       supportUsersLoading: signal(false),
@@ -103,7 +105,6 @@ describe('TicketDetailHeaderComponent', () => {
     const fixture = TestBed.createComponent(TicketDetailHeaderComponent);
     fixture.componentRef.setInput('ticket', baseTicket);
     fixture.detectChanges();
-    await fixture.whenStable();
 
     return { fixture, storeMock };
   }
@@ -122,7 +123,7 @@ describe('TicketDetailHeaderComponent', () => {
       assignedAgentName: 'Grace Agent',
     });
     fixture.detectChanges();
-    await fixture.whenStable();
+    await Promise.resolve();
 
     expect(component.assignmentForm.controls.agentId.value).toBe('user-agent-2');
   });
@@ -141,7 +142,7 @@ describe('TicketDetailHeaderComponent', () => {
       version: 2,
     });
     fixture.detectChanges();
-    await fixture.whenStable();
+    await Promise.resolve();
 
     expect(component.assignmentForm.controls.agentId.value).toBe('user-agent-2');
   });
