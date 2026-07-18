@@ -1,6 +1,7 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { SkeletonModule } from 'primeng/skeleton';
 import { TICKET_STATUS_LABELS } from '../../../../shared/constants/ui.constants';
+import { DashboardSummary, TicketStatus } from '../../../../shared/models/api.models';
 import { DashboardStore } from '../../stores/dashboard.store';
 import { MessageModule } from 'primeng/message';
 import { CommonModule } from '@angular/common';
@@ -18,10 +19,21 @@ import { TagModule } from 'primeng/tag';
 export class DashboardPageComponent implements OnInit {
   readonly dashboardStore = inject(DashboardStore);
   readonly skeletonCards = Array.from({ length: 6 });
-  readonly objectEntries = Object.entries;
   readonly statusLabels = TICKET_STATUS_LABELS;
 
   ngOnInit(): void {
     this.dashboardStore.load();
+  }
+
+  statusEntries(ticketsByStatus: DashboardSummary['ticketsByStatus']): Array<{
+    status: TicketStatus;
+    total: number;
+  }> {
+    return (Object.entries(ticketsByStatus) as Array<[TicketStatus, number]>).map(
+      ([status, total]) => ({
+        status,
+        total,
+      }),
+    );
   }
 }

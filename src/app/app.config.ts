@@ -32,7 +32,7 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes),
     provideHttpClient(
       withFetch(),
-      withInterceptors([correlationIdInterceptor, authInterceptor, errorInterceptor]),
+      withInterceptors([correlationIdInterceptor, errorInterceptor, authInterceptor]),
     ),
     providePrimeNG({
       ripple: true,
