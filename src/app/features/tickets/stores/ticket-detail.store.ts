@@ -29,9 +29,7 @@ import {
   of,
 } from 'rxjs';
 
-@Injectable({
-  providedIn: 'root',
-})
+@Injectable()
 export class TicketDetailStore {
   private readonly ticketApiService = inject(TicketApiService);
   private readonly destroyRef = inject(DestroyRef);

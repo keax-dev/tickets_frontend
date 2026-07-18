@@ -4,9 +4,7 @@ import { resolveProblemDetailsMessage } from '../../../shared/utils/resolve-prob
 import { Injectable, inject, signal } from '@angular/core';
 import { NotificationApiService } from '../services/notification-api.service';
 
-@Injectable({
-  providedIn: 'root',
-})
+@Injectable()
 export class NotificationStore {
   private readonly notificationApiService = inject(NotificationApiService);
 

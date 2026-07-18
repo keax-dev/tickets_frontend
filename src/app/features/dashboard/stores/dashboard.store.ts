@@ -8,9 +8,7 @@ import {
   ProblemDetails,
 } from '../../../shared/models/api.models';
 
-@Injectable({
-  providedIn: 'root',
-})
+@Injectable()
 export class DashboardStore {
   private readonly dashboardApiService = inject(DashboardApiService);
 

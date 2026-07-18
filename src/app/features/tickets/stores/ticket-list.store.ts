@@ -12,9 +12,7 @@ import {
   TicketStatus,
 } from '../../../shared/models/api.models';
 
-@Injectable({
-  providedIn: 'root',
-})
+@Injectable()
 export class TicketListStore {
   private readonly ticketApiService = inject(TicketApiService);
   private readonly destroyRef = inject(DestroyRef);
