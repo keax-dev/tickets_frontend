@@ -274,6 +274,6 @@ describe('TicketDetailStore', () => {
 
     expect(succeeded).toBe(false);
     expect(ticketApiServiceMock.assignTicket).not.toHaveBeenCalled();
-    expect(ticketDetailStore.errorMessage()).toBe('There is no loaded ticket for this action.');
+    expect(ticketDetailStore.errorMessage()).toBe('No hay un ticket cargado para esta acción.');
   });
 });

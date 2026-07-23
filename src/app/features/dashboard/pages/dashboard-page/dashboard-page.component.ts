@@ -1,6 +1,9 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { SkeletonModule } from 'primeng/skeleton';
-import { TICKET_STATUS_LABELS } from '../../../../shared/constants/ui.constants';
+import {
+  TICKET_STATUS_LABELS,
+  getTicketHistoryActionLabel,
+} from '../../../../shared/constants/ui.constants';
 import { DashboardSummary, TicketStatus } from '../../../../shared/models/api.models';
 import { DashboardStore } from '../../stores/dashboard.store';
 import { MessageModule } from 'primeng/message';
@@ -35,5 +38,9 @@ export class DashboardPageComponent implements OnInit {
         total,
       }),
     );
+  }
+
+  actionLabel(action: string): string {
+    return getTicketHistoryActionLabel(action);
   }
 }

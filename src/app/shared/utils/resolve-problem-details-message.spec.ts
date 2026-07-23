@@ -53,7 +53,7 @@ describe('resolveProblemDetailsMessage', () => {
     });
 
     expect(resolveProblemDetailsMessage(error, 'Fallback message')).toBe(
-      'Unable to reach the server. Check your connection and try again.',
+      'No se pudo conectar con el servidor. Revisa tu conexión e intenta nuevamente.',
     );
   });
 });

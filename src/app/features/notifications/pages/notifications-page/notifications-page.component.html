@@ -1,9 +1,9 @@
 <section class="container-fluid page-card p-4">
   <div class="row align-items-start g-3 mb-4">
     <div class="col-12 col-sm">
-      <h1 class="mb-2">Notifications</h1>
+      <h1 class="mb-2">Notificaciones</h1>
       <p class="mb-0 notifications-muted">
-        Personal tracking for relevant events across the ticket workflow.
+        Seguimiento personal de eventos relevantes en el flujo de tickets.
       </p>
     </div>
     <div class="col-12 col-sm-auto">
@@ -17,7 +17,7 @@
         [loading]="notificationStore.updating()"
         severity="secondary"
         class="w-100"
-        label="Mark all as read"
+        label="Marcar todo como leído"
         type="button"
         pButton
       ></button>
@@ -35,13 +35,13 @@
   @if (notificationStore.loading()) {
     <div class="row">
       <div class="col-12">
-        <p class="mb-0 notifications-muted">Loading notifications...</p>
+        <p class="mb-0 notifications-muted">Cargando notificaciones...</p>
       </div>
     </div>
   } @else if ((notificationStore.page()?.content?.length ?? 0) === 0) {
     <div class="row">
       <div class="col-12">
-        <p class="mb-0 notifications-muted">No notifications available.</p>
+        <p class="mb-0 notifications-muted">No hay notificaciones disponibles.</p>
       </div>
     </div>
   } @else {
@@ -58,14 +58,14 @@
             >
               <p-tag
                 [severity]="notification.read ? 'secondary' : 'success'"
-                [value]="notification.read ? 'Read' : 'New'"
+                [value]="notification.read ? 'Leída' : 'Nueva'"
               ></p-tag>
               <button
                 (click)="notificationStore.markAsRead(notification.id)"
                 [disabled]="notificationStore.updating() || notification.read"
                 [loading]="notificationStore.updating()"
                 variant="text"
-                label="Mark as read"
+                label="Marcar como leída"
                 type="button"
                 pButton
               ></button>
@@ -85,7 +85,7 @@
           [first]="currentFirst()"
           [rows]="notificationStore.pageSize()"
           styleClass="notifications-paginator"
-          currentPageReportTemplate="{first} - {last} of {totalRecords}"
+          currentPageReportTemplate="{first} - {last} de {totalRecords}"
         />
       </div>
     </div>

@@ -41,7 +41,7 @@ export class DashboardStore {
         error: (error: ProblemDetails) => {
           this.recentActivityState.set([]);
           this.summaryState.set(null);
-          this.errorState.set(resolveProblemDetailsMessage(error, 'Unable to load the dashboard.'));
+          this.errorState.set(resolveProblemDetailsMessage(error, 'No se pudo cargar el panel.'));
         },
       });
   }

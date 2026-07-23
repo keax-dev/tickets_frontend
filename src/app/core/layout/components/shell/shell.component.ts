@@ -67,11 +67,11 @@ export class ShellComponent {
 
   readonly fullName = computed(() => {
     const user = this.authStore.currentUser();
-    return user ? `${user.firstName} ${user.lastName}` : 'Guest';
+    return user ? `${user.firstName} ${user.lastName}` : 'Invitado';
   });
 
   readonly currentRoleLabel = computed(() => {
     const user = this.authStore.currentUser();
-    return user ? getAppRoleLabel(user.role) : 'Guest';
+    return user ? getAppRoleLabel(user.role) : 'Invitado';
   });
 }

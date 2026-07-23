@@ -76,7 +76,7 @@ describe('errorInterceptor', () => {
     expect(receivedError).toEqual({
       status: 0,
       title: 'Unknown Error',
-      detail: 'Unable to reach the server. Check your connection and try again.',
+      detail: 'No se pudo conectar con el servidor. Revisa tu conexión e intenta nuevamente.',
       code: 'NETWORK_ERROR',
       correlationId: undefined,
       fieldErrors: [],

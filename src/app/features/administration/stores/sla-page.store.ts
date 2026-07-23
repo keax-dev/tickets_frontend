@@ -35,7 +35,9 @@ export class SlaPageStore {
           this.policiesState.set(policies);
         },
         error: (error: ProblemDetails) => {
-          this.errorState.set(resolveProblemDetailsMessage(error, 'Unable to load SLA policies.'));
+          this.errorState.set(
+            resolveProblemDetailsMessage(error, 'No se pudieron cargar las políticas SLA.'),
+          );
         },
       });
   }
@@ -56,7 +58,7 @@ export class SlaPageStore {
         },
         error: (error: ProblemDetails) => {
           this.errorState.set(
-            resolveProblemDetailsMessage(error, 'Unable to update the SLA policy.'),
+            resolveProblemDetailsMessage(error, 'No se pudo actualizar la política SLA.'),
           );
         },
       });

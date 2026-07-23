@@ -215,7 +215,7 @@ describe('TicketDetailPageComponent', () => {
       canReadHistory: false,
     });
 
-    expect(fixture.nativeElement.textContent).not.toContain('History');
+    expect(fixture.nativeElement.textContent).not.toContain('Historial');
   });
 
   it('does not reinitialize when store signals touched inside initialize change', async () => {

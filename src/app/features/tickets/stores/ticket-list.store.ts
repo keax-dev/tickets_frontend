@@ -66,7 +66,9 @@ export class TicketListStore {
             }),
             catchError((error: ProblemDetails) => {
               this.pageState.set(null);
-              this.errorState.set(resolveProblemDetailsMessage(error, 'Unable to load tickets.'));
+              this.errorState.set(
+                resolveProblemDetailsMessage(error, 'No se pudieron cargar los tickets.'),
+              );
               return EMPTY;
             }),
             finalize(() => {

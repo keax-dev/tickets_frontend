@@ -22,25 +22,25 @@ function createOptions<T extends string>(
 }
 
 export const ROUTE_TITLES = {
-  login: 'Sign in',
-  dashboard: 'Dashboard',
+  login: 'Iniciar sesión',
+  dashboard: 'Panel',
   tickets: 'Tickets',
-  ticketCreate: 'New ticket',
-  ticketDetail: 'Ticket details',
-  notifications: 'Notifications',
-  profile: 'Profile',
-  users: 'Users',
-  categories: 'Categories',
-  sla: 'SLA policies',
-  forbidden: 'Access denied',
-  notFound: 'Page not found',
+  ticketCreate: 'Nuevo ticket',
+  ticketDetail: 'Detalle del ticket',
+  notifications: 'Notificaciones',
+  profile: 'Perfil',
+  users: 'Usuarios',
+  categories: 'Categorías',
+  sla: 'Políticas SLA',
+  forbidden: 'Acceso denegado',
+  notFound: 'Página no encontrada',
 } as const;
 
 export const APP_ROLE_LABELS: Readonly<Record<AppRole, string>> = {
-  ADMIN: 'Administrator',
-  SUPPORT_MANAGER: 'Support manager',
-  SUPPORT_AGENT: 'Support agent',
-  CUSTOMER: 'Customer',
+  ADMIN: 'Administrador',
+  SUPPORT_MANAGER: 'Gestor de soporte',
+  SUPPORT_AGENT: 'Agente de soporte',
+  CUSTOMER: 'Cliente',
 };
 
 export const APP_ROLE_OPTIONS = createOptions(APP_ROLE_LABELS);
@@ -50,10 +50,10 @@ export function getAppRoleLabel(role: AppRole): string {
 }
 
 export const TICKET_PRIORITY_LABELS: Readonly<Record<TicketPriority, string>> = {
-  LOW: 'Low',
-  MEDIUM: 'Medium',
-  HIGH: 'High',
-  URGENT: 'Urgent',
+  LOW: 'Baja',
+  MEDIUM: 'Media',
+  HIGH: 'Alta',
+  URGENT: 'Urgente',
 };
 
 export const TICKET_PRIORITY_OPTIONS = createOptions(TICKET_PRIORITY_LABELS);
@@ -71,20 +71,18 @@ export function getTicketPriorityLabel(priority: TicketPriority): string {
   return TICKET_PRIORITY_LABELS[priority];
 }
 
-export function getTicketPriorityTagSeverity(
-  priority: TicketPriority,
-): TicketPriorityTagSeverity {
+export function getTicketPriorityTagSeverity(priority: TicketPriority): TicketPriorityTagSeverity {
   return TICKET_PRIORITY_TAG_SEVERITIES[priority];
 }
 
 export const TICKET_STATUS_LABELS: Readonly<Record<TicketStatus, string>> = {
-  CREATED: 'Created',
-  ASSIGNED: 'Assigned',
-  IN_PROGRESS: 'In progress',
-  WAITING_FOR_CUSTOMER: 'Waiting for customer',
-  RESOLVED: 'Resolved',
-  CLOSED: 'Closed',
-  CANCELLED: 'Cancelled',
+  CREATED: 'Creado',
+  ASSIGNED: 'Asignado',
+  IN_PROGRESS: 'En progreso',
+  WAITING_FOR_CUSTOMER: 'Esperando al cliente',
+  RESOLVED: 'Resuelto',
+  CLOSED: 'Cerrado',
+  CANCELLED: 'Cancelado',
 };
 
 export const TICKET_STATUS_OPTIONS = createOptions(TICKET_STATUS_LABELS);
@@ -93,22 +91,44 @@ export function getTicketStatusLabel(status: TicketStatus): string {
   return TICKET_STATUS_LABELS[status];
 }
 
+export const TICKET_HISTORY_ACTION_LABELS: Readonly<Record<string, string>> = {
+  CREATED: 'Creado',
+  UPDATED: 'Actualizado',
+  ASSIGNED: 'Asignado',
+  REASSIGNED: 'Reasignado',
+  STARTED: 'Iniciado',
+  REQUESTED_INFORMATION: 'Información solicitada',
+  COMMENT_ADDED_PUBLIC: 'Comentario público agregado',
+  COMMENT_ADDED_INTERNAL: 'Comentario interno agregado',
+  RESOLVED: 'Resuelto',
+  REOPENED: 'Reabierto',
+  CLOSED: 'Cerrado',
+  CANCELLED: 'Cancelado',
+  PRIORITY_CHANGED: 'Prioridad cambiada',
+  CATEGORY_CHANGED: 'Categoría cambiada',
+  SLA_BREACHED: 'SLA vencido',
+};
+
+export function getTicketHistoryActionLabel(action: string): string {
+  return TICKET_HISTORY_ACTION_LABELS[action] ?? action;
+}
+
 export const ACTIVE_STATE_OPTIONS: Array<SelectOption<boolean>> = [
-  { label: 'Active', value: true },
-  { label: 'Inactive', value: false },
+  { label: 'Activo', value: true },
+  { label: 'Inactivo', value: false },
 ];
 
 export function getActiveStateLabel(active: boolean): string {
-  return active ? 'Active' : 'Inactive';
+  return active ? 'Activo' : 'Inactivo';
 }
 
 export function getActivationActionLabel(active: boolean): string {
-  return active ? 'Deactivate' : 'Activate';
+  return active ? 'Desactivar' : 'Activar';
 }
 
 export const COMMENT_VISIBILITY_LABELS: Readonly<Record<TicketCommentVisibility, string>> = {
-  PUBLIC: 'Public',
-  INTERNAL: 'Internal',
+  PUBLIC: 'Público',
+  INTERNAL: 'Interno',
 };
 
 export function getTicketCommentVisibilityOptions(

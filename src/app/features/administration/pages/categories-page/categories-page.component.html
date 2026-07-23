@@ -1,16 +1,16 @@
 <section class="page-card p-4">
   <div class="row g-3 align-items-start mb-4">
     <div class="col-12 col-md">
-      <h1 class="mb-2">Categories</h1>
+      <h1 class="mb-2">Categorías</h1>
       <p class="mb-0 categories-muted">
-        Maintain the category catalog that classifies tickets and supports SLA rules.
+        Mantén el catálogo de categorías que clasifica tickets y soporta reglas SLA.
       </p>
     </div>
     <div class="col-12 col-md-auto">
       <div class="d-flex flex-wrap justify-content-center justify-content-md-end gap-2">
         <button
           (click)="startCreate()"
-          label="New category"
+          label="Nueva categoría"
           icon="pi pi-plus"
           type="button"
           pButton
@@ -18,7 +18,7 @@
         <button
           (click)="loadCategories()"
           severity="secondary"
-          label="Refresh"
+          label="Actualizar"
           type="button"
           icon="pi pi-refresh"
           pButton
@@ -47,7 +47,7 @@
           [loading]="loading()"
           [value]="categoryRows()"
           [rows]="10"
-          currentPageReportTemplate="{first} - {last} of {totalRecords}"
+          currentPageReportTemplate="{first} - {last} de {totalRecords}"
         >
           <ng-template pTemplate="caption">
             <div class="table-toolbar">
@@ -55,8 +55,8 @@
                 <i class="pi pi-search" aria-hidden="true"></i>
                 <input
                   (input)="onGlobalFilter(categoriesTable, $event)"
-                  aria-label="Search categories"
-                  placeholder="Search categories"
+                  aria-label="Buscar categorías"
+                  placeholder="Buscar categorías"
                   type="search"
                   pInputText
                 />
@@ -67,19 +67,19 @@
           <ng-template pTemplate="header">
             <tr>
               <th pSortableColumn="name">
-                <span class="sortable-header">Name <p-sortIcon field="name"></p-sortIcon></span>
+                <span class="sortable-header">Nombre <p-sortIcon field="name"></p-sortIcon></span>
               </th>
               <th pSortableColumn="descriptionDisplay">
                 <span class="sortable-header">
-                  Description <p-sortIcon field="descriptionDisplay"></p-sortIcon>
+                  Descripción <p-sortIcon field="descriptionDisplay"></p-sortIcon>
                 </span>
               </th>
               <th pSortableColumn="activeDisplay">
                 <span class="sortable-header">
-                  Status <p-sortIcon field="activeDisplay"></p-sortIcon>
+                  Estado <p-sortIcon field="activeDisplay"></p-sortIcon>
                 </span>
               </th>
-              <th class="actions-column">Actions</th>
+              <th class="actions-column">Acciones</th>
             </tr>
           </ng-template>
 
@@ -97,7 +97,7 @@
                 <button
                   (click)="editCategory(category)"
                   severity="secondary"
-                  label="Edit"
+                  label="Editar"
                   type="button"
                   size="small"
                   pButton
@@ -118,29 +118,29 @@
     </div>
 
     <div class="col-12 col-md-4">
-      <p-card [header]="isEditing() ? 'Edit category' : 'Create category'">
+      <p-card [header]="isEditing() ? 'Editar categoría' : 'Crear categoría'">
         <form (ngSubmit)="submit()" [formGroup]="categoryForm" class="d-flex flex-column gap-3">
           <label class="d-flex flex-column gap-2">
-            <span class="categories-muted">Name</span>
+            <span class="categories-muted">Nombre</span>
             <input pInputText formControlName="name" />
           </label>
 
           <label class="d-flex flex-column gap-2">
-            <span class="categories-muted">Description</span>
+            <span class="categories-muted">Descripción</span>
             <textarea pTextarea formControlName="description" rows="5"></textarea>
           </label>
 
           <div class="d-flex flex-wrap gap-2">
             <button
               [loading]="saving()"
-              [label]="isEditing() ? 'Save changes' : 'Create category'"
+              [label]="isEditing() ? 'Guardar cambios' : 'Crear categoría'"
               type="submit"
               pButton
             ></button>
             <button
               (click)="startCreate()"
               severity="secondary"
-              label="Clear"
+              label="Limpiar"
               type="button"
               pButton
             ></button>

@@ -88,14 +88,14 @@ export class TicketDetailStore {
       };
 
       return this.ticketApiService.addComment(ticket.id, payload);
-    }, 'Unable to add the comment.');
+    }, 'No se pudo agregar el comentario.');
   }
 
   assignTicket(agentId: string): Observable<boolean> {
     return this.runTicketMutation(
       (ticket) =>
         this.ticketApiService.assignTicket(ticket.id, { version: ticket.version, agentId }),
-      'Unable to assign the ticket.',
+      'No se pudo asignar el ticket.',
     );
   }
 
@@ -104,7 +104,7 @@ export class TicketDetailStore {
       const payload: TicketVersionRequest = { version: ticket.version };
 
       return this.ticketApiService.startTicket(ticket.id, payload);
-    }, 'Unable to start the ticket.');
+    }, 'No se pudo iniciar el ticket.');
   }
 
   requestInformation(content: string): Observable<boolean> {
@@ -115,7 +115,7 @@ export class TicketDetailStore {
       };
 
       return this.ticketApiService.requestInformation(ticket.id, payload);
-    }, 'Unable to request more information.');
+    }, 'No se pudo solicitar más información.');
   }
 
   resolveTicket(resolutionSummary: string): Observable<boolean> {
@@ -126,7 +126,7 @@ export class TicketDetailStore {
       };
 
       return this.ticketApiService.resolveTicket(ticket.id, payload);
-    }, 'Unable to resolve the ticket.');
+    }, 'No se pudo resolver el ticket.');
   }
 
   closeTicket(): Observable<boolean> {
@@ -134,7 +134,7 @@ export class TicketDetailStore {
       const payload: TicketVersionRequest = { version: ticket.version };
 
       return this.ticketApiService.closeTicket(ticket.id, payload);
-    }, 'Unable to close the ticket.');
+    }, 'No se pudo cerrar el ticket.');
   }
 
   private loadSupportUsers(): void {
@@ -163,7 +163,7 @@ export class TicketDetailStore {
           this.supportUsersLoadedState.set(false);
           this.supportUsersState.set([]);
           this.supportUsersErrorState.set(
-            resolveProblemDetailsMessage(error, 'Unable to load available agents.'),
+            resolveProblemDetailsMessage(error, 'No se pudieron cargar los agentes disponibles.'),
           );
         },
       });
@@ -197,7 +197,7 @@ export class TicketDetailStore {
       }),
       map(() => void 0),
       catchError((error: ProblemDetails) => {
-        this.errorState.set(resolveProblemDetailsMessage(error, 'Unable to load the ticket.'));
+        this.errorState.set(resolveProblemDetailsMessage(error, 'No se pudo cargar el ticket.'));
         return EMPTY;
       }),
       finalize(() => {
@@ -215,7 +215,7 @@ export class TicketDetailStore {
     const currentTicket = this.ticketState();
 
     if (!currentTicket) {
-      this.errorState.set('There is no loaded ticket for this action.');
+      this.errorState.set('No hay un ticket cargado para esta acción.');
       return of(false);
     }
 
@@ -243,7 +243,7 @@ export class TicketDetailStore {
     return this.ticketApiService.getHistory(ticketId).pipe(
       catchError((error: ProblemDetails) => {
         this.historyErrorState.set(
-          resolveProblemDetailsMessage(error, 'Unable to load the ticket history.'),
+          resolveProblemDetailsMessage(error, 'No se pudo cargar el historial del ticket.'),
         );
         return of([]);
       }),

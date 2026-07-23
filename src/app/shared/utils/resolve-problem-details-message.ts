@@ -1,11 +1,13 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { FieldErrorResponse, ProblemDetails } from '../models/api.models';
 
-const NETWORK_ERROR_MESSAGE = 'Unable to reach the server. Check your connection and try again.';
-const UNAUTHORIZED_MESSAGE = 'Your session has expired. Please sign in again.';
-const FORBIDDEN_MESSAGE = 'You do not have permission to perform this action.';
-const SERVER_ERROR_MESSAGE = 'The server returned an unexpected error. Please try again shortly.';
-const UNEXPECTED_ERROR_MESSAGE = 'An unexpected error occurred.';
+const NETWORK_ERROR_MESSAGE =
+  'No se pudo conectar con el servidor. Revisa tu conexión e intenta nuevamente.';
+const UNAUTHORIZED_MESSAGE = 'Tu sesión expiró. Inicia sesión nuevamente.';
+const FORBIDDEN_MESSAGE = 'No tienes permiso para realizar esta acción.';
+const SERVER_ERROR_MESSAGE =
+  'El servidor devolvió un error inesperado. Intenta nuevamente en unos minutos.';
+const UNEXPECTED_ERROR_MESSAGE = 'Ocurrió un error inesperado.';
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null;
@@ -39,17 +41,17 @@ function toFieldErrors(value: unknown): FieldErrorResponse[] {
 function inferProblemTitle(status: number): string {
   switch (status) {
     case 0:
-      return 'Network Error';
+      return 'Error de red';
     case 400:
-      return 'Bad Request';
+      return 'Solicitud incorrecta';
     case 401:
-      return 'Unauthorized';
+      return 'No autorizado';
     case 403:
-      return 'Forbidden';
+      return 'Prohibido';
     case 404:
-      return 'Not Found';
+      return 'No encontrado';
     default:
-      return status >= 500 ? 'Server Error' : 'Unexpected Error';
+      return status >= 500 ? 'Error del servidor' : 'Error inesperado';
   }
 }
 
@@ -125,9 +127,7 @@ function normalizeProblemRecord(
 
 function normalizeHttpErrorResponse(error: HttpErrorResponse): ProblemDetails {
   const correlationId =
-    error.headers.get('X-Correlation-Id') ??
-    error.headers.get('x-correlation-id') ??
-    undefined;
+    error.headers.get('X-Correlation-Id') ?? error.headers.get('x-correlation-id') ?? undefined;
   const defaults: Partial<ProblemDetails> = {
     status: error.status,
     title: error.statusText || undefined,

@@ -1,5 +1,10 @@
 <form (ngSubmit)="addComment()" [formGroup]="commentForm" class="d-flex flex-column gap-3">
-  <textarea formControlName="content" placeholder="Write a comment" rows="4" pTextarea></textarea>
+  <textarea
+    formControlName="content"
+    placeholder="Escribe un comentario"
+    rows="4"
+    pTextarea
+  ></textarea>
   <p-select
     [options]="visibilityOptions()"
     formControlName="visibility"
@@ -8,12 +13,12 @@
     styleClass="w-100"
   ></p-select>
   <div class="d-flex flex-wrap gap-2">
-    <button pButton type="submit" label="Add comment"></button>
+    <button pButton type="submit" label="Agregar comentario"></button>
   </div>
 </form>
 
 @if (visibleComments().length === 0) {
-  <p class="mb-0 mt-4 ticket-detail-muted">No comments are available.</p>
+  <p class="mb-0 mt-4 ticket-detail-muted">No hay comentarios disponibles.</p>
 } @else {
   <div class="vstack gap-3 mt-4">
     @for (comment of visibleComments(); track comment.id) {
@@ -21,7 +26,7 @@
         [class.comment-item-internal]="comment.visibility === 'INTERNAL'"
         class="comment-item p-3 rounded-4 border"
       >
-        <strong class="d-block">{{ comment.authorName ?? 'User' }}</strong>
+        <strong class="d-block">{{ comment.authorName ?? 'Usuario' }}</strong>
         <small class="d-block mt-1 ticket-detail-muted">{{
           comment.createdAt | date: 'short'
         }}</small>

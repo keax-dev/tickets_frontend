@@ -2,10 +2,12 @@
   <div class="row g-3 align-items-start mb-4">
     <div class="col-12 col-md">
       <h1 class="mb-2">Tickets</h1>
-      <p class="mb-0 ticket-list-muted">Review and manage ticket status across the workflow.</p>
+      <p class="mb-0 ticket-list-muted">
+        Revisa y administra el estado de los tickets en el flujo.
+      </p>
     </div>
     <div class="col-12 col-md-auto">
-      <a pButton routerLink="/tickets/new" label="New ticket" icon="pi pi-plus"></a>
+      <a pButton routerLink="/tickets/new" label="Nuevo ticket" icon="pi pi-plus"></a>
     </div>
   </div>
 
@@ -13,7 +15,7 @@
     <div class="col-12 col-xl-4">
       <input
         formControlName="search"
-        placeholder="Search tickets"
+        placeholder="Buscar tickets"
         class="w-100"
         type="search"
         pInputText
@@ -25,7 +27,7 @@
         formControlName="status"
         optionLabel="label"
         optionValue="value"
-        placeholder="Status"
+        placeholder="Estado"
         styleClass="w-100"
       ></p-select>
     </div>
@@ -35,7 +37,7 @@
         formControlName="priority"
         optionLabel="label"
         optionValue="value"
-        placeholder="Priority"
+        placeholder="Prioridad"
         styleClass="w-100"
       ></p-select>
     </div>
@@ -45,7 +47,7 @@
         formControlName="categoryId"
         optionLabel="name"
         optionValue="id"
-        placeholder="Category"
+        placeholder="Categoría"
         styleClass="w-100"
       ></p-select>
     </div>
@@ -81,34 +83,36 @@
     [first]="currentFirst()"
     [lazy]="true"
     [rows]="currentRows()"
-    currentPageReportTemplate="{first} - {last} of {totalRecords}"
+    currentPageReportTemplate="{first} - {last} de {totalRecords}"
   >
     <ng-template pTemplate="header">
       <tr>
         <th pSortableColumn="code">
-          <span class="sortable-header">Code <p-sortIcon field="code"></p-sortIcon></span>
+          <span class="sortable-header">Código <p-sortIcon field="code"></p-sortIcon></span>
         </th>
         <th pSortableColumn="title">
-          <span class="sortable-header">Title <p-sortIcon field="title"></p-sortIcon></span>
+          <span class="sortable-header">Título <p-sortIcon field="title"></p-sortIcon></span>
         </th>
         <th pSortableColumn="status">
-          <span class="sortable-header">Status <p-sortIcon field="status"></p-sortIcon></span>
+          <span class="sortable-header">Estado <p-sortIcon field="status"></p-sortIcon></span>
         </th>
         <th pSortableColumn="priority">
-          <span class="sortable-header">Priority <p-sortIcon field="priority"></p-sortIcon></span>
+          <span class="sortable-header">Prioridad <p-sortIcon field="priority"></p-sortIcon></span>
         </th>
         <th pSortableColumn="requesterName">
           <span class="sortable-header">
-            Requester <p-sortIcon field="requesterName"></p-sortIcon>
+            Solicitante <p-sortIcon field="requesterName"></p-sortIcon>
           </span>
         </th>
         <th pSortableColumn="assignedAgentName">
           <span class="sortable-header">
-            Agent <p-sortIcon field="assignedAgentName"></p-sortIcon>
+            Agente <p-sortIcon field="assignedAgentName"></p-sortIcon>
           </span>
         </th>
         <th pSortableColumn="resolutionDueAt">
-          <span class="sortable-header">Due <p-sortIcon field="resolutionDueAt"></p-sortIcon></span>
+          <span class="sortable-header"
+            >Vence <p-sortIcon field="resolutionDueAt"></p-sortIcon
+          ></span>
         </th>
       </tr>
     </ng-template>
@@ -124,8 +128,8 @@
             [value]="priorityLabel(ticket.priority)"
           ></p-tag>
         </td>
-        <td>{{ ticket.requesterName ?? 'No data' }}</td>
-        <td>{{ ticket.assignedAgentName ?? 'Unassigned' }}</td>
+        <td>{{ ticket.requesterName ?? 'Sin datos' }}</td>
+        <td>{{ ticket.assignedAgentName ?? 'Sin asignar' }}</td>
         <td>{{ ticket.resolutionDueAt | date: 'short' }}</td>
       </tr>
     </ng-template>

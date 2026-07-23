@@ -50,7 +50,7 @@ export class CategoriesPageComponent implements OnInit {
     this.categories().map((category) => ({
       ...category,
       activeDisplay: getActiveStateLabel(category.active),
-      descriptionDisplay: category.description || 'No description',
+      descriptionDisplay: category.description || 'Sin descripción',
     })),
   );
   readonly loading = this.categoriesPageStore.loading;

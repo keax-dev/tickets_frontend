@@ -133,7 +133,7 @@ export class TicketListPageComponent implements OnInit {
         error: (error: ProblemDetails) => {
           this.categories.set([]);
           this.categoryErrorMessage.set(
-            resolveProblemDetailsMessage(error, 'Unable to load categories.'),
+            resolveProblemDetailsMessage(error, 'No se pudieron cargar las categorías.'),
           );
         },
       });

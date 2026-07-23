@@ -1,44 +1,44 @@
 <div class="login-page">
   <div class="hero">
-    <p class="eyebrow">Management Tickets</p>
-    <h1>Manage support operations from one place.</h1>
-    <p>Sign in to review tickets, priorities, SLA windows, and operational follow-up.</p>
+    <p class="eyebrow">Gestión de tickets</p>
+    <h1>Administra la operación de soporte desde un solo lugar.</h1>
+    <p>Inicia sesión para revisar tickets, prioridades, tiempos SLA y seguimiento operativo.</p>
   </div>
 
   <p-card styleClass="login-card">
     <ng-template pTemplate="title">
-      <span class="login-card-title">Sign in</span>
+      <span class="login-card-title">Iniciar sesión</span>
     </ng-template>
     <ng-template pTemplate="subtitle">
-      <span class="login-card-subtitle">Enter your credentials to continue.</span>
+      <span class="login-card-subtitle">Ingresa tus credenciales para continuar.</span>
     </ng-template>
 
     <form (ngSubmit)="submit()" [formGroup]="loginForm">
       <label class="field">
-        <span>Email</span>
+        <span>Correo electrónico</span>
         <input
           pInputText
           type="email"
           formControlName="email"
-          placeholder="you@company.com"
+          placeholder="tu@empresa.com"
           autocomplete="username"
         />
       </label>
 
       <label class="field">
-        <span>Password</span>
+        <span>Contraseña</span>
         <p-password
           [toggleMask]="true"
           [feedback]="false"
           formControlName="password"
           styleClass="w-100"
           inputStyleClass="w-100"
-          placeholder="Enter your password"
+          placeholder="Ingresa tu contraseña"
         />
       </label>
 
       @if (showValidationError()) {
-        <p-message severity="warn" text="Enter both email and password to continue." />
+        <p-message severity="warn" text="Ingresa correo y contraseña para continuar." />
       }
 
       @if (authStore.errorMessage()) {
@@ -47,7 +47,7 @@
 
       <button
         [loading]="authStore.loading()"
-        label="Sign in"
+        label="Iniciar sesión"
         class="submit-button"
         type="submit"
         pButton

@@ -143,7 +143,7 @@ export class SlaPageComponent implements OnInit {
     const selectedPolicy = this.policies().find((policy) => policy.priority === rawValue.priority);
 
     if (!selectedPolicy) {
-      this.validationErrorMessage.set('Unable to identify the SLA policy to update.');
+      this.validationErrorMessage.set('No se pudo identificar la política SLA para actualizar.');
       return;
     }
 

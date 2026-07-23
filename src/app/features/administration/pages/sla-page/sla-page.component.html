@@ -3,14 +3,14 @@
     <div class="col-12 col-md">
       <h1 class="mb-2">SLA</h1>
       <p class="mb-0 sla-muted">
-        Define target windows by priority for first response and resolution.
+        Define tiempos objetivo por prioridad para primera respuesta y resolución.
       </p>
     </div>
     <div class="col-12 col-md-auto">
       <button
         (click)="loadPolicies()"
         severity="secondary"
-        label="Refresh"
+        label="Actualizar"
         icon="pi pi-refresh"
         type="button"
         pButton
@@ -43,7 +43,7 @@
           [loading]="loading()"
           [value]="policyRows()"
           [rows]="10"
-          currentPageReportTemplate="{first} - {last} of {totalRecords}"
+          currentPageReportTemplate="{first} - {last} de {totalRecords}"
         >
           <ng-template pTemplate="caption">
             <div class="table-toolbar">
@@ -51,8 +51,8 @@
                 <i class="pi pi-search" aria-hidden="true"></i>
                 <input
                   (input)="onGlobalFilter(slaTable, $event)"
-                  aria-label="Search SLA policies"
-                  placeholder="Search SLA policies"
+                  aria-label="Buscar políticas SLA"
+                  placeholder="Buscar políticas SLA"
                   type="search"
                   pInputText
                 />
@@ -64,25 +64,25 @@
             <tr>
               <th pSortableColumn="priorityDisplay">
                 <span class="sortable-header">
-                  Priority <p-sortIcon field="priorityDisplay"></p-sortIcon>
+                  Prioridad <p-sortIcon field="priorityDisplay"></p-sortIcon>
                 </span>
               </th>
               <th pSortableColumn="firstResponseHours">
                 <span class="sortable-header">
-                  First response <p-sortIcon field="firstResponseHours"></p-sortIcon>
+                  Primera respuesta <p-sortIcon field="firstResponseHours"></p-sortIcon>
                 </span>
               </th>
               <th pSortableColumn="resolutionHours">
                 <span class="sortable-header">
-                  Resolution <p-sortIcon field="resolutionHours"></p-sortIcon>
+                  Resolución <p-sortIcon field="resolutionHours"></p-sortIcon>
                 </span>
               </th>
               <th pSortableColumn="activeDisplay">
                 <span class="sortable-header">
-                  Status <p-sortIcon field="activeDisplay"></p-sortIcon>
+                  Estado <p-sortIcon field="activeDisplay"></p-sortIcon>
                 </span>
               </th>
-              <th class="actions-column">Actions</th>
+              <th class="actions-column">Acciones</th>
             </tr>
           </ng-template>
 
@@ -106,7 +106,7 @@
                 <button
                   (click)="selectPolicy(policy)"
                   severity="secondary"
-                  label="Edit"
+                  label="Editar"
                   type="button"
                   size="small"
                   pButton
@@ -119,10 +119,10 @@
     </div>
 
     <div class="col-12 col-md-4">
-      <p-card header="Edit policy" class="h-100">
+      <p-card header="Editar política" class="h-100">
         <form [formGroup]="slaForm" (ngSubmit)="submit()" class="d-flex flex-column gap-3">
           <label class="d-flex flex-column gap-2">
-            <span class="sla-muted">Priority</span>
+            <span class="sla-muted">Prioridad</span>
             <p-select
               [options]="priorityOptions"
               formControlName="priority"
@@ -132,17 +132,17 @@
           </label>
 
           <label class="d-flex flex-column gap-2">
-            <span class="sla-muted">First response (hours)</span>
+            <span class="sla-muted">Primera respuesta (horas)</span>
             <input pInputText type="number" min="1" formControlName="firstResponseHours" />
           </label>
 
           <label class="d-flex flex-column gap-2">
-            <span class="sla-muted">Resolution (hours)</span>
+            <span class="sla-muted">Resolución (horas)</span>
             <input pInputText type="number" min="1" formControlName="resolutionHours" />
           </label>
 
           <label class="d-flex flex-column gap-2">
-            <span class="sla-muted">Status</span>
+            <span class="sla-muted">Estado</span>
             <p-select
               [options]="activeOptions"
               formControlName="active"
@@ -152,7 +152,7 @@
           </label>
 
           <div class="d-flex flex-wrap gap-2">
-            <button pButton type="submit" label="Save SLA" [loading]="saving()"></button>
+            <button pButton type="submit" label="Guardar SLA" [loading]="saving()"></button>
           </div>
         </form>
       </p-card>
