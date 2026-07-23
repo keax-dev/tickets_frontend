@@ -1,6 +1,7 @@
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { Component, computed, inject } from '@angular/core';
 import { ROUTE_TITLES, getAppRoleLabel } from '../../../../shared/constants/ui.constants';
+import { AppPermission } from '../../../../shared/models/api.models';
 import { DividerModule } from 'primeng/divider';
 import { AvatarModule } from 'primeng/avatar';
 import { ButtonModule } from 'primeng/button';
@@ -29,6 +30,12 @@ export class ShellComponent {
   readonly themeStore = inject(ThemeStore);
   readonly authStore = inject(AuthStore);
 
+  private readonly categoryAdministrationPermissions: AppPermission[] = [
+    'CATEGORY_CREATE',
+    'CATEGORY_UPDATE',
+    'CATEGORY_DISABLE',
+  ];
+
   readonly navigationItems = computed(() => {
     const baseItems: Array<{ path: string; label: string; icon: string }> = [
       { path: '/dashboard', label: ROUTE_TITLES.dashboard, icon: 'pi pi-chart-bar' },
@@ -40,7 +47,11 @@ export class ShellComponent {
     if (this.authStore.hasPermission('USER_READ')) {
       baseItems.push({ path: '/admin/users', label: ROUTE_TITLES.users, icon: 'pi pi-users' });
     }
-    if (this.authStore.hasPermission('CATEGORY_READ')) {
+    if (
+      this.categoryAdministrationPermissions.some((permission) =>
+        this.authStore.hasPermission(permission),
+      )
+    ) {
       baseItems.push({
         path: '/admin/categories',
         label: ROUTE_TITLES.categories,

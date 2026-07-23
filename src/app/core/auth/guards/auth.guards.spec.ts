@@ -80,4 +80,23 @@ describe('auth guards', () => {
     expect(routerMock.createUrlTree).toHaveBeenCalledWith(['/forbidden']);
     expect(result).toEqual({ commands: ['/forbidden'] });
   });
+
+  it('allows routes when at least one required permission is present in permissionGuard', () => {
+    authStoreMock.hasPermission.mockImplementation(
+      (permission) => permission === 'CATEGORY_UPDATE',
+    );
+
+    const result = TestBed.runInInjectionContext(() =>
+      permissionGuard(
+        {
+          data: {
+            permissions: ['CATEGORY_CREATE', 'CATEGORY_UPDATE', 'CATEGORY_DISABLE'],
+          },
+        } as never,
+        {} as never,
+      ),
+    );
+
+    expect(result).toBe(true);
+  });
 });

@@ -83,7 +83,7 @@ export const routes: Routes = [
         title: ROUTE_TITLES.categories,
         canActivate: [permissionGuard],
         data: {
-          permission: 'CATEGORY_READ',
+          permissions: ['CATEGORY_CREATE', 'CATEGORY_UPDATE', 'CATEGORY_DISABLE'],
         },
         loadComponent: () =>
           import('./features/administration/pages/categories-page/categories-page.component').then(

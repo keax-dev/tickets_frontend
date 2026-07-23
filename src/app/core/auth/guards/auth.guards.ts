@@ -32,10 +32,15 @@ export const guestGuard: CanActivateFn = () => {
 
 export const permissionGuard: CanActivateFn = (route: ActivatedRouteSnapshot) => {
   const requiredPermission = route.data['permission'] as AppPermission | undefined;
+  const requiredPermissions = route.data['permissions'] as AppPermission[] | undefined;
   const authStore = inject(AuthStore);
   const router = inject(Router);
 
-  if (!requiredPermission || authStore.hasPermission(requiredPermission)) {
+  if (
+    (!requiredPermission && !requiredPermissions?.length) ||
+    (requiredPermission && authStore.hasPermission(requiredPermission)) ||
+    requiredPermissions?.some((permission) => authStore.hasPermission(permission))
+  ) {
     return true;
   }
 
