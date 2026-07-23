@@ -27,6 +27,7 @@ import { CardModule } from 'primeng/card';
 import { TagModule } from 'primeng/tag';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { SlaPageStore } from '../../stores/sla-page.store';
+import { AuthStore } from '../../../../core/auth/stores/auth.store';
 
 type SlaPolicyTableRow = SlaPolicy & {
   activeDisplay: string;
@@ -54,8 +55,10 @@ export class SlaPageComponent implements OnInit {
   private readonly destroyRef = inject(DestroyRef);
   private readonly slaPageStore = inject(SlaPageStore);
   private readonly formBuilder = inject(FormBuilder);
+  private readonly authStore = inject(AuthStore);
 
   readonly validationErrorMessage = signal<string | null>(null);
+  readonly canUpdateSla = computed(() => this.authStore.hasPermission('SLA_UPDATE'));
   readonly errorMessage = computed(
     () => this.validationErrorMessage() ?? this.slaPageStore.errorMessage(),
   );
@@ -128,10 +131,18 @@ export class SlaPageComponent implements OnInit {
   }
 
   selectPolicy(policy: SlaPolicy): void {
+    if (!this.canUpdateSla()) {
+      return;
+    }
+
     this.patchForm(policy);
   }
 
   submit(): void {
+    if (!this.canUpdateSla()) {
+      return;
+    }
+
     if (this.slaForm.invalid) {
       this.slaForm.markAllAsTouched();
       return;

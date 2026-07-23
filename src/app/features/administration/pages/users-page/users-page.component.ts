@@ -17,6 +17,7 @@ import { Table, TableModule } from 'primeng/table';
 import { CardModule } from 'primeng/card';
 import { TagModule } from 'primeng/tag';
 import { UsersPageStore } from '../../stores/users-page.store';
+import { AuthStore } from '../../../../core/auth/stores/auth.store';
 
 type UserTableRow = UserRecord & {
   activeDisplay: string;
@@ -45,10 +46,18 @@ type UserTableRow = UserRecord & {
 export class UsersPageComponent implements OnInit {
   private readonly usersPageStore = inject(UsersPageStore);
   private readonly formBuilder = inject(FormBuilder);
+  private readonly authStore = inject(AuthStore);
 
   readonly editingUserVersion = signal<number | null>(null);
   readonly editingUserId = signal<string | null>(null);
   readonly isEditing = computed(() => this.editingUserId() !== null);
+  readonly canCreateUser = computed(() => this.authStore.hasPermission('USER_CREATE'));
+  readonly canUpdateUser = computed(() => this.authStore.hasPermission('USER_UPDATE'));
+  readonly canDisableUser = computed(() => this.authStore.hasPermission('USER_DISABLE'));
+  readonly showActionsColumn = computed(() => this.canUpdateUser() || this.canDisableUser());
+  readonly showUserForm = computed(
+    () => this.canCreateUser() || (this.isEditing() && this.canUpdateUser()),
+  );
   readonly errorMessage = this.usersPageStore.errorMessage;
   readonly loading = this.usersPageStore.loading;
   readonly saving = this.usersPageStore.saving;
@@ -103,6 +112,11 @@ export class UsersPageComponent implements OnInit {
   }
 
   startCreate(): void {
+    if (!this.canCreateUser()) {
+      this.clearEditingState();
+      return;
+    }
+
     this.editingUserVersion.set(null);
     this.editingUserId.set(null);
     this.userForm.reset({
@@ -117,6 +131,10 @@ export class UsersPageComponent implements OnInit {
   }
 
   editUser(user: UserRecord): void {
+    if (!this.canUpdateUser()) {
+      return;
+    }
+
     this.editingUserVersion.set(user.version);
     this.editingUserId.set(user.id);
     this.userForm.reset({
@@ -131,6 +149,13 @@ export class UsersPageComponent implements OnInit {
   }
 
   submit(): void {
+    if (
+      (this.isEditing() && !this.canUpdateUser()) ||
+      (!this.isEditing() && !this.canCreateUser())
+    ) {
+      return;
+    }
+
     if (this.userForm.invalid) {
       this.userForm.markAllAsTouched();
       return;
@@ -147,7 +172,16 @@ export class UsersPageComponent implements OnInit {
   }
 
   toggleStatus(user: UserRecord): void {
+    if (!this.canDisableUser()) {
+      return;
+    }
+
     this.usersPageStore.toggleStatus(user);
+  }
+
+  clearEditingState(): void {
+    this.editingUserVersion.set(null);
+    this.editingUserId.set(null);
   }
 
   private createUser(rawValue: {

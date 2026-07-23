@@ -6,13 +6,15 @@
     </div>
     <div class="col-12 col-md-auto">
       <div class="d-flex flex-wrap justify-content-center justify-content-md-end gap-2">
-        <button
-          (click)="startCreate()"
-          type="button"
-          label="Nuevo usuario"
-          icon="pi pi-plus"
-          pButton
-        ></button>
+        @if (canCreateUser()) {
+          <button
+            (click)="startCreate()"
+            type="button"
+            label="Nuevo usuario"
+            icon="pi pi-plus"
+            pButton
+          ></button>
+        }
         <button
           (click)="loadUsers()"
           severity="secondary"
@@ -34,7 +36,7 @@
   }
 
   <div class="row gx-4 gy-3">
-    <div class="col-12 col-md-8">
+    <div class="col-12" [class.col-md-8]="showUserForm()" [class.col-md-12]="!showUserForm()">
       <p-card class="h-100">
         <p-table
           #usersTable
@@ -65,9 +67,9 @@
           <ng-template pTemplate="header">
             <tr>
               <th pSortableColumn="fullName">
-                <span class="sortable-header"
-                  >Nombre <p-sortIcon field="fullName"></p-sortIcon
-                ></span>
+                <span class="sortable-header">
+                  Nombre <p-sortIcon field="fullName"></p-sortIcon>
+                </span>
               </th>
               <th pSortableColumn="email">
                 <span class="sortable-header">
@@ -75,16 +77,18 @@
                 </span>
               </th>
               <th pSortableColumn="roleDisplay">
-                <span class="sortable-header"
-                  >Rol <p-sortIcon field="roleDisplay"></p-sortIcon
-                ></span>
+                <span class="sortable-header">
+                  Rol <p-sortIcon field="roleDisplay"></p-sortIcon>
+                </span>
               </th>
               <th pSortableColumn="activeDisplay">
                 <span class="sortable-header">
                   Estado <p-sortIcon field="activeDisplay"></p-sortIcon>
                 </span>
               </th>
-              <th class="actions-column">Acciones</th>
+              @if (showActionsColumn()) {
+                <th class="actions-column">Acciones</th>
+              }
             </tr>
           </ng-template>
 
@@ -99,90 +103,98 @@
                   [value]="user.activeDisplay"
                 ></p-tag>
               </td>
-              <td class="d-flex flex-wrap gap-2">
-                <button
-                  (click)="editUser(user)"
-                  severity="secondary"
-                  label="Editar"
-                  size="small"
-                  type="button"
-                  pButton
-                ></button>
-                <button
-                  (click)="toggleStatus(user)"
-                  [severity]="user.active ? 'danger' : 'success'"
-                  [label]="activationActionLabel(user.active)"
-                  type="button"
-                  size="small"
-                  pButton
-                ></button>
-              </td>
+              @if (showActionsColumn()) {
+                <td class="d-flex flex-wrap gap-2">
+                  @if (canUpdateUser()) {
+                    <button
+                      (click)="editUser(user)"
+                      severity="secondary"
+                      label="Editar"
+                      size="small"
+                      type="button"
+                      pButton
+                    ></button>
+                  }
+                  @if (canDisableUser()) {
+                    <button
+                      (click)="toggleStatus(user)"
+                      [severity]="user.active ? 'danger' : 'success'"
+                      [label]="activationActionLabel(user.active)"
+                      type="button"
+                      size="small"
+                      pButton
+                    ></button>
+                  }
+                </td>
+              }
             </tr>
           </ng-template>
         </p-table>
       </p-card>
     </div>
 
-    <div class="col-12 col-md-4">
-      <p-card [header]="isEditing() ? 'Editar usuario' : 'Crear usuario'" class="h-100">
-        <form (ngSubmit)="submit()" [formGroup]="userForm" class="d-flex flex-column gap-3">
-          <label class="d-flex flex-column gap-2">
-            <span class="users-muted">Nombre</span>
-            <input pInputText formControlName="firstName" />
-          </label>
-
-          <label class="d-flex flex-column gap-2">
-            <span class="users-muted">Apellido</span>
-            <input pInputText formControlName="lastName" />
-          </label>
-
-          <label class="d-flex flex-column gap-2">
-            <span class="users-muted">Correo electrónico</span>
-            <input pInputText type="email" formControlName="email" />
-          </label>
-
-          <label class="d-flex flex-column gap-2">
-            <span class="users-muted">Rol</span>
-            <p-select
-              [options]="roleOptions"
-              formControlName="role"
-              optionLabel="label"
-              optionValue="value"
-            ></p-select>
-          </label>
-
-          @if (!isEditing()) {
+    @if (showUserForm()) {
+      <div class="col-12 col-md-4">
+        <p-card [header]="isEditing() ? 'Editar usuario' : 'Crear usuario'" class="h-100">
+          <form (ngSubmit)="submit()" [formGroup]="userForm" class="d-flex flex-column gap-3">
             <label class="d-flex flex-column gap-2">
-              <span class="users-muted">Contraseña inicial</span>
-              <p-password
-                [toggleMask]="true"
-                [feedback]="false"
-                formControlName="password"
-              ></p-password>
+              <span class="users-muted">Nombre</span>
+              <input pInputText formControlName="firstName" />
             </label>
-          } @else {
-            <p class="mb-0 users-muted">
-              Al editar, la contraseña actual del usuario se mantiene sin cambios.
-            </p>
-          }
 
-          <div class="d-flex flex-wrap gap-2">
-            <button
-              [loading]="saving()"
-              [label]="isEditing() ? 'Guardar cambios' : 'Crear usuario'"
-              type="submit"
-              pButton
-            ></button>
-            <button
-              (click)="startCreate()"
-              severity="secondary"
-              label="Limpiar"
-              type="button"
-              pButton
-            ></button>
-          </div>
-        </form>
-      </p-card>
-    </div>
+            <label class="d-flex flex-column gap-2">
+              <span class="users-muted">Apellido</span>
+              <input pInputText formControlName="lastName" />
+            </label>
+
+            <label class="d-flex flex-column gap-2">
+              <span class="users-muted">Correo electrónico</span>
+              <input pInputText type="email" formControlName="email" />
+            </label>
+
+            <label class="d-flex flex-column gap-2">
+              <span class="users-muted">Rol</span>
+              <p-select
+                [options]="roleOptions"
+                formControlName="role"
+                optionLabel="label"
+                optionValue="value"
+              ></p-select>
+            </label>
+
+            @if (!isEditing()) {
+              <label class="d-flex flex-column gap-2">
+                <span class="users-muted">Contraseña inicial</span>
+                <p-password
+                  [toggleMask]="true"
+                  [feedback]="false"
+                  formControlName="password"
+                ></p-password>
+              </label>
+            } @else {
+              <p class="mb-0 users-muted">
+                Al editar, la contraseña actual del usuario se mantiene sin cambios.
+              </p>
+            }
+
+            <div class="d-flex flex-wrap gap-2">
+              <button
+                [loading]="saving()"
+                [label]="isEditing() ? 'Guardar cambios' : 'Crear usuario'"
+                type="submit"
+                pButton
+              ></button>
+              <button
+                (click)="startCreate()"
+                severity="secondary"
+                [label]="canCreateUser() ? 'Limpiar' : 'Cancelar'"
+                type="button"
+                pButton
+              ></button>
+            </div>
+          </form>
+        </p-card>
+      </div>
+    }
   </div>
 </section>

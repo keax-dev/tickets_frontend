@@ -27,7 +27,7 @@
   }
 
   <div class="row gx-4 gy-3">
-    <div class="col-12 col-md-8">
+    <div class="col-12" [class.col-md-8]="canUpdateSla()" [class.col-md-12]="!canUpdateSla()">
       <p-card>
         <p-table
           #slaTable
@@ -82,7 +82,9 @@
                   Estado <p-sortIcon field="activeDisplay"></p-sortIcon>
                 </span>
               </th>
-              <th class="actions-column">Acciones</th>
+              @if (canUpdateSla()) {
+                <th class="actions-column">Acciones</th>
+              }
             </tr>
           </ng-template>
 
@@ -102,60 +104,64 @@
                   [value]="policy.activeDisplay"
                 ></p-tag>
               </td>
-              <td class="d-flex flex-wrap gap-2">
-                <button
-                  (click)="selectPolicy(policy)"
-                  severity="secondary"
-                  label="Editar"
-                  type="button"
-                  size="small"
-                  pButton
-                ></button>
-              </td>
+              @if (canUpdateSla()) {
+                <td class="d-flex flex-wrap gap-2">
+                  <button
+                    (click)="selectPolicy(policy)"
+                    severity="secondary"
+                    label="Editar"
+                    type="button"
+                    size="small"
+                    pButton
+                  ></button>
+                </td>
+              }
             </tr>
           </ng-template>
         </p-table>
       </p-card>
     </div>
 
-    <div class="col-12 col-md-4">
-      <p-card header="Editar política" class="h-100">
-        <form [formGroup]="slaForm" (ngSubmit)="submit()" class="d-flex flex-column gap-3">
-          <label class="d-flex flex-column gap-2">
-            <span class="sla-muted">Prioridad</span>
-            <p-select
-              [options]="priorityOptions"
-              formControlName="priority"
-              optionLabel="label"
-              optionValue="value"
-            ></p-select>
-          </label>
+    @if (canUpdateSla()) {
+      <div class="col-12 col-md-4">
+        <p-card header="Editar política" class="h-100">
+          <form [formGroup]="slaForm" (ngSubmit)="submit()" class="d-flex flex-column gap-3">
+            <label class="d-flex flex-column gap-2">
+              <span class="sla-muted">Prioridad</span>
+              <p-select
+                [options]="priorityOptions"
+                formControlName="priority"
+                optionLabel="label"
+                optionValue="value"
+              ></p-select>
+            </label>
 
-          <label class="d-flex flex-column gap-2">
-            <span class="sla-muted">Primera respuesta (horas)</span>
-            <input pInputText type="number" min="1" formControlName="firstResponseHours" />
-          </label>
+            <label class="d-flex flex-column gap-2">
+              <span class="sla-muted">Primera respuesta (horas)</span>
+              <input pInputText type="number" min="1" formControlName="firstResponseHours" />
+            </label>
 
-          <label class="d-flex flex-column gap-2">
-            <span class="sla-muted">Resolución (horas)</span>
-            <input pInputText type="number" min="1" formControlName="resolutionHours" />
-          </label>
+            <label class="d-flex flex-column gap-2">
+              <span class="sla-muted">Resolución (horas)</span>
+              <input pInputText type="number" min="1" formControlName="resolutionHours" />
+            </label>
 
-          <label class="d-flex flex-column gap-2">
-            <span class="sla-muted">Estado</span>
-            <p-select
-              [options]="activeOptions"
-              formControlName="active"
-              optionValue="value"
-              optionLabel="label"
-            ></p-select>
-          </label>
+            <label class="d-flex flex-column gap-2">
+              <span class="sla-muted">Estado</span>
+              <p-select
+                [options]="activeOptions"
+                formControlName="active"
+                optionValue="value"
+                optionLabel="label"
+              ></p-select>
+            </label>
 
-          <div class="d-flex flex-wrap gap-2">
-            <button pButton type="submit" label="Guardar SLA" [loading]="saving()"></button>
-          </div>
-        </form>
-      </p-card>
-    </div>
+            <div class="d-flex flex-wrap gap-2">
+              <button pButton type="submit" label="Guardar SLA" [loading]="saving()"></button>
+            </div>
+          </form>
+        </p-card>
+      </div>
+    }
   </div>
 </section>
