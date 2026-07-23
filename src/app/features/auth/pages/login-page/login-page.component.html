@@ -18,6 +18,7 @@
         <span>Correo electrónico</span>
         <input
           pInputText
+          data-testid="login-email-input"
           type="email"
           formControlName="email"
           placeholder="tu@empresa.com"
@@ -31,6 +32,7 @@
           [toggleMask]="true"
           [feedback]="false"
           formControlName="password"
+          inputId="login-password-input"
           styleClass="w-100"
           inputStyleClass="w-100"
           placeholder="Ingresa tu contraseña"
@@ -47,6 +49,7 @@
 
       <button
         [loading]="authStore.loading()"
+        data-testid="login-submit-button"
         label="Iniciar sesión"
         class="submit-button"
         type="submit"

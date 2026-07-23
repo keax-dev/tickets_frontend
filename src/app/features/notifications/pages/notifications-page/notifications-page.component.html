@@ -9,6 +9,7 @@
     <div class="col-12 col-sm-auto">
       <button
         (click)="notificationStore.markAllAsRead()"
+        data-testid="notifications-mark-all-button"
         [disabled]="
           notificationStore.loading() ||
           notificationStore.updating() ||
@@ -62,6 +63,7 @@
               ></p-tag>
               <button
                 (click)="notificationStore.markAsRead(notification.id)"
+                [attr.data-testid]="'notification-mark-read-' + notification.id"
                 [disabled]="notificationStore.updating() || notification.read"
                 [loading]="notificationStore.updating()"
                 variant="text"

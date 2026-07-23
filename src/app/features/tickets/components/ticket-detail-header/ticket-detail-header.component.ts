@@ -58,7 +58,10 @@ export class TicketDetailHeaderComponent {
       }
 
       this.lastSyncedAssignmentKey = assignmentKey;
-      this.assignmentForm.patchValue({ agentId: ticket.assignedAgentId ?? null }, { emitEvent: false });
+      this.assignmentForm.patchValue(
+        { agentId: ticket.assignedAgentId ?? null },
+        { emitEvent: false },
+      );
     });
 
     effect(() => {

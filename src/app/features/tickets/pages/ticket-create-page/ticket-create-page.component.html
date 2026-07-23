@@ -11,12 +11,17 @@
   <form [formGroup]="ticketForm" (ngSubmit)="submit()" class="d-flex flex-column gap-3">
     <label class="d-flex flex-column gap-2">
       <span class="ticket-create-muted">Título</span>
-      <input class="w-100" pInputText formControlName="title" />
+      <input class="w-100" data-testid="ticket-title-input" pInputText formControlName="title" />
     </label>
 
     <label class="d-flex flex-column gap-2">
       <span class="ticket-create-muted">Descripción</span>
-      <textarea pTextarea formControlName="description" rows="7"></textarea>
+      <textarea
+        data-testid="ticket-description-input"
+        pTextarea
+        formControlName="description"
+        rows="7"
+      ></textarea>
     </label>
 
     <div class="row g-3">
@@ -26,6 +31,7 @@
           <p-select
             [disabled]="categories().length === 0"
             [options]="categories()"
+            data-testid="ticket-category-select"
             formControlName="categoryId"
             optionLabel="name"
             optionValue="id"
@@ -39,6 +45,7 @@
           <span class="ticket-create-muted">Prioridad</span>
           <p-select
             [options]="priorityOptions"
+            data-testid="ticket-priority-select"
             formControlName="priority"
             optionLabel="label"
             optionValue="value"
@@ -60,6 +67,7 @@
       <button
         [disabled]="categories().length === 0"
         [loading]="submitting()"
+        data-testid="ticket-submit-button"
         label="Crear ticket"
         type="submit"
         pButton

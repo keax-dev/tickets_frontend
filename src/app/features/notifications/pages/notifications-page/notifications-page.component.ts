@@ -19,7 +19,7 @@ export class NotificationsPageComponent implements OnInit {
   readonly defaultRows = 10;
 
   readonly currentFirst = computed(
-    () => this.notificationStore.currentPage() * this.notificationStore.pageSize()
+    () => this.notificationStore.currentPage() * this.notificationStore.pageSize(),
   );
 
   ngOnInit(): void {
