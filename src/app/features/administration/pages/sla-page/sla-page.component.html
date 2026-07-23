@@ -30,20 +30,58 @@
     <div class="col-12 col-md-8">
       <p-card>
         <p-table
+          #slaTable
           [showCurrentPageReport]="true"
           [rowsPerPageOptions]="[10, 25, 50, 100]"
+          [globalFilterFields]="[
+            'priorityDisplay',
+            'firstResponseHours',
+            'resolutionHours',
+            'activeDisplay',
+          ]"
           [paginator]="true"
           [loading]="loading()"
-          [value]="policies()"
+          [value]="policyRows()"
           [rows]="10"
           currentPageReportTemplate="{first} - {last} of {totalRecords}"
         >
+          <ng-template pTemplate="caption">
+            <div class="table-toolbar">
+              <span class="table-search">
+                <i class="pi pi-search" aria-hidden="true"></i>
+                <input
+                  (input)="onGlobalFilter(slaTable, $event)"
+                  aria-label="Search SLA policies"
+                  placeholder="Search SLA policies"
+                  type="search"
+                  pInputText
+                />
+              </span>
+            </div>
+          </ng-template>
+
           <ng-template pTemplate="header">
             <tr>
-              <th>Priority</th>
-              <th>First response</th>
-              <th>Resolution</th>
-              <th>Status</th>
+              <th pSortableColumn="priorityDisplay">
+                <span class="sortable-header">
+                  Priority <p-sortIcon field="priorityDisplay"></p-sortIcon>
+                </span>
+              </th>
+              <th pSortableColumn="firstResponseHours">
+                <span class="sortable-header">
+                  First response <p-sortIcon field="firstResponseHours"></p-sortIcon>
+                </span>
+              </th>
+              <th pSortableColumn="resolutionHours">
+                <span class="sortable-header">
+                  Resolution <p-sortIcon field="resolutionHours"></p-sortIcon>
+                </span>
+              </th>
+              <th pSortableColumn="activeDisplay">
+                <span class="sortable-header">
+                  Status <p-sortIcon field="activeDisplay"></p-sortIcon>
+                </span>
+              </th>
               <th class="actions-column">Actions</th>
             </tr>
           </ng-template>
@@ -53,7 +91,7 @@
               <td>
                 <p-tag
                   [severity]="prioritySeverity(policy.priority)"
-                  [value]="priorityLabel(policy.priority)"
+                  [value]="policy.priorityDisplay"
                 ></p-tag>
               </td>
               <td>{{ policy.firstResponseHours }} h</td>
@@ -61,7 +99,7 @@
               <td>
                 <p-tag
                   [severity]="policy.active ? 'success' : 'secondary'"
-                  [value]="activeStateLabel(policy.active)"
+                  [value]="policy.activeDisplay"
                 ></p-tag>
               </td>
               <td class="d-flex flex-wrap gap-2">

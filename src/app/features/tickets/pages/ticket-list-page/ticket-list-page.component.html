@@ -13,7 +13,7 @@
     <div class="col-12 col-xl-4">
       <input
         formControlName="search"
-        placeholder="Search by code, title, or description"
+        placeholder="Search tickets"
         class="w-100"
         type="search"
         pInputText
@@ -69,12 +69,15 @@
 
   <p-table
     (onPage)="onPageChange($event)"
+    (onSort)="onSortChange($event)"
     [showCurrentPageReport]="true"
     [rowsPerPageOptions]="[10, 25, 50, 100]"
     [totalRecords]="totalRecords()"
     [paginator]="true"
     [loading]="ticketListStore.loading()"
     [value]="ticketListStore.page()?.content ?? []"
+    [sortField]="sortField()"
+    [sortOrder]="sortOrder()"
     [first]="currentFirst()"
     [lazy]="true"
     [rows]="currentRows()"
@@ -82,13 +85,31 @@
   >
     <ng-template pTemplate="header">
       <tr>
-        <th>Code</th>
-        <th>Title</th>
-        <th>Status</th>
-        <th>Priority</th>
-        <th>Requester</th>
-        <th>Agent</th>
-        <th>Due</th>
+        <th pSortableColumn="code">
+          <span class="sortable-header">Code <p-sortIcon field="code"></p-sortIcon></span>
+        </th>
+        <th pSortableColumn="title">
+          <span class="sortable-header">Title <p-sortIcon field="title"></p-sortIcon></span>
+        </th>
+        <th pSortableColumn="status">
+          <span class="sortable-header">Status <p-sortIcon field="status"></p-sortIcon></span>
+        </th>
+        <th pSortableColumn="priority">
+          <span class="sortable-header">Priority <p-sortIcon field="priority"></p-sortIcon></span>
+        </th>
+        <th pSortableColumn="requesterName">
+          <span class="sortable-header">
+            Requester <p-sortIcon field="requesterName"></p-sortIcon>
+          </span>
+        </th>
+        <th pSortableColumn="assignedAgentName">
+          <span class="sortable-header">
+            Agent <p-sortIcon field="assignedAgentName"></p-sortIcon>
+          </span>
+        </th>
+        <th pSortableColumn="resolutionDueAt">
+          <span class="sortable-header">Due <p-sortIcon field="resolutionDueAt"></p-sortIcon></span>
+        </th>
       </tr>
     </ng-template>
 

@@ -32,8 +32,8 @@ export class TicketApiService {
     let params = new HttpParams()
       .set('page', filters.page)
       .set('size', filters.size)
-      .set('sortBy', 'createdAt')
-      .set('direction', 'DESC');
+      .set('sortBy', filters.sortBy ?? 'createdAt')
+      .set('direction', filters.direction ?? 'DESC');
 
     if (filters.search) {
       params = params.set('search', filters.search);

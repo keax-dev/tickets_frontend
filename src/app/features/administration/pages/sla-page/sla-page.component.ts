@@ -22,11 +22,16 @@ import { MessageModule } from 'primeng/message';
 import { SelectModule } from 'primeng/select';
 import { CommonModule } from '@angular/common';
 import { ButtonModule } from 'primeng/button';
-import { TableModule } from 'primeng/table';
+import { Table, TableModule } from 'primeng/table';
 import { CardModule } from 'primeng/card';
 import { TagModule } from 'primeng/tag';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { SlaPageStore } from '../../stores/sla-page.store';
+
+type SlaPolicyTableRow = SlaPolicy & {
+  activeDisplay: string;
+  priorityDisplay: string;
+};
 
 @Component({
   standalone: true,
@@ -55,6 +60,13 @@ export class SlaPageComponent implements OnInit {
     () => this.validationErrorMessage() ?? this.slaPageStore.errorMessage(),
   );
   readonly policies = this.slaPageStore.policies;
+  readonly policyRows = computed<SlaPolicyTableRow[]>(() =>
+    this.policies().map((policy) => ({
+      ...policy,
+      activeDisplay: getActiveStateLabel(policy.active),
+      priorityDisplay: getTicketPriorityLabel(policy.priority),
+    })),
+  );
   readonly loading = this.slaPageStore.loading;
   readonly saving = this.slaPageStore.saving;
 
@@ -107,6 +119,12 @@ export class SlaPageComponent implements OnInit {
 
   loadPolicies(): void {
     this.slaPageStore.load();
+  }
+
+  onGlobalFilter(table: Table, event: Event): void {
+    const input = event.target as HTMLInputElement | null;
+
+    table.filterGlobal(input?.value ?? '', 'contains');
   }
 
   selectPolicy(policy: SlaPolicy): void {

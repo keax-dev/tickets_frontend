@@ -92,4 +92,23 @@ describe('TicketListStore', () => {
       expect.objectContaining({ search: 'network' }),
     );
   });
+
+  it('reloads the first page with the selected sort', () => {
+    ticketListStore.load(2, 25);
+    ticketListStore.updateSort('title', 'ASC');
+
+    expect(ticketListStore.currentPage()).toBe(0);
+    expect(ticketListStore.pageSize()).toBe(25);
+    expect(ticketListStore.sortBy()).toBe('title');
+    expect(ticketListStore.sortDirection()).toBe('ASC');
+    expect(ticketApiServiceMock.listTickets).toHaveBeenNthCalledWith(
+      2,
+      expect.objectContaining({
+        direction: 'ASC',
+        page: 0,
+        size: 25,
+        sortBy: 'title',
+      }),
+    );
+  });
 });

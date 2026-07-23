@@ -10,10 +10,15 @@ import { MessageModule } from 'primeng/message';
 import { TextareaModule } from 'primeng/textarea';
 import { CommonModule } from '@angular/common';
 import { ButtonModule } from 'primeng/button';
-import { TableModule } from 'primeng/table';
+import { Table, TableModule } from 'primeng/table';
 import { CardModule } from 'primeng/card';
 import { TagModule } from 'primeng/tag';
 import { CategoriesPageStore } from '../../stores/categories-page.store';
+
+type CategoryTableRow = Category & {
+  activeDisplay: string;
+  descriptionDisplay: string;
+};
 
 @Component({
   standalone: true,
@@ -41,6 +46,13 @@ export class CategoriesPageComponent implements OnInit {
   readonly isEditing = computed(() => this.editingCategoryId() !== null);
   readonly errorMessage = this.categoriesPageStore.errorMessage;
   readonly categories = this.categoriesPageStore.categories;
+  readonly categoryRows = computed<CategoryTableRow[]>(() =>
+    this.categories().map((category) => ({
+      ...category,
+      activeDisplay: getActiveStateLabel(category.active),
+      descriptionDisplay: category.description || 'No description',
+    })),
+  );
   readonly loading = this.categoriesPageStore.loading;
   readonly saving = this.categoriesPageStore.saving;
 
@@ -65,6 +77,12 @@ export class CategoriesPageComponent implements OnInit {
 
   loadCategories(): void {
     this.categoriesPageStore.load();
+  }
+
+  onGlobalFilter(table: Table, event: Event): void {
+    const input = event.target as HTMLInputElement | null;
+
+    table.filterGlobal(input?.value ?? '', 'contains');
   }
 
   startCreate(): void {

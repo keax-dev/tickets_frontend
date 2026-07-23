@@ -37,33 +37,62 @@
     <div class="col-12 col-md-8">
       <p-card class="h-100">
         <p-table
+          #usersTable
           [showCurrentPageReport]="true"
           [rowsPerPageOptions]="[10, 25, 50, 100]"
+          [globalFilterFields]="['fullName', 'email', 'roleDisplay', 'activeDisplay']"
           [loading]="loading()"
           [paginator]="true"
-          [value]="users()"
+          [value]="userRows()"
           [rows]="10"
           currentPageReportTemplate="{first} - {last} of {totalRecords}"
         >
+          <ng-template pTemplate="caption">
+            <div class="table-toolbar">
+              <span class="table-search">
+                <i class="pi pi-search" aria-hidden="true"></i>
+                <input
+                  (input)="onGlobalFilter(usersTable, $event)"
+                  aria-label="Search users"
+                  placeholder="Search users"
+                  type="search"
+                  pInputText
+                />
+              </span>
+            </div>
+          </ng-template>
+
           <ng-template pTemplate="header">
             <tr>
-              <th>Name</th>
-              <th>Email</th>
-              <th>Role</th>
-              <th>Status</th>
+              <th pSortableColumn="fullName">
+                <span class="sortable-header">Name <p-sortIcon field="fullName"></p-sortIcon></span>
+              </th>
+              <th pSortableColumn="email">
+                <span class="sortable-header">Email <p-sortIcon field="email"></p-sortIcon></span>
+              </th>
+              <th pSortableColumn="roleDisplay">
+                <span class="sortable-header"
+                  >Role <p-sortIcon field="roleDisplay"></p-sortIcon
+                ></span>
+              </th>
+              <th pSortableColumn="activeDisplay">
+                <span class="sortable-header">
+                  Status <p-sortIcon field="activeDisplay"></p-sortIcon>
+                </span>
+              </th>
               <th class="actions-column">Actions</th>
             </tr>
           </ng-template>
 
           <ng-template pTemplate="body" let-user>
             <tr>
-              <td>{{ user.firstName }} {{ user.lastName }}</td>
+              <td>{{ user.fullName }}</td>
               <td>{{ user.email }}</td>
-              <td><p-tag [value]="roleLabel(user.role)" severity="info"></p-tag></td>
+              <td><p-tag [value]="user.roleDisplay" severity="info"></p-tag></td>
               <td>
                 <p-tag
                   [severity]="user.active ? 'success' : 'secondary'"
-                  [value]="activeStateLabel(user.active)"
+                  [value]="user.activeDisplay"
                 ></p-tag>
               </td>
               <td class="d-flex flex-wrap gap-2">

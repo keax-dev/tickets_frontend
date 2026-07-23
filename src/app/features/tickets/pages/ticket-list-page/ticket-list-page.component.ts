@@ -25,9 +25,15 @@ import { TagModule } from 'primeng/tag';
 import {
   ProblemDetails,
   TicketPriority,
+  SortDirection,
   TicketStatus,
   Category,
 } from '../../../../shared/models/api.models';
+
+type TicketTableSortEvent = {
+  field?: string | string[] | null;
+  order?: number | null;
+};
 
 @Component({
   standalone: true,
@@ -70,6 +76,8 @@ export class TicketListPageComponent implements OnInit {
   readonly currentFirst = computed(
     () => this.ticketListStore.currentPage() * this.ticketListStore.pageSize(),
   );
+  readonly sortField = this.ticketListStore.sortBy;
+  readonly sortOrder = computed(() => (this.ticketListStore.sortDirection() === 'ASC' ? 1 : -1));
   readonly totalRecords = this.ticketListStore.totalRecords;
   readonly currentRows = this.ticketListStore.pageSize;
 
@@ -97,6 +105,20 @@ export class TicketListPageComponent implements OnInit {
     const page = Math.floor(event.first / rows);
 
     this.ticketListStore.load(page, rows);
+  }
+
+  onSortChange(event: TicketTableSortEvent): void {
+    const sortBy = Array.isArray(event.field) ? event.field[0] : event.field;
+
+    if (!sortBy) {
+      return;
+    }
+
+    this.ticketListStore.updateSort(sortBy, this.resolveSortDirection(event.order));
+  }
+
+  private resolveSortDirection(order: number | null | undefined): SortDirection {
+    return order === 1 ? 'ASC' : 'DESC';
   }
 
   private loadCategories(): void {

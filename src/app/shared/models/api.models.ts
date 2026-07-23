@@ -43,6 +43,7 @@ export type TicketStatus =
 
 export type TicketPriority = 'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT';
 export type TicketCommentVisibility = 'PUBLIC' | 'INTERNAL';
+export type SortDirection = 'ASC' | 'DESC';
 
 export interface PageResponse<T> {
   content: T[];
@@ -203,6 +204,8 @@ export interface TicketListFilters {
   priority?: TicketPriority | null;
   categoryId?: string | null;
   assignedAgentId?: string | null;
+  sortBy?: string;
+  direction?: SortDirection;
   page: number;
   size: number;
 }

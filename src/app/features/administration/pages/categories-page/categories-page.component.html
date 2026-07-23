@@ -39,19 +39,46 @@
     <div class="col-12 col-md-8">
       <p-card class="h-100">
         <p-table
+          #categoriesTable
           [showCurrentPageReport]="true"
           [rowsPerPageOptions]="[10, 25, 50, 100]"
+          [globalFilterFields]="['name', 'descriptionDisplay', 'activeDisplay']"
           [paginator]="true"
           [loading]="loading()"
-          [value]="categories()"
+          [value]="categoryRows()"
           [rows]="10"
           currentPageReportTemplate="{first} - {last} of {totalRecords}"
         >
+          <ng-template pTemplate="caption">
+            <div class="table-toolbar">
+              <span class="table-search">
+                <i class="pi pi-search" aria-hidden="true"></i>
+                <input
+                  (input)="onGlobalFilter(categoriesTable, $event)"
+                  aria-label="Search categories"
+                  placeholder="Search categories"
+                  type="search"
+                  pInputText
+                />
+              </span>
+            </div>
+          </ng-template>
+
           <ng-template pTemplate="header">
             <tr>
-              <th>Name</th>
-              <th>Description</th>
-              <th>Status</th>
+              <th pSortableColumn="name">
+                <span class="sortable-header">Name <p-sortIcon field="name"></p-sortIcon></span>
+              </th>
+              <th pSortableColumn="descriptionDisplay">
+                <span class="sortable-header">
+                  Description <p-sortIcon field="descriptionDisplay"></p-sortIcon>
+                </span>
+              </th>
+              <th pSortableColumn="activeDisplay">
+                <span class="sortable-header">
+                  Status <p-sortIcon field="activeDisplay"></p-sortIcon>
+                </span>
+              </th>
               <th class="actions-column">Actions</th>
             </tr>
           </ng-template>
@@ -59,11 +86,11 @@
           <ng-template pTemplate="body" let-category>
             <tr>
               <td>{{ category.name }}</td>
-              <td>{{ category.description || 'No description' }}</td>
+              <td>{{ category.descriptionDisplay }}</td>
               <td>
                 <p-tag
                   [severity]="category.active ? 'success' : 'secondary'"
-                  [value]="activeStateLabel(category.active)"
+                  [value]="category.activeDisplay"
                 ></p-tag>
               </td>
               <td class="d-flex flex-wrap gap-2">

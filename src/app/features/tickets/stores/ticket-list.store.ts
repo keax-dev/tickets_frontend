@@ -7,6 +7,7 @@ import {
   TicketListFilters,
   TicketPriority,
   ProblemDetails,
+  SortDirection,
   TicketSummary,
   PageResponse,
   TicketStatus,
@@ -25,6 +26,8 @@ export class TicketListStore {
   private readonly loadRequests$ = new Subject<TicketListFilters>();
   private readonly priorityState = signal<TicketPriority | null>(null);
   private readonly loadingState = signal(false);
+  private readonly sortByState = signal('createdAt');
+  private readonly sortDirectionState = signal<SortDirection>('DESC');
   private readonly searchState = signal('');
   private readonly statusState = signal<TicketStatus | null>(null);
   private readonly errorState = signal<string | null>(null);
@@ -40,6 +43,8 @@ export class TicketListStore {
   readonly pageSize = this.pageSizeState.asReadonly();
   readonly priority = this.priorityState.asReadonly();
   readonly loading = this.loadingState.asReadonly();
+  readonly sortBy = this.sortByState.asReadonly();
+  readonly sortDirection = this.sortDirectionState.asReadonly();
   readonly status = this.statusState.asReadonly();
   readonly search = this.searchState.asReadonly();
   readonly page = this.pageState.asReadonly();
@@ -76,15 +81,17 @@ export class TicketListStore {
       .subscribe();
   }
 
-  load(page = 0, size = 10): void {
+  load(page = 0, size = this.pageSizeState()): void {
     this.currentPageState.set(page);
     this.pageSizeState.set(size);
 
     this.loadRequests$.next({
       assignedAgentId: this.assignedAgentIdState(),
       categoryId: this.categoryIdState(),
+      direction: this.sortDirectionState(),
       priority: this.priorityState(),
       search: this.searchState(),
+      sortBy: this.sortByState(),
       status: this.statusState(),
       page,
       size,
@@ -94,6 +101,12 @@ export class TicketListStore {
   updateSearch(value: string): void {
     this.searchState.set(value);
     this.load();
+  }
+
+  updateSort(sortBy: string, direction: SortDirection): void {
+    this.sortByState.set(sortBy);
+    this.sortDirectionState.set(direction);
+    this.load(0, this.pageSizeState());
   }
 
   updateFilters(filters: {

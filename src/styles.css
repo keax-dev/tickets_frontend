@@ -90,3 +90,35 @@ a {
   margin: 0.4rem 0 0;
   color: var(--app-text-muted);
 }
+
+.table-toolbar {
+  display: flex;
+  justify-content: flex-end;
+  width: 100%;
+}
+
+.table-search {
+  position: relative;
+  width: min(100%, 22rem);
+}
+
+.table-search .pi {
+  color: var(--app-text-muted);
+  left: 0.85rem;
+  pointer-events: none;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.table-search input {
+  padding-left: 2.35rem;
+  width: 100%;
+}
+
+.sortable-header {
+  align-items: center;
+  display: inline-flex;
+  gap: 0.35rem;
+  white-space: nowrap;
+}

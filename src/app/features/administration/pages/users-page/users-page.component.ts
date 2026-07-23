@@ -13,10 +13,16 @@ import { MessageModule } from 'primeng/message';
 import { CommonModule } from '@angular/common';
 import { ButtonModule } from 'primeng/button';
 import { SelectModule } from 'primeng/select';
-import { TableModule } from 'primeng/table';
+import { Table, TableModule } from 'primeng/table';
 import { CardModule } from 'primeng/card';
 import { TagModule } from 'primeng/tag';
 import { UsersPageStore } from '../../stores/users-page.store';
+
+type UserTableRow = UserRecord & {
+  activeDisplay: string;
+  fullName: string;
+  roleDisplay: string;
+};
 
 @Component({
   standalone: true,
@@ -47,6 +53,14 @@ export class UsersPageComponent implements OnInit {
   readonly loading = this.usersPageStore.loading;
   readonly saving = this.usersPageStore.saving;
   readonly users = this.usersPageStore.users;
+  readonly userRows = computed<UserTableRow[]>(() =>
+    this.users().map((user) => ({
+      ...user,
+      activeDisplay: getActiveStateLabel(user.active),
+      fullName: `${user.firstName} ${user.lastName}`.trim(),
+      roleDisplay: getAppRoleLabel(user.role),
+    })),
+  );
 
   readonly roleOptions = APP_ROLE_OPTIONS;
 
@@ -80,6 +94,12 @@ export class UsersPageComponent implements OnInit {
 
   loadUsers(): void {
     this.usersPageStore.load();
+  }
+
+  onGlobalFilter(table: Table, event: Event): void {
+    const input = event.target as HTMLInputElement | null;
+
+    table.filterGlobal(input?.value ?? '', 'contains');
   }
 
   startCreate(): void {
