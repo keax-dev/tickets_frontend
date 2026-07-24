@@ -13,7 +13,7 @@
   </a>
 </div>
 
-# Domain Model
+# Modelo de Dominio
 
 ## Roles
 
@@ -22,20 +22,20 @@
 - `SUPPORT_AGENT`
 - `CUSTOMER`
 
-## Core Permissions
+## Permisos Principales
 
-- User management
-- Category management
-- SLA management
-- Ticket read/create/update/assign/reassign/change status
-- Public and internal comment creation
-- Attachment upload/download
-- Audit read
-- Dashboard read
+- Gestion de usuarios
+- Gestion de categorias
+- Gestion de SLA
+- Lectura, creacion, actualizacion, asignacion, reasignacion y cambio de estado de tickets
+- Creacion de comentarios publicos e internos
+- Carga y descarga de adjuntos
+- Lectura de auditoria
+- Lectura de dashboard
 
-Permissions are centralized and mapped to roles in the identity module.
+Los permisos estan centralizados y mapeados a roles en el modulo `identity`.
 
-## Aggregates and Entities
+## Agregados y Entidades
 
 ### User
 
@@ -167,7 +167,7 @@ Permissions are centralized and mapped to roles in the identity module.
 - `createdAt`
 - `expiresAt`
 
-## Ticket Lifecycle
+## Ciclo de Vida del Ticket
 
 - `CREATED`
 - `ASSIGNED`
@@ -177,4 +177,4 @@ Permissions are centralized and mapped to roles in the identity module.
 - `CLOSED`
 - `CANCELLED`
 
-Allowed transitions are enforced in the ticket domain model, not in controllers.
+Las transiciones permitidas se aplican en el modelo de dominio de `ticket`, no en los controllers.

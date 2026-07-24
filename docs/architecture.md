@@ -1,3 +1,18 @@
+<div align="right">
+  <a href="./architecture.md">
+    <img
+      alt="English"
+      src="https://img.shields.io/badge/Language-English-1f6feb?style=for-the-badge"
+    />
+  </a>
+  <a href="./architecture.es.md">
+    <img
+      alt="Espanol"
+      src="https://img.shields.io/badge/Idioma-Espanol-0b7a4b?style=for-the-badge"
+    />
+  </a>
+</div>
+
 # Management Tickets Architecture
 
 ## System Overview
