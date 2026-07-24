@@ -13,13 +13,13 @@
   </a>
 </div>
 
-# API Contract
+# Contrato API
 
 ## Base Path
 
 `/api/v1`
 
-## Authentication
+## Autenticacion
 
 - `POST /auth/login`
 - `POST /auth/refresh`
@@ -41,24 +41,24 @@
 - `POST /tickets/{ticketId}/cancel`
 - `GET /tickets/{ticketId}/history`
 
-## Comments
+## Comentarios
 
 - `GET /tickets/{ticketId}/comments`
 - `POST /tickets/{ticketId}/comments`
 
-## Attachments
+## Adjuntos
 
 - `POST /tickets/{ticketId}/attachments`
 - `GET /attachments/{attachmentId}/download`
 
-## Categories
+## Categorias
 
 - `GET /categories`
 - `POST /categories`
 - `PUT /categories/{categoryId}`
 - `PATCH /categories/{categoryId}/status`
 
-## Users
+## Usuarios
 
 - `GET /users`
 - `POST /users`
@@ -66,7 +66,7 @@
 - `PUT /users/{userId}`
 - `PATCH /users/{userId}/status`
 
-## SLA Policies
+## Politicas SLA
 
 - `GET /sla-policies`
 - `PUT /sla-policies/{priority}`
@@ -76,23 +76,23 @@
 - `GET /dashboard/summary`
 - `GET /dashboard/recent-activity`
 
-## Notifications
+## Notificaciones
 
 - `GET /notifications`
 - `PATCH /notifications/{notificationId}/read`
 - `PATCH /notifications/read-all`
 
-## Error Contract
+## Contrato de Error
 
-Errors use `ProblemDetail` with these custom fields:
+Los errores usan `ProblemDetail` con estos campos personalizados:
 
 - `code`
 - `correlationId`
 - `timestamp`
 - `fieldErrors`
 
-## Concurrency and Idempotency
+## Concurrencia e Idempotencia
 
-- Mutable resources carry a `version`
-- Version conflicts return HTTP `409`
-- Ticket creation requires `Idempotency-Key`
+- Los recursos mutables llevan `version`
+- Los conflictos de version retornan HTTP `409`
+- La creacion de tickets requiere `Idempotency-Key`

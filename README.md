@@ -1,101 +1,81 @@
 <div align="right">
   <a href="./README.md">
     <img
-      alt="Español"
-      src="https://img.shields.io/badge/Idioma-Espa%C3%B1ol-0b7a4b?style=for-the-badge"
-    />
-  </a>
-  <a href="./README.en.md">
-    <img
       alt="English"
       src="https://img.shields.io/badge/Language-English-1f6feb?style=for-the-badge"
+    />
+  </a>
+  <a href="./README.es.md">
+    <img
+      alt="Espanol"
+      src="https://img.shields.io/badge/Idioma-Espanol-0b7a4b?style=for-the-badge"
     />
   </a>
 </div>
 
 # Management Tickets Frontend
 
-SPA construida con Angular para el sistema **Management Tickets**. Este repositorio contiene el frontend del producto: autenticacion, panel principal, flujo de tickets, notificaciones, perfil y modulos de administracion con navegacion sensible a permisos.
+Angular SPA for the **Management Tickets** system. This repository contains the product frontend: authentication, dashboard, ticket workflow, notifications, profile, and administration modules with permission-aware navigation.
 
-## Resumen
+## Overview
 
-- Angular 21 con componentes standalone y lazy loading por rutas.
-- Estado local con **Signals** y orquestacion async con **RxJS**.
-- UI con **PrimeNG**, **PrimeIcons** y **Bootstrap 5**.
-- Autenticacion con access token en memoria y refresh token por cookie HttpOnly.
-- Guards, interceptors y stores orientados a modulos.
-- Suite de pruebas con **Vitest** organizada por feature.
+- Angular 21 with standalone components and route-level lazy loading.
+- Local state handled with **Signals** and async orchestration handled with **RxJS**.
+- UI built with **PrimeNG**, **PrimeIcons**, and **Bootstrap 5**.
+- Authentication based on in-memory access token and HttpOnly refresh cookie.
+- Feature-oriented guards, interceptors, and stores.
+- Testing support with Angular unit tests, **Playwright**, ESLint, Prettier, and strict type checking.
 
-## Alcance funcional
+## Functional scope
 
-El frontend actualmente incluye:
+The frontend currently includes:
 
-- Inicio de sesion y restauracion automatica de sesion.
-- Cambio de tema claro/oscuro con persistencia en `localStorage`.
-- Dashboard con resumen operativo y actividad reciente.
-- Listado de tickets con filtros, ordenamiento, paginacion y navegacion a detalle.
-- Creacion de tickets.
-- Vista de detalle de ticket con:
-  - resumen del ticket,
-  - comentarios,
-  - historial,
-  - asignacion o reasignacion,
-  - transiciones del flujo como iniciar, solicitar informacion, resolver y cerrar.
-- Notificaciones con marcado individual y masivo como leidas.
-- Perfil del usuario autenticado.
-- Administracion de usuarios.
-- Administracion de categorias.
-- Administracion de politicas SLA.
-- Pantallas de sistema para acceso denegado y pagina no encontrada.
+- Sign-in and automatic session restore.
+- Light and dark theme toggle persisted in `localStorage`.
+- Dashboard with operational summary and recent activity.
+- Ticket list with filters, sorting, pagination, and detail navigation.
+- Ticket creation.
+- Ticket detail view with summary data, comments, history, assignment or reassignment, and workflow actions such as start, request information, resolve, and close.
+- Notifications with single and bulk mark-as-read actions.
+- Authenticated user profile.
+- User administration.
+- Category administration.
+- SLA policy administration.
+- System pages for forbidden access and not found.
 
-## Stack principal
+## Main stack
 
 - Angular `21`
 - TypeScript `5.9`
 - RxJS `7.8`
 - PrimeNG `21`
 - Bootstrap `5.3`
-- Vitest `4`
 - Playwright `1.61`
 - ESLint `10`
 - Prettier `3`
 
-## Arquitectura
+## Architecture
 
-La aplicacion sigue una organizacion por capas ligeras y por features:
+The application is organized around lightweight layers and feature boundaries:
 
-- `core`
-  - autenticacion y autorizacion,
-  - configuracion runtime,
-  - interceptors HTTP,
-  - layout principal,
-  - tema global.
-- `shared`
-  - modelos,
-  - constantes,
-  - utilidades reutilizables.
-- `features`
-  - `auth`
-  - `dashboard`
-  - `tickets`
-  - `notifications`
-  - `profile`
-  - `administration`
-  - `system`
+- `core`: authentication, authorization, runtime configuration, HTTP interceptors, the main shell, and global theme support.
+- `shared`: models, constants, directives, helpers, and reusable utilities.
+- `features`: `auth`, `dashboard`, `tickets`, `notifications`, `profile`, `administration`, and `system`.
+- `tests`: app-level integration and end-to-end support.
 
-Patrones usados:
+Patterns used in the codebase:
 
-- **Standalone components** en toda la app.
-- **Route-level lazy loading** para aislar modulos.
-- **Stores basados en Signals** como fachada de estado por feature.
-- **RxJS** para HTTP, refresh, mutaciones, busquedas y sincronizacion.
-- **Guards** para acceso autenticado, invitado y rutas con permisos.
-- **Interceptors** para correlation id, manejo uniforme de errores y refresh de sesion.
-- **Zoneless change detection** configurado desde `app.config.ts`.
+- **Standalone components** across the app.
+- **Route-level lazy loading** for feature isolation.
+- **Signals-based stores** as feature facades.
+- **RxJS** for HTTP, refresh flows, mutations, search, and synchronization.
+- **Guards** for authenticated, guest, and permission-based routes.
+- **Interceptors** for correlation id, uniform error normalization, and session refresh.
+- **Zoneless change detection** configured in `app.config.ts`.
 
-## Navegacion y control de acceso
+## Navigation and access control
 
-Rutas principales:
+Main routes:
 
 - `/login`
 - `/dashboard`
@@ -109,48 +89,48 @@ Rutas principales:
 - `/admin/sla`
 - `/forbidden`
 
-La navegacion lateral no esta amarrada de forma rigida al rol visual, sino a permisos:
+Sidebar navigation is permission-driven instead of being hardcoded to role labels:
 
-- `USER_READ` muestra **Users**.
-- Cualquier permiso entre `CATEGORY_CREATE`, `CATEGORY_UPDATE` o `CATEGORY_DISABLE` muestra **Categories**.
-- `SLA_READ` muestra **SLA**.
+- `USER_READ` shows **Users**.
+- Any permission among `CATEGORY_CREATE`, `CATEGORY_UPDATE`, or `CATEGORY_DISABLE` shows **Categories**.
+- `SLA_READ` shows **SLA**.
 
-Importante:
+Important note:
 
-- El frontend oculta o muestra opciones como capa UX.
-- La autorizacion real debe seguir validandose en el backend.
+- The frontend only hides or shows options as a UX layer.
+- The backend must remain the source of truth for authorization.
 
-## Seguridad y comunicacion con backend
+## Security and backend communication
 
-- `authGuard`, `guestGuard` y `permissionGuard` protegen la navegacion.
-- `authInterceptor` agrega `Authorization: Bearer ...` y recupera la sesion cuando corresponde.
-- `correlationIdInterceptor` agrega `X-Correlation-Id` a cada request.
-- `errorInterceptor` normaliza errores backend y fallos de red al contrato `ProblemDetails`.
-- El frontend espera un backend disponible en `/api/v1`.
+- `authGuard`, `guestGuard`, and `permissionGuard` protect navigation.
+- `authInterceptor` adds `Authorization: Bearer ...` and restores the session when possible.
+- `correlationIdInterceptor` adds `X-Correlation-Id` to each request.
+- `errorInterceptor` normalizes backend and network failures to the `ProblemDetails` contract.
+- The frontend expects a backend exposed under `http://localhost:8080/api/v1` by default.
 
-Notas del contrato:
+Contract notes:
 
-- Los recursos mutables usan `version` para optimistic locking.
-- La creacion de tickets requiere `Idempotency-Key` en backend.
-- Los errores usan `ProblemDetails` con `code`, `correlationId`, `timestamp` y `fieldErrors`.
+- Mutable resources use `version` for optimistic locking.
+- Ticket creation requires `Idempotency-Key` on the backend.
+- Errors follow `ProblemDetails` with `code`, `correlationId`, `timestamp`, and `fieldErrors`.
 
-## Configuracion de entorno
+## Environment configuration
 
-Archivos disponibles:
+Available files:
 
 - `src/environments/environment.ts`
 - `src/environments/environment.development.ts`
 - `src/environments/environment.production.ts`
 
-Actualmente el valor principal es:
+Current main value:
 
 ```ts
 apiBaseUrl: 'http://localhost:8080/api/v1';
 ```
 
-Si el backend corre en otro host o puerto, actualiza `apiBaseUrl` en el environment correspondiente.
+If the backend runs on another host or port, update `apiBaseUrl` in the corresponding environment file.
 
-## Estructura del proyecto
+## Project structure
 
 ```text
 src/
@@ -170,10 +150,10 @@ src/
 docs/
   decisions/
 README.md
-README.en.md
+README.es.md
 ```
 
-Patron interno por feature:
+Common internal feature layout:
 
 ```text
 feature/
@@ -187,35 +167,35 @@ feature/
     e2e/
 ```
 
-## Requisitos
+## Requirements
 
-- Node.js compatible con Angular 21.
-- npm como package manager.
-- Backend de `Management Tickets` corriendo y accesible desde el frontend.
+- Node.js version compatible with Angular 21.
+- npm as package manager.
+- The `Management Tickets` backend running and reachable from the frontend.
 
-## Puesta en marcha
+## Getting started
 
-1. Instala dependencias:
+1. Install dependencies:
 
 ```bash
 npm install
 ```
 
-2. Asegura que el backend este disponible en `http://localhost:8080/api/v1`.
+2. Make sure the backend is available at `http://localhost:8080/api/v1`.
 
-3. Inicia el servidor de desarrollo:
+3. Start the development server:
 
 ```bash
 npm start
 ```
 
-4. Abre la aplicacion en:
+4. Open the app at:
 
 ```text
 http://localhost:4200
 ```
 
-## Scripts disponibles
+## Available scripts
 
 ```bash
 npm start
@@ -231,31 +211,31 @@ npm run lint
 npm run typecheck
 ```
 
-Descripcion rapida:
+Quick description:
 
-- `npm start`: levanta el dev server Angular.
-- `npm run build`: genera build de produccion.
-- `npm run watch`: recompila en modo desarrollo.
-- `npm test`: ejecuta la suite con Vitest a traves del builder de Angular.
-- `npm run test:e2e`: ejecuta las pruebas end-to-end con Playwright en Chromium.
-- `npm run test:e2e:headed`: ejecuta las e2e con navegador visible.
-- `npm run validate`: ejecuta format check, lint, typecheck, tests de Vitest y pruebas e2e.
-- `npm run format`: aplica Prettier.
-- `npm run format:check`: valida formato.
-- `npm run lint`: ejecuta ESLint.
-- `npm run typecheck`: valida TypeScript para app, specs y pruebas e2e.
+- `npm start`: Runs the Angular development server.
+- `npm run build`: Creates the production build.
+- `npm run watch`: Rebuilds continuously in development mode.
+- `npm test`: Runs the Angular unit test suite.
+- `npm run test:e2e`: Runs end-to-end tests with Playwright in Chromium.
+- `npm run test:e2e:headed`: Runs end-to-end tests with a visible browser.
+- `npm run validate`: Runs format check, lint, typecheck, unit tests, and e2e tests.
+- `npm run format`: Applies Prettier formatting.
+- `npm run format:check`: Checks formatting.
+- `npm run lint`: Runs ESLint.
+- `npm run typecheck`: Validates TypeScript for the app, specs, and e2e tests.
 
-## Calidad y pruebas
+## Quality and testing
 
-La estrategia actual de calidad contempla:
+Current quality strategy includes:
 
-- linting con ESLint,
-- formateo con Prettier,
-- chequeo estricto de tipos,
-- pruebas unitarias e integracion con Vitest,
-- pruebas end-to-end con Playwright.
+- Linting with ESLint.
+- Formatting with Prettier.
+- Strict type checking.
+- Unit and integration testing inside the Angular test setup.
+- End-to-end testing with Playwright.
 
-Comandos recomendados:
+Recommended commands:
 
 ```bash
 npm run format
@@ -267,62 +247,54 @@ npm run test:e2e
 npm run validate
 ```
 
-Organizacion de pruebas:
+Test organization:
 
-- `tests/units`: stores, guards, interceptors y helpers.
-- `tests/integrations`: componentes y paginas con dependencias mockeadas.
-- `tests/e2e`: escenarios end-to-end reales organizados por modulo.
+- `tests/units`: Stores, guards, interceptors, and helpers.
+- `tests/integrations`: Components and pages with mocked dependencies.
+- `tests/e2e`: Real end-to-end scenarios organized by module.
 
-Estado actual de e2e:
+Current e2e status:
 
-- Playwright ya esta configurado en el repositorio.
-- Actualmente se ejecutan escenarios e2e para autenticacion, autorizacion, tickets y notificaciones.
+- Playwright is already configured in this repository.
+- The current suite covers authentication, authorization, tickets, and notifications flows.
 
-## Documentacion del repositorio
+## Repository documentation
 
-Documentos principales:
+Main documents:
 
-- [Arquitectura](./docs/architecture.md)
-- [Contrato API](./docs/api-contract.md)
-- [Modelo de dominio](./docs/domain-model.md)
-- [Testing strategy](./docs/testing-strategy.md)
-- [Implementation plan](./docs/implementation-plan.md)
-- [Implementation progress](./docs/implementation-progress.md)
+- [Architecture](./docs/architecture.md)
+- [API Contract](./docs/api-contract.md)
+- [Domain Model](./docs/domain-model.md)
+- [Testing Strategy](./docs/testing-strategy.md)
+- [Implementation Plan](./docs/implementation-plan.md)
+- [Implementation Progress](./docs/implementation-progress.md)
 
 Decision records:
 
-- [001 - Clean architecture](./docs/decisions/001-clean-architecture.md)
-- [002 - Authentication strategy](./docs/decisions/002-authentication-strategy.md)
-- [003 - Angular state management](./docs/decisions/003-angular-state-management.md)
-- [004 - Ticket workflow](./docs/decisions/004-ticket-workflow.md)
+- [001 - Clean Architecture](./docs/decisions/001-clean-architecture.md)
+- [002 - Authentication Strategy](./docs/decisions/002-authentication-strategy.md)
+- [003 - Angular State Management](./docs/decisions/003-angular-state-management.md)
+- [004 - Ticket Workflow](./docs/decisions/004-ticket-workflow.md)
 
-## Integracion con el backend
+## Backend integration
 
-Este repositorio contiene solo el frontend. La solucion completa descrita en la documentacion contempla un backend separado llamado `tickets-backend`, responsable de:
+This repository only contains the frontend. The full solution also includes a separate backend called `tickets-backend`, responsible for business rules, authentication, persistence, notifications, dashboard data, SLA management, and audit history.
 
-- reglas de negocio,
-- autenticacion,
-- persistencia,
-- notificaciones,
-- dashboard,
-- SLA,
-- auditoria.
+## Current status
 
-## Estado actual
+The project already includes:
 
-El proyecto ya cuenta con:
+- The main functional modules.
+- Permission-aware navigation.
+- Paginated list views.
+- Light and dark theme support.
+- Consistent error handling.
+- A test suite organized by module.
+- A real Playwright e2e base ready to execute.
+- Baseline technical documentation under `docs/`.
 
-- modulos funcionales principales implementados,
-- navegacion con permisos,
-- tablas con paginacion,
-- tema claro/oscuro,
-- manejo consistente de errores,
-- suite de pruebas organizada por modulo,
-- base e2e real ejecutable con Playwright,
-- documentacion tecnica base en `docs/`.
+## Suggested next improvements
 
-## Siguientes mejoras sugeridas
-
-- Incorporar coverage automatizado en CI.
-- Publicar ejemplos de usuarios y permisos para ambientes demo.
-- Agregar capturas de pantalla o gifs del flujo principal.
+- Add automated coverage reporting in CI.
+- Publish sample users and permission matrices for demo environments.
+- Add screenshots or GIFs for the main flow.

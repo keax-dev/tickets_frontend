@@ -1,3 +1,18 @@
+<div align="right">
+  <a href="./001-clean-architecture.md">
+    <img
+      alt="English"
+      src="https://img.shields.io/badge/Language-English-1f6feb?style=for-the-badge"
+    />
+  </a>
+  <a href="./001-clean-architecture.es.md">
+    <img
+      alt="Espanol"
+      src="https://img.shields.io/badge/Idioma-Espanol-0b7a4b?style=for-the-badge"
+    />
+  </a>
+</div>
+
 # ADR 001 - Pragmatic Clean Architecture
 
 ## Status
